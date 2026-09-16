@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+/* Bộ token dùng chung, kế thừa từ thaco-truck-sale-page.
+   Khung thiết kế Figma của Towner E cũng rộng 1440 nên hệ lưới/cỡ chữ/khoảng
+   cách giữ nguyên được. Riêng NHÓM MÀU bên dưới là màu tạm — thay bằng màu thật
+   ngay khi đọc được bản thiết kế. */
+
+@theme {
+  /* ── Màu thương hiệu (TẠM — chờ Figma) ────────────────── */
+  --color-primary: #122c5f;
+  --color-brand: #00529c;
+  --color-brand-hover: #0086ff;
+  --color-brand-alpha: rgba(0, 82, 156, 0.1);
+  --color-dark: #141b34;
+
+  /* ── Màu chữ ──────────────────────────────────────────── */
+  --color-text-heading: #2e2e2e;
+  --color-text-title: #575757;
+  --color-text-body: #a6a6a6;
+  --color-text-disabled: #f5f5f5;
+
+  /* ── Nền / viền ───────────────────────────────────────── */
+  --color-bg-base: #f7f7f7;
+  --color-bg-soft: #f8f8f8;
+  --color-stroke: #d9e1e2;
+  --color-gray-bold: #808080;
+  --color-border-alpha: rgba(128, 128, 128, 0.1);
+
+  /* ── Phông chữ ────────────────────────────────────────── */
+  --font-sans: var(--font-lexend), system-ui, sans-serif;
+  --font-display: var(--font-big-shoulders), system-ui, sans-serif;
+
+  /* ── Cỡ chữ ───────────────────────────────────────────── */
+  --text-body-xs: 12px;
+  --text-body-xs--line-height: 16px;
+  --text-body-xs--letter-spacing: -0.02em;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-body-sm--letter-spacing: -0.02em;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--letter-spacing: -0.02em;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 26px;
+  --text-body-lg--letter-spacing: -0.02em;
+
+  --text-heading-xl: 20px;
+  --text-heading-xl--line-height: 28px;
+
+  --text-heading-2xl: 24px;
+  --text-heading-2xl--line-height: 32px;
+
+  --text-display-md: 40px;
+  --text-display-md--line-height: 52px;
+  --text-display-md--letter-spacing: -0.02em;
+
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.01em;
+
+  --text-display-xl: 72px;
+  --text-display-xl--line-height: 82px;
+  --text-display-xl--letter-spacing: -0.01em;
+
+  --text-display-2xl: 80px;
+  --text-display-2xl--line-height: 100px;
+  --text-display-2xl--letter-spacing: -0.01em;
+
+  /* ── Khoảng cách (token Figma) ────────────────────────── */
+  --spacing-4xs: 4px;
+  --spacing-3xs: 6px;
+  --spacing-2xs: 8px;
+  --spacing-xs: 10px;
+  --spacing-sm: 12px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --spacing-3xl: 32px;
+  --spacing-4xl: 40px;
+  --spacing-6xl: 64px;
+  --spacing-7xl: 96px;
+  --spacing-8xl: 128px;
+
+  /* ── Bo góc ───────────────────────────────────────────── */
+  --radius-3xs: 2px;
+  --radius-2xs: 4px;
+
+  /* ── Bề rộng nội dung (khung Figma = 1440) ────────────── */
+  --container-content: 1184px;
+  --container-canvas: 1440px;
+}
+
+/* ── Lớp nền ──────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+  color: var(--color-text-heading);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: #ffffff;
+}
+
+* {
+  font-feature-settings: "liga" 0, "lnum" 1, "pnum" 1;
+}
+
+/* ── Hiệu ứng dùng lại (kế thừa từ truck; xoá nếu không dùng) ── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Ken Burns: phóng chậm + trôi nhẹ cho ảnh nền đầu trang. */
+@keyframes ken-burns {
+  0%   { transform: scale(1)    translate(0, 0); }
+  50%  { transform: scale(1.08) translate(-1.5%, -1%); }
+  100% { transform: scale(1)    translate(0, 0); }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 24s ease-in-out infinite;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns { animation: none; }
+}

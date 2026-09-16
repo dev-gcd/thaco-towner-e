@@ -1,0 +1,34 @@
+{
+  "name": "thaco-towner-e",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "dev:cms": "node scripts/cms-dev.mjs",
+    "build": "next build",
+    "start": "next start -p 3002",
+    "deploy": "next build && wrangler deploy",
+    "optimize:images": "tsx scripts/optimize-images.ts --delete-originals",
+    "test:screens": "node scripts/screenshot-resolutions.mjs",
+    "sync:assets": "tsx scripts/sync-figma-assets.ts"
+  },
+  "dependencies": {
+    "motion": "^12.38.0",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260518.1",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "playwright": "^1.60.0",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "wrangler": "^3"
+  }
+}

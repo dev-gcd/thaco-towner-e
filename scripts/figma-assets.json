@@ -1,0 +1,6 @@
+{
+  "fileKey": "Wh7QFGOJVuKPF6IIjmtKN0",
+  "lastSynced": null,
+  "note": "Link ảnh của Figma hết hạn sau 7 ngày. Sau mỗi lần đọc lại thiết kế thì cập nhật url rồi chạy `pnpm sync:assets`.",
+  "assets": []
+}

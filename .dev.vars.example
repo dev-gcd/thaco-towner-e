@@ -1,0 +1,30 @@
+# Worker secrets / config cho `wrangler dev` ở máy.
+# Copy sang `.dev.vars` (đã chặn commit) rồi điền. Với production, đặt bằng
+#   pnpm exec wrangler secret put <TÊN>
+# (giá trị không bí mật như MAIL_FROM/MAIL_TO/CONTENT_BRANCH có thể để trong
+#  khối `vars` của wrangler.jsonc.)
+
+# ── Đăng nhập trang quản trị ──────────────────────────────────────────────
+ADMIN_PASSWORD="changeme-dev"
+# Khoá ký cookie phiên. Bản thật dùng chuỗi ngẫu nhiên dài:  openssl rand -hex 32
+ADMIN_SESSION_SECRET="dev-only-not-secret-replace-in-prod-0000000000000000"
+
+# ── CMS ghi nội dung lên GitHub ───────────────────────────────────────────
+# PAT fine-grained, quyền Contents: write trên dev-gcd/thaco-towner-e.
+# ⚠️ Repo đang nằm ở tài khoản cá nhân dev-gcd. Ngày chuyển repo sang tổ chức
+#    thì PAT này CHẾT — phải tạo lại, nếu không khách bấm Lưu sẽ báo lỗi.
+GITHUB_TOKEN=""
+# Nhánh CMS ghi nội dung vào (push nhánh này = Workers Build chạy lại = xuất bản).
+CONTENT_BRANCH="main"
+
+# ── Email báo có khách đăng ký (tuỳ chọn) ─────────────────────────────────
+# Phải đủ cả ba thì mới gửi; thiếu thì vẫn nhận được khách, chỉ là không gửi thư.
+MAIL_API_KEY=""
+# MAIL_API_URL="https://api.resend.com/emails"
+MAIL_FROM="Thaco Towner E <no-reply@example.vn>"
+MAIL_TO="sales@example.vn"
+
+# ── Figma REST API (chỉ dùng ở máy, khi chưa có ghế Dev Mode) ─────────────
+# Personal access token, quyền File content = Read-only. KHÔNG commit.
+FIGMA_TOKEN=""
+FIGMA_FILE_KEY="Wh7QFGOJVuKPF6IIjmtKN0"

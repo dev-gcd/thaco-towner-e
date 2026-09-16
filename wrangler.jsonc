@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "thaco-towner-e",
+  // Cùng tài khoản Cloudflare với thaco-truck/thaco-van. Nếu `wrangler whoami`
+  // sau khi đăng nhập ra tài khoản khác → đổi id này cho khớp.
+  "account_id": "ed367bb99287365b621d89a65c85749a",
+  "compatibility_date": "2026-05-18",
+  "main": "worker/index.ts",
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "thaco-towner-e-leads",
+      // TODO: tạo kho D1 rồi dán id thật vào đây:
+      //   pnpm exec wrangler d1 create thaco-towner-e-leads
+      // Rồi chạy migration cho CẢ local lẫn remote:
+      //   pnpm exec wrangler d1 execute thaco-towner-e-leads --remote --file migrations/0001_create_leads.sql
+      //   pnpm exec wrangler d1 execute thaco-towner-e-leads --remote --file migrations/0002_leads_status.sql
+      "database_id": "PLACEHOLDER-CHUA-TAO",
+    },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+}

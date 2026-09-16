@@ -15,12 +15,11 @@
     {
       "binding": "DB",
       "database_name": "thaco-towner-e-leads",
-      // TODO: tạo kho D1 rồi dán id thật vào đây:
-      //   pnpm exec wrangler d1 create thaco-towner-e-leads
-      // Rồi chạy migration cho CẢ local lẫn remote:
+      // Tạo ngày 16/09 bằng `wrangler d1 create thaco-towner-e-leads` (vùng APAC).
+      // Đổi cấu trúc bảng thì chạy migration cho CẢ local lẫn remote:
       //   pnpm exec wrangler d1 execute thaco-towner-e-leads --remote --file migrations/0001_create_leads.sql
       //   pnpm exec wrangler d1 execute thaco-towner-e-leads --remote --file migrations/0002_leads_status.sql
-      "database_id": "PLACEHOLDER-CHUA-TAO",
+      "database_id": "a9ac2b0d-4bd7-4bc0-984a-e3d82d51fbdd",
     },
   ],
   "observability": {

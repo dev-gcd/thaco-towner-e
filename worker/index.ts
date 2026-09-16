@@ -54,9 +54,15 @@ const REPO = "dev-gcd/thaco-towner-e";
 // Editable content files (allowlist — :name must be a key here).
 // Add a block as you build it, e.g. hero: "content/hero.json".
 const CONTENT_FILES: Record<string, string> = {
-  // Danh sách nháp đọc từ bảng Layers của Figma (frame "Thaco Towner E - Full").
-  // Chốt lại tên khoá khi dựng từng khối; khoá ở đây PHẢI khớp scripts/cms-dev.mjs.
-  //   header, gtsp, usp, versions, exterior, interior, cta, charging, footer
+  header: "content/header.json",
+  gtsp: "content/gtsp.json",
+  usp: "content/usp.json",
+  versions: "content/versions.json",
+  exterior: "content/exterior.json",
+  interior: "content/interior.json",
+  cta: "content/cta.json",
+  charging: "content/charging.json",
+  footer: "content/footer.json",
 };
 
 type LeadInput = {
@@ -503,7 +509,7 @@ async function handlePutContent(
 
 /* ──────────────── Image upload → GitHub commit ──────────────── */
 
-const UPLOAD_EXTENSIONS = [".webp", ".png", ".jpg", ".jpeg"];
+const UPLOAD_EXTENSIONS = [".webp", ".png", ".jpg", ".jpeg", ".pdf"];
 
 async function handleUpload(req: Request, env: Env): Promise<Response> {
   if (!env.GITHUB_TOKEN) {
@@ -528,7 +534,7 @@ async function handleUpload(req: Request, env: Env): Promise<Response> {
   const ext = baseName.slice(baseName.lastIndexOf("."));
   if (!UPLOAD_EXTENSIONS.includes(ext)) {
     return json(
-      { error: "Định dạng không hợp lệ (chỉ .webp .png .jpg .jpeg)" },
+      { error: "Định dạng không hợp lệ (chỉ .webp .png .jpg .jpeg .pdf)" },
       400
     );
   }
@@ -537,8 +543,10 @@ async function handleUpload(req: Request, env: Env): Promise<Response> {
   // uniqueness token so re-uploads of the same name don't collide.
   const cleaned = baseName.replace(/[^a-z0-9._-]/g, "-").replace(/-+/g, "-");
   const safeName = `${Date.now().toString(36)}-${cleaned}`;
-  const filePath = `public/images/uploads/${safeName}`;
-  const publicPath = `/images/uploads/${safeName}`;
+  // Tài liệu (brochure) để riêng public/files/, ảnh vẫn ở public/images/uploads/.
+  const dir = ext === ".pdf" ? "files" : "images/uploads";
+  const filePath = `public/${dir}/${safeName}`;
+  const publicPath = `/${dir}/${safeName}`;
 
   const branch = env.CONTENT_BRANCH || "main";
 

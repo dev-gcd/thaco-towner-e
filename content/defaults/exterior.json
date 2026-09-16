@@ -1,0 +1,24 @@
+{
+  "label": "Thaco Towner E",
+  "ghostTitle": "ngoại thất",
+  "view360": {
+    "background": { "src": "/images/exterior/bg-360.webp", "srcMobile": "", "alt": "" },
+    "car": { "src": "/images/exterior/xe.webp", "alt": "Ngoại thất Thaco Towner E" },
+    "frames": []
+  },
+  "heading": "thiết kế mạnh mẽ",
+  "headingAccent": "phong cách hiện đại",
+  "description": "Thiết kế tối ưu cho vận hành đô thị, kết hợp hài hoà giữa tính thẩm mỹ và công năng sử dụng.",
+  "items": [
+    {
+      "image": { "src": "/images/exterior/detail-1.webp", "alt": "Mặt ga-lăng" },
+      "title": "Mặt Ga-lăng",
+      "description": "Cấu trúc hình thoi liên kết với nhau tạo cảm giác chuyển động khi tương tác với ánh sáng."
+    },
+    {
+      "image": { "src": "/images/exterior/detail-2.webp", "alt": "Đèn Halogen Projector" },
+      "title": "Đèn Halogen Projector",
+      "description": "Cường độ sáng cao hơn, khoảng cách chiếu sáng xa hơn so với đèn Halogen thông thường."
+    }
+  ]
+}

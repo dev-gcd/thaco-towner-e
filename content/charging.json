@@ -1,0 +1,109 @@
+{
+  "label": "Hệ thống trạm sạc",
+  "heading": "sạc linh hoạt - sẵn sàng cho mọi lịch trình",
+  "description": "Tương thích trạm sạc CCS2 phổ biến tại Việt Nam, hỗ trợ sạc nhanh và bộ sạc di động, giúp chủ xe chủ động trong mọi hành trình.",
+  "background": {
+    "src": "/images/charging/bg.webp",
+    "srcMobile": "",
+    "alt": ""
+  },
+  "car": {
+    "src": "/images/charging/xe.webp",
+    "alt": "Thaco Towner E đang sạc"
+  },
+  "mapLabel": "Mở bản đồ",
+  "stations": [
+    {
+      "name": "Trạm sạc Dĩ An, Bình Dương",
+      "area": "Khu vực TP. Hồ Chí Minh",
+      "mapUrl": "",
+      "specs": [
+        {
+          "icon": "power",
+          "value": "90kW",
+          "label": "Công suất"
+        },
+        {
+          "icon": "plug",
+          "value": "4 trụ sạc",
+          "label": "Số trụ"
+        },
+        {
+          "icon": "standard",
+          "value": "CCS2",
+          "label": "Chuẩn sạc"
+        }
+      ]
+    },
+    {
+      "name": "Trạm sạc Đồng Nai",
+      "area": "Khu vực TP. Hồ Chí Minh",
+      "mapUrl": "",
+      "specs": [
+        {
+          "icon": "power",
+          "value": "90kW",
+          "label": "Công suất"
+        },
+        {
+          "icon": "plug",
+          "value": "4 trụ sạc",
+          "label": "Số trụ"
+        },
+        {
+          "icon": "standard",
+          "value": "CCS2",
+          "label": "Chuẩn sạc"
+        }
+      ]
+    },
+    {
+      "name": "Trạm sạc Đài Tư",
+      "area": "Khu vực Hà Nội",
+      "mapUrl": "",
+      "specs": [
+        {
+          "icon": "power",
+          "value": "90kW",
+          "label": "Công suất"
+        },
+        {
+          "icon": "plug",
+          "value": "4 trụ sạc",
+          "label": "Số trụ"
+        },
+        {
+          "icon": "standard",
+          "value": "CCS2",
+          "label": "Chuẩn sạc"
+        }
+      ]
+    },
+    {
+      "name": "Trạm sạc Tây Nam",
+      "area": "Khu vực Hà Nội",
+      "mapUrl": "",
+      "specs": [
+        {
+          "icon": "power",
+          "value": "90kW",
+          "label": "Công suất"
+        },
+        {
+          "icon": "plug",
+          "value": "4 trụ sạc",
+          "label": "Số trụ"
+        },
+        {
+          "icon": "standard",
+          "value": "CCS2",
+          "label": "Chuẩn sạc"
+        }
+      ]
+    }
+  ],
+  "highlight": {
+    "title": "Tốc độ sạc vượt trội",
+    "description": "20% - 80% chỉ trong 18 phút"
+  }
+}

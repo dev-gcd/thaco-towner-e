@@ -23,3 +23,169 @@ export type CmsImage = {
 // ── Blocks ───────────────────────────────────────────────────
 // Empty until the Figma layout is readable. Blocks are added one at a time
 // following the recipe above.
+
+import headerData from "@/content/header.json";
+
+// ── Header (đầu trang) ───────────────────────────────────────
+export type MenuLink = { label: string; href: string };
+export type HeaderContent = {
+  menu: MenuLink[];
+  logo: CmsImage;
+  background: CmsImage;
+  title: string;
+  description: string;
+};
+export const header = headerData as HeaderContent;
+
+import gtspData from "@/content/gtsp.json";
+
+// ── GTSP (giới thiệu sản phẩm) ───────────────────────────────
+export type GtspContent = {
+  title: string;
+  description: string;
+  ctaLabel: string;
+  background: CmsImage;
+  car: CmsImage;
+  wheelFront: CmsImage;
+  wheelRear: CmsImage;
+};
+export const gtsp = gtspData as GtspContent;
+
+import uspData from "@/content/usp.json";
+
+// ── USP (ưu điểm nổi bật — băng chuyền) ──────────────────────
+export type UspItem = { image: CmsImage; title: string; subtitle: string };
+export type UspContent = { label: string; heading: string; items: UspItem[] };
+export const usp = uspData as UspContent;
+
+import versionsData from "@/content/versions.json";
+
+// ── Dòng xe (các phiên bản) ──────────────────────────────────
+export type VersionSpec = { value: string; label: string };
+export type VersionItem = {
+  name: string;
+  code: string;
+  displayName: string;
+  price: string;
+  specs: VersionSpec[];
+};
+export type VersionsContent = {
+  label: string;
+  heading: string;
+  /** Nửa sau của tiêu đề, hiển thị bằng màu xanh sáng. */
+  headingAccent: string;
+  background: CmsImage;
+  priceLabel: string;
+  items: VersionItem[];
+};
+export const versions = versionsData as VersionsContent;
+
+import exteriorData from "@/content/exterior.json";
+
+// ── Ngoại thất ───────────────────────────────────────────────
+export type DetailItem = { image: CmsImage; title: string; description: string };
+export type ExteriorContent = {
+  label: string;
+  ghostTitle: string;
+  view360: {
+    background: CmsImage;
+    car: CmsImage;
+    /** Bộ ảnh xoay 360°. Để trống thì chỉ hiện 1 ảnh và thanh trượt bị khoá. */
+    frames: string[];
+  };
+  heading: string;
+  headingAccent: string;
+  description: string;
+  items: DetailItem[];
+};
+export const exterior = exteriorData as ExteriorContent;
+
+import interiorData from "@/content/interior.json";
+
+// ── Nội thất (điểm nóng trên ảnh) ────────────────────────────
+export type Hotspot = {
+  title: string;
+  description: string;
+  image: CmsImage;
+  /** Toạ độ điểm nóng trên khung 1440×1200 của bản thiết kế. */
+  x: number;
+  y: number;
+};
+export type InteriorContent = {
+  label: string;
+  ghostTitle: string;
+  background: CmsImage;
+  car: CmsImage;
+  shadow: CmsImage;
+  hotspots: Hotspot[];
+};
+export const interior = interiorData as InteriorContent;
+
+import ctaData from "@/content/cta.json";
+
+// ── CTA + biểu mẫu đăng ký lái thử ───────────────────────────
+export type CtaCard = {
+  label: string;
+  heading: string;
+  buttonLabel: string;
+  image: CmsImage;
+};
+export type LeadFormContent = {
+  title: string;
+  description: string;
+  nameLabel: string;
+  namePlaceholder: string;
+  phoneLabel: string;
+  phonePlaceholder: string;
+  noteLabel: string;
+  notePlaceholder: string;
+  submitLabel: string;
+  successMessage: string;
+};
+export type CtaContent = {
+  driveTest: CtaCard;
+  /** `file` trống ⇒ ẩn nút tải brochure (khách chưa gửi tệp). */
+  brochure: CtaCard & { file: string };
+  form: LeadFormContent;
+};
+export const cta = ctaData as CtaContent;
+
+import chargingData from "@/content/charging.json";
+
+// ── Trạm sạc ─────────────────────────────────────────────────
+export type StationSpec = { icon: string; value: string; label: string };
+export type Station = {
+  name: string;
+  area: string;
+  /** Link bản đồ. Để trống ⇒ ẩn nút "Mở bản đồ". */
+  mapUrl: string;
+  specs: StationSpec[];
+};
+export type ChargingContent = {
+  label: string;
+  heading: string;
+  description: string;
+  background: CmsImage;
+  car: CmsImage;
+  mapLabel: string;
+  stations: Station[];
+  highlight: { title: string; description: string };
+};
+export const charging = chargingData as ChargingContent;
+
+import footerData from "@/content/footer.json";
+
+// ── Footer ───────────────────────────────────────────────────
+export type FooterLink = { label: string; href: string };
+export type FooterColumn = { title: string; links: FooterLink[] };
+export type FooterContent = {
+  logo: CmsImage;
+  companyName: string;
+  registration: string;
+  subLogo: CmsImage;
+  columns: FooterColumn[];
+  copyright: string;
+  /** Để trống `href` ⇒ ẩn biểu tượng đó. */
+  socials: { icon: string; href: string }[];
+};
+export const footer = footerData as FooterContent;

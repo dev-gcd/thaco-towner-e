@@ -4,8 +4,9 @@ Landing xe tải van điện **THACO TOWNER E**, dựng pixel-perfect từ Figma
 **Khung được clone từ `thaco-truck-sale-page`** (cùng workspace) — luồng giống hệt:
 dựng giao diện từ Figma trước, sau đó thêm trang quản trị cho khách tự sửa nội dung.
 
-> Trạng thái: **mới dựng khung** (2026-09-16). Chưa có khối nội dung nào, chưa deploy,
-> chưa tạo kho dữ liệu D1. Xem mục "Việc còn lại" bên dưới.
+> Trạng thái (2026-09-16): **9/9 khối giao diện đã dựng từ Figma**, trang quản trị sửa được
+> cả 9 khối, hộp thoại đăng ký lái thử ghi vào kho khách đăng ký. **Chưa deploy, chưa tạo D1.**
+> Xem mục "Việc còn lại" bên dưới.
 
 ## Nguồn thiết kế
 
@@ -51,13 +52,17 @@ curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
 - Host: **Cloudflare Workers Static Assets** + **D1** (khách đăng ký), wrangler **v3**
 - Quản lý gói: **pnpm** (Node 20 — `.nvmrc`)
 - **Chỉ tiếng Việt.** Mọi ô chữ là chuỗi thường, không có cặp `{vi, en}` như bản truck.
+- **Mốc màn hình desktop là `dsk` = 1440px**, KHÔNG phải `lg` (1024) của Tailwind. Bố cục dựng
+  theo toạ độ tuyệt đối của khung 1440, nên bật ở 1024 sẽ tràn ngang (đo thật: tràn 356px ở
+  1024, 100px ở 1280). Khai báo ở `app/globals.css` (`--breakpoint-dsk`). Viết `dsk:` cho mọi
+  quy tắc thuộc bố cục 1440; `sm:`/`lg:` chỉ dùng cho việc xếp lại thẻ ở màn hẹp.
 
 ## Lệnh
 
 ```sh
 pnpm install
 pnpm dev               # next dev :3002 (giao diện tĩnh; /api KHÔNG chạy ở chế độ này)
-pnpm dev:cms           # lưng CMS ở :8790 — chạy SONG SONG với `pnpm dev`, sửa nội dung thấy ngay
+pnpm dev:cms           # 1 lệnh chạy cả hai: lưng CMS :8790 + trang :3002 (đừng chạy thêm `pnpm dev`)
 pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)

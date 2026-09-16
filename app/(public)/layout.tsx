@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { bigShoulders, lexend } from "../fonts";
+import { montserrat } from "../fonts";
 import "../globals.css";
 
 // Google Tag Manager container. Khách chưa cấp mã — để rỗng thì không chèn thẻ
@@ -24,7 +24,7 @@ export default function PublicLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="vi" className={`${lexend.variable} ${bigShoulders.variable}`}>
+    <html lang="vi" className={montserrat.variable}>
       <head>
         {GTM_ID ? (
           /* Google Tag Manager — thẻ thô, KHÔNG dùng next/script

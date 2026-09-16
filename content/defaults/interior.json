@@ -1,0 +1,44 @@
+{
+  "label": "Thaco Towner E",
+  "ghostTitle": "nội thất",
+  "background": { "src": "/images/interior/bg.webp", "srcMobile": "", "alt": "" },
+  "car": { "src": "/images/interior/xe.webp", "alt": "Nội thất Thaco Towner E" },
+  "shadow": { "src": "/images/interior/shadow.webp", "alt": "" },
+  "hotspots": [
+    {
+      "title": "màn hình avn",
+      "description": "Mang lại giá trị sử dụng cao cho khách hàng",
+      "image": { "src": "/images/interior/avn.webp", "alt": "Màn hình AVN" },
+      "x": 756,
+      "y": 531
+    },
+    {
+      "title": "Điều hoà 2 chiều",
+      "description": "Mang lại giá trị sử dụng cao cho khách hàng",
+      "image": { "src": "/images/interior/dieu-hoa.webp", "alt": "Điều hoà 2 chiều" },
+      "x": 700,
+      "y": 583
+    },
+    {
+      "title": "Kính cửa chỉnh điện",
+      "description": "Mang lại giá trị sử dụng cao cho khách hàng",
+      "image": { "src": "/images/interior/kinh-cua.webp", "alt": "Kính cửa chỉnh điện" },
+      "x": 522,
+      "y": 666
+    },
+    {
+      "title": "ghế ngồi",
+      "description": "Làm từ simili cao cấp với các viền chỉ nổi bật, có khả năng chống bám bẩn tốt",
+      "image": { "src": "/images/interior/ghe.webp", "alt": "Ghế ngồi" },
+      "x": 622,
+      "y": 728
+    },
+    {
+      "title": "cần số tích hợp trên trụ lái",
+      "description": "Sang số thuận tiện hơn, tránh mất tập trung khi sang số",
+      "image": { "src": "/images/interior/can-so.webp", "alt": "Cần số tích hợp trên trụ lái" },
+      "x": 720,
+      "y": 728
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "title": "giải pháp vận chuyển\nhiệu quả cho đô thị",
+  "description": "Thaco Towner E là dòng xe tải van điện thế hệ mới, được phát triển nhằm đáp ứng xu hướng vận chuyển xanh và nhu cầu logistics đô thị ngày càng cao.",
+  "ctaLabel": "Đăng ký lái thử ngay",
+  "background": {
+    "src": "/images/gtsp/bg.webp",
+    "srcMobile": "",
+    "alt": ""
+  },
+  "car": {
+    "src": "/images/gtsp/xe.webp",
+    "alt": "Thaco Towner E"
+  },
+  "wheelFront": {
+    "src": "/images/gtsp/banh-truoc.webp",
+    "alt": ""
+  },
+  "wheelRear": {
+    "src": "/images/gtsp/banh-sau.webp",
+    "alt": ""
+  }
+}

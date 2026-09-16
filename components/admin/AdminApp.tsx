@@ -2,14 +2,32 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { LeadsPanel } from "./LeadsPanel";
+import { HeaderEditor } from "./HeaderEditor";
+import { GtspEditor } from "./GtspEditor";
+import { UspEditor } from "./UspEditor";
+import { VersionsEditor } from "./VersionsEditor";
+import { ExteriorEditor } from "./ExteriorEditor";
+import { InteriorEditor } from "./InteriorEditor";
+import { CtaEditor } from "./CtaEditor";
+import { ChargingEditor } from "./ChargingEditor";
+import { FooterEditor } from "./FooterEditor";
 
 type NavKey = "leads";
 type DefaultTab = "content" | "leads";
 
-// Các khối nội dung sửa được. Rỗng cho tới khi dựng giao diện từ Figma; mỗi lần
-// thêm một khối thì thêm 1 dòng ở đây + 1 nhánh render ở <main> bên dưới.
+// Các khối nội dung sửa được — xếp đúng thứ tự xuất hiện trên trang.
 // Khoá phải khớp CONTENT_FILES trong worker/index.ts và scripts/cms-dev.mjs.
-const CONTENT_ITEMS: { key: string; label: string }[] = [];
+const CONTENT_ITEMS: { key: string; label: string }[] = [
+  { key: "header", label: "Đầu trang" },
+  { key: "gtsp", label: "Giới thiệu sản phẩm" },
+  { key: "usp", label: "Ưu điểm nổi bật" },
+  { key: "versions", label: "Dòng xe" },
+  { key: "exterior", label: "Ngoại thất" },
+  { key: "interior", label: "Nội thất" },
+  { key: "charging", label: "Trạm sạc" },
+  { key: "cta", label: "Đăng ký & Brochure" },
+  { key: "footer", label: "Chân trang" },
+];
 
 export function AdminApp({ defaultTab = "content" }: { defaultTab?: DefaultTab }) {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -145,6 +163,15 @@ export function AdminApp({ defaultTab = "content" }: { defaultTab?: DefaultTab }
       </aside>
 
       <main className="min-w-0 flex-1 px-6 py-8">
+        {active === "header" && <HeaderEditor />}
+        {active === "gtsp" && <GtspEditor />}
+        {active === "usp" && <UspEditor />}
+        {active === "versions" && <VersionsEditor />}
+        {active === "exterior" && <ExteriorEditor />}
+        {active === "interior" && <InteriorEditor />}
+        {active === "charging" && <ChargingEditor />}
+        {active === "cta" && <CtaEditor />}
+        {active === "footer" && <FooterEditor />}
         {active === "leads" && <LeadsPanel onUnauthorized={() => setAuthed(false)} />}
       </main>
     </div>

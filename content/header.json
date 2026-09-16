@@ -1,0 +1,21 @@
+{
+  "menu": [
+    { "label": "Giới thiệu", "href": "#gioi-thieu" },
+    { "label": "Ưu điểm", "href": "#uu-diem" },
+    { "label": "Dòng xe", "href": "#dong-xe" },
+    { "label": "Ngoại thất", "href": "#ngoai-that" },
+    { "label": "Nội thất", "href": "#noi-that" },
+    { "label": "Trạm sạc", "href": "#tram-sac" }
+  ],
+  "logo": {
+    "src": "/images/header/logo.webp",
+    "alt": "THACO TOWNER E"
+  },
+  "background": {
+    "src": "/images/header/hero-bg.webp",
+    "srcMobile": "",
+    "alt": "Thaco Towner E chạy trên đường đô thị"
+  },
+  "title": "Xe tải van điện thế hệ mới",
+  "description": "Giải pháp vận chuyển đô thị hiện đại với công nghệ pin 2c,\nsạc nhanh và khả năng vận hành ổn định."
+}

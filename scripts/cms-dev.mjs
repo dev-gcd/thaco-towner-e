@@ -24,12 +24,18 @@ const LEADS_FILE = join(ROOT, ".cms-dev", "leads.json");
 
 // Must match CONTENT_FILES in worker/index.ts.
 const CONTENT_FILES = {
-  // Danh sách nháp đọc từ bảng Layers của Figma (frame "Thaco Towner E - Full").
-  // Chốt lại tên khoá khi dựng từng khối; khoá ở đây PHẢI khớp scripts/cms-dev.mjs.
-  //   header, gtsp, usp, versions, exterior, interior, cta, charging, footer
+  header: "content/header.json",
+  gtsp: "content/gtsp.json",
+  usp: "content/usp.json",
+  versions: "content/versions.json",
+  exterior: "content/exterior.json",
+  interior: "content/interior.json",
+  cta: "content/cta.json",
+  charging: "content/charging.json",
+  footer: "content/footer.json",
 };
 
-const UPLOAD_EXTENSIONS = [".webp", ".png", ".jpg", ".jpeg"];
+const UPLOAD_EXTENSIONS = [".webp", ".png", ".jpg", ".jpeg", ".pdf"];
 
 /* ───────────────────────── helpers ───────────────────────── */
 
@@ -192,15 +198,18 @@ async function handleUpload(req, res) {
   const baseName = filename.split(/[/\\]/).pop().toLowerCase();
   const ext = baseName.slice(baseName.lastIndexOf("."));
   if (!UPLOAD_EXTENSIONS.includes(ext))
-    return sendJson(res, 400, { error: "Định dạng không hợp lệ (.webp .png .jpg .jpeg)" });
+    return sendJson(res, 400, { error: "Định dạng không hợp lệ (.webp .png .jpg .jpeg .pdf)" });
 
   const cleaned = baseName.replace(/[^a-z0-9._-]/g, "-").replace(/-+/g, "-");
   const safeName = `${Date.now().toString(36)}-${cleaned}`;
-  const dir = join(ROOT, "public", "images", "uploads");
+  // Phải khớp worker/index.ts: PDF vào public/files/, ảnh vào public/images/uploads/.
+  const rel = ext === ".pdf" ? ["files"] : ["images", "uploads"];
+  const dir = join(ROOT, "public", ...rel);
   await mkdir(dir, { recursive: true });
   await writeFile(join(dir, safeName), Buffer.from(dataBase64, "base64"));
-  console.log(`[cms-dev] uploaded /images/uploads/${safeName}`);
-  return sendJson(res, 200, { ok: true, path: `/images/uploads/${safeName}` });
+  const publicPath = `/${rel.join("/")}/${safeName}`;
+  console.log(`[cms-dev] uploaded ${publicPath}`);
+  return sendJson(res, 200, { ok: true, path: publicPath });
 }
 
 /* ───────────────────────── router ───────────────────────── */

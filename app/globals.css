@@ -6,68 +6,62 @@
    ngay khi đọc được bản thiết kế. */
 
 @theme {
-  /* ── Màu thương hiệu (TẠM — chờ Figma) ────────────────── */
-  --color-primary: #122c5f;
-  --color-brand: #00529c;
-  --color-brand-hover: #0086ff;
-  --color-brand-alpha: rgba(0, 82, 156, 0.1);
-  --color-dark: #141b34;
+  /* ── Màu thương hiệu (đo từ Figma) ────────────────────── */
+  --color-brand: #1e7ed8;          /* xanh chủ đạo, dùng nhiều nhất */
+  --color-brand-deep: #00529c;     /* xanh đậm — nút, nhấn mạnh */
+  --color-brand-alpha: rgba(30, 126, 216, 0.1);
 
   /* ── Màu chữ ──────────────────────────────────────────── */
   --color-text-heading: #2e2e2e;
-  --color-text-title: #575757;
-  --color-text-body: #a6a6a6;
-  --color-text-disabled: #f5f5f5;
+  --color-text-muted: #ababab;
 
   /* ── Nền / viền ───────────────────────────────────────── */
-  --color-bg-base: #f7f7f7;
-  --color-bg-soft: #f8f8f8;
-  --color-stroke: #d9e1e2;
-  --color-gray-bold: #808080;
-  --color-border-alpha: rgba(128, 128, 128, 0.1);
+  --color-bg-soft: #f9fcff;        /* nền xanh rất nhạt giữa các khối */
+  --color-bg-tint: #d7edff;        /* mảng xanh nhạt trong khối trạm sạc */
+  --color-stroke: #e5e7eb;
+  --color-stroke-soft: #ededed;
+  --color-stroke-mute: #cccccc;
 
   /* ── Phông chữ ────────────────────────────────────────── */
-  --font-sans: var(--font-lexend), system-ui, sans-serif;
-  --font-display: var(--font-big-shoulders), system-ui, sans-serif;
+  --font-sans: var(--font-montserrat), system-ui, sans-serif;
 
-  /* ── Cỡ chữ ───────────────────────────────────────────── */
+  /* ── Cỡ chữ (đo từ Figma: cỡ / chiều cao dòng) ────────── */
   --text-body-xs: 12px;
-  --text-body-xs--line-height: 16px;
-  --text-body-xs--letter-spacing: -0.02em;
+  --text-body-xs--line-height: 15px;
 
   --text-body-sm: 14px;
   --text-body-sm--line-height: 20px;
-  --text-body-sm--letter-spacing: -0.02em;
 
   --text-body-md: 16px;
-  --text-body-md--line-height: 24px;
-  --text-body-md--letter-spacing: -0.02em;
+  --text-body-md--line-height: 20px;
 
-  --text-body-lg: 18px;
-  --text-body-lg--line-height: 26px;
-  --text-body-lg--letter-spacing: -0.02em;
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
 
-  --text-heading-xl: 20px;
-  --text-heading-xl--line-height: 28px;
+  --text-heading-sm: 20px;
+  --text-heading-sm--line-height: 24px;
 
-  --text-heading-2xl: 24px;
-  --text-heading-2xl--line-height: 32px;
+  --text-heading-md: 24px;
+  --text-heading-md--line-height: 32px;
+
+  --text-heading-lg: 28px;
+  --text-heading-lg--line-height: 34px;
+
+  --text-display-sm: 32px;
+  --text-display-sm--line-height: 40px;
 
   --text-display-md: 40px;
-  --text-display-md--line-height: 52px;
-  --text-display-md--letter-spacing: -0.02em;
+  --text-display-md--line-height: 48px;
 
   --text-display-lg: 48px;
-  --text-display-lg--line-height: 56px;
-  --text-display-lg--letter-spacing: -0.01em;
+  --text-display-lg--line-height: 66px;
 
-  --text-display-xl: 72px;
-  --text-display-xl--line-height: 82px;
-  --text-display-xl--letter-spacing: -0.01em;
+  --text-display-xl: 64px;
+  --text-display-xl--line-height: 72px;
 
-  --text-display-2xl: 80px;
-  --text-display-2xl--line-height: 100px;
-  --text-display-2xl--letter-spacing: -0.01em;
+  /* Chữ nền khổng lồ "THACO TOWNER E" ở khối Ngoại thất / Nội thất */
+  --text-ghost: 136px;
+  --text-ghost--line-height: 144px;
 
   /* ── Khoảng cách (token Figma) ────────────────────────── */
   --spacing-4xs: 4px;
@@ -86,6 +80,12 @@
   /* ── Bo góc ───────────────────────────────────────────── */
   --radius-3xs: 2px;
   --radius-2xs: 4px;
+
+  /* ── Mốc màn hình ─────────────────────────────────────── */
+  /* Bố cục dựng theo toạ độ tuyệt đối của khung 1440 chỉ được bật khi màn hình
+     đủ 1440px. Mốc `lg` mặc định của Tailwind là 1024 — dùng nó sẽ tràn ngang
+     ở dải 1024–1439 (đã đo: tràn 356px ở 1024, 100px ở 1280). */
+  --breakpoint-dsk: 1440px;
 
   /* ── Bề rộng nội dung (khung Figma = 1440) ────────────── */
   --container-content: 1184px;

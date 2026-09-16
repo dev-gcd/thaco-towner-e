@@ -1,6 +1,6 @@
 // Regression screenshots across the resolutions real customers reported issues on.
 // Usage:
-//   pnpm dev            # serve the site (default :3000), or set BASE_URL
+//   pnpm dev:cms        # serve the site (:3002), or set BASE_URL
 //   pnpm test:screens   # in another terminal
 //
 // Customer monitors are mostly non-retina (DPR=1) — that's the case the dev's
@@ -14,7 +14,7 @@ import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const BASE = process.env.BASE_URL ?? "http://localhost:3000";
+const BASE = process.env.BASE_URL ?? "http://localhost:3002";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "_screens");
 mkdirSync(OUT, { recursive: true });

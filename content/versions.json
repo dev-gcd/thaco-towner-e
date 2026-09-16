@@ -1,0 +1,61 @@
+{
+  "label": "Các phiên bản",
+  "heading": "Đa dạng lựa chọn",
+  "background": {
+    "src": "/images/versions/bg.webp",
+    "srcMobile": "",
+    "alt": ""
+  },
+  "priceLabel": "Giá bán đề xuất:",
+  "items": [
+    {
+      "name": "Towner e",
+      "code": "v2.6-2s",
+      "displayName": "Towner E V2.6-2S",
+      "price": "489.000.000 VNĐ",
+      "specs": [
+        {
+          "value": "5.28m³",
+          "label": "Thể tích thùng"
+        },
+        {
+          "value": "2.930mm",
+          "label": "Chiều dài cơ sở"
+        },
+        {
+          "value": "02",
+          "label": "Số chỗ ngồi"
+        },
+        {
+          "value": "75kW",
+          "label": "Động cơ điện"
+        }
+      ]
+    },
+    {
+      "name": "Towner e",
+      "code": "v2.7-2s",
+      "displayName": "Towner E V2.7-2S",
+      "price": "489.000.000 VNĐ",
+      "specs": [
+        {
+          "value": "5.9m³",
+          "label": "Thể tích thùng"
+        },
+        {
+          "value": "3.135mm",
+          "label": "Chiều dài cơ sở"
+        },
+        {
+          "value": "02",
+          "label": "Số chỗ ngồi"
+        },
+        {
+          "value": "75kW",
+          "label": "Động cơ điện"
+        }
+      ]
+    }
+  ],
+  "headingAccent": "phù hợp nhu cầu"
+}

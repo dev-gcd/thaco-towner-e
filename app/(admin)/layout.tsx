@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { bigShoulders, lexend } from "../fonts";
+import { montserrat } from "../fonts";
 import "../globals.css";
 
 // Root layout riêng cho CMS: cố ý KHÔNG nhúng Google Tag Manager để thao tác
@@ -13,7 +13,7 @@ export default function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="vi" className={`${lexend.variable} ${bigShoulders.variable}`}>
+    <html lang="vi" className={montserrat.variable}>
       <body className="bg-white text-text-heading antialiased">
         {children}
       </body>

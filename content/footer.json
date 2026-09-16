@@ -1,0 +1,80 @@
+{
+  "logo": {
+    "src": "/images/footer/logo-kia.webp",
+    "alt": "Thaco Towner E"
+  },
+  "companyName": "công ty TNHH phân phối thaco auto",
+  "registration": "Giấy CNĐKKD: 3600252847 - Ngày cấp: 06/04/2007\nNơi cấp: Phòng ĐKKD Sở kế hoạch và Đầu tư tỉnh Quảng Nam",
+  "subLogo": {
+    "src": "/images/footer/logo-thaco-truck.webp",
+    "alt": "Thaco Truck"
+  },
+  "columns": [
+    {
+      "title": "Thương hiệu",
+      "links": [
+        {
+          "label": "Thaco Truck",
+          "href": "#"
+        },
+        {
+          "label": "Thaco Truck",
+          "href": "#"
+        }
+      ]
+    },
+    {
+      "title": "Thương hiệu",
+      "links": [
+        {
+          "label": "Giới thiệu chung",
+          "href": "#"
+        },
+        {
+          "label": "Dịch vụ sửa chữa",
+          "href": "#"
+        },
+        {
+          "label": "Bảo dưỡng định kỳ",
+          "href": "#"
+        },
+        {
+          "label": "Chế độ bảo hành",
+          "href": "#"
+        }
+      ]
+    },
+    {
+      "title": "Liên hệ",
+      "links": [
+        {
+          "label": "Địa chỉ: Toà nhà Sadora, Số 2 đường 13,\nPhường An Khánh, TP. Hồ Chí Minh",
+          "href": ""
+        },
+        {
+          "label": "Kinh doanh xe tải: 0933 805 902",
+          "href": "tel:0933805902"
+        },
+        {
+          "label": "Hỗ trợ kỹ thuật và phụ tùng: 0903 892 892",
+          "href": "tel:0903892892"
+        },
+        {
+          "label": "Hỗ trợ: thacoauto.marketingtaibus@thaco.com.vn",
+          "href": "mailto:thacoauto.marketingtaibus@thaco.com.vn"
+        }
+      ]
+    }
+  ],
+  "copyright": "© 2026 Thaco Auto. All Rights Reserved.",
+  "socials": [
+    {
+      "icon": "facebook",
+      "href": ""
+    },
+    {
+      "icon": "youtube",
+      "href": ""
+    }
+  ]
+}

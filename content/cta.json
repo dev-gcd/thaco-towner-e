@@ -1,0 +1,27 @@
+{
+  "driveTest": {
+    "label": "Đăng ký lái thử",
+    "heading": "Trải nghiệm\nthaco towner E",
+    "buttonLabel": "Đăng ký lái thử",
+    "image": { "src": "/images/cta/lai-thu.webp", "alt": "Đăng ký lái thử Thaco Towner E" }
+  },
+  "brochure": {
+    "label": "Tải Brochure",
+    "heading": "Khám phá chi tiết\nsản phẩm",
+    "buttonLabel": "Tải Brochure",
+    "file": "",
+    "image": { "src": "/images/cta/brochure.webp", "alt": "Brochure Thaco Towner E" }
+  },
+  "form": {
+    "title": "Đăng ký lái thử",
+    "description": "Để lại thông tin, đội ngũ kinh doanh sẽ liên hệ trong thời gian sớm nhất.",
+    "nameLabel": "Họ và tên",
+    "namePlaceholder": "Nguyễn Văn A",
+    "phoneLabel": "Số điện thoại",
+    "phonePlaceholder": "09xx xxx xxx",
+    "noteLabel": "Ghi chú",
+    "notePlaceholder": "Phiên bản quan tâm, khu vực, thời gian muốn lái thử…",
+    "submitLabel": "Gửi đăng ký",
+    "successMessage": "Đã nhận thông tin. Cảm ơn anh/chị, chúng tôi sẽ liên hệ sớm nhất."
+  }
+}

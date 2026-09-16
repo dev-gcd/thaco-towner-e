@@ -1,17 +1,9 @@
-// TODO: phông tạm kế thừa từ thaco-truck-sale-page. Đổi theo bản thiết kế
-// Towner E ngay khi đọc được Figma.
-import { Lexend, Big_Shoulders } from "next/font/google";
+import { Montserrat } from "next/font/google";
 
-export const lexend = Lexend({
+// Bản thiết kế dùng đúng một họ chữ: Montserrat, các mức đậm 400/500/600/700/800.
+export const montserrat = Montserrat({
   subsets: ["latin", "vietnamese"],
-  weight: ["400", "500", "700"],
-  variable: "--font-lexend",
-  display: "swap",
-});
-
-export const bigShoulders = Big_Shoulders({
-  subsets: ["latin"],
-  weight: ["700", "800"],
-  variable: "--font-big-shoulders",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-montserrat",
   display: "swap",
 });

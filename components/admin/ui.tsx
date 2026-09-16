@@ -234,6 +234,99 @@ export function ImageInput({
   return label ? <Field label={label}>{inner}</Field> : inner;
 }
 
+/**
+ * Ô chọn tệp tài liệu (.pdf) — dùng cho brochure khách gửi sau. Không nén,
+ * không chuyển định dạng; Worker lưu vào public/files/.
+ */
+export function FileInput({
+  value,
+  onChange,
+  label,
+  hint = "Chỉ nhận tệp .pdf.",
+}: {
+  value: string;
+  onChange: (path: string) => void;
+  label?: string;
+  hint?: string;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [justUploaded, setJustUploaded] = useState(false);
+
+  async function handleFile(file: File) {
+    setError(null);
+    setJustUploaded(false);
+    setUploading(true);
+    try {
+      const dataBase64 = await blobToBase64(file);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, dataBase64 }),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { ok?: boolean; path?: string; error?: string }
+        | null;
+      if (!res.ok || !data?.ok || !data.path) {
+        setError(data?.error || "Tải lên thất bại");
+        return;
+      }
+      onChange(data.path);
+      setJustUploaded(true);
+    } catch {
+      setError("Tải lên thất bại");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  const inner = (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <TextInput
+          value={value}
+          placeholder="/files/…pdf  (để trống = ẩn nút tải brochure)"
+          onChange={(e) => {
+            onChange(e.target.value);
+            setJustUploaded(false);
+          }}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={uploading}
+          onClick={() => fileRef.current?.click()}
+          className="shrink-0"
+        >
+          {uploading ? "Đang tải lên…" : "Tải lên"}
+        </Button>
+      </div>
+      {error && <span className="text-xs text-red-600">{error}</span>}
+      {justUploaded && !error && (
+        <span className="text-xs text-green-600">
+          ✓ Đã tải lên. Bấm “Lưu &amp; xuất bản” để áp dụng (~1–2 phút build).
+        </span>
+      )}
+      <span className="text-xs text-gray-400">{hint}</span>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="application/pdf"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void handleFile(file);
+          e.target.value = "";
+        }}
+      />
+    </div>
+  );
+
+  return label ? <Field label={label}>{inner}</Field> : inner;
+}
+
 export function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea

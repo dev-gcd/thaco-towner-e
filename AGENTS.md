@@ -4,9 +4,9 @@ Landing xe tải van điện **THACO TOWNER E**, dựng pixel-perfect từ Figma
 **Khung được clone từ `thaco-truck-sale-page`** (cùng workspace) — luồng giống hệt:
 dựng giao diện từ Figma trước, sau đó thêm trang quản trị cho khách tự sửa nội dung.
 
-> Trạng thái (2026-09-16): **9/9 khối giao diện đã dựng từ Figma**, trang quản trị sửa được
-> cả 9 khối, hộp thoại đăng ký lái thử ghi vào kho khách đăng ký. **Chưa deploy, chưa tạo D1.**
-> Xem mục "Việc còn lại" bên dưới.
+> Trạng thái (2026-09-16): **ĐÃ DEPLOY** — https://thaco-towner-e.yellow-mouse-f324.workers.dev
+> (tài khoản Cloudflare `dev@gcd.vn`). 9/9 khối dựng từ Figma, CMS sửa được cả 9 khối, form
+> đăng ký lái thử ghi vào D1 `thaco-towner-e-leads`. Xem "Việc còn lại" bên dưới.
 
 ## Nguồn thiết kế
 
@@ -152,13 +152,17 @@ Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác t
 
 ## Việc còn lại trước khi chạy thật
 
-- [ ] Tạo kho D1 rồi dán id vào `wrangler.jsonc`: `pnpm exec wrangler d1 create thaco-towner-e-leads`
-- [ ] Chạy migration 0001 + 0002 cho **cả local lẫn `--remote`** (hai môi trường tách biệt)
-- [ ] Đặt khoá bí mật bản thật: `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `GITHUB_TOKEN` (+ `MAIL_*` nếu cần)
-- [ ] Ở máy: copy `.dev.vars.example` → `.dev.vars` rồi điền
-- [ ] Nối Cloudflare Workers Build với repo `dev-gcd/thaco-towner-e`
+- [x] Kho D1 `thaco-towner-e-leads` (APAC) — id `a9ac2b0d-4bd7-4bc0-984a-e3d82d51fbdd`
+- [x] Migration 0001 + 0002 đã chạy cả local lẫn `--remote` (11 cột, 3 chỉ mục)
+- [x] Khoá bí mật bản thật: `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `GITHUB_TOKEN`
+      (chưa đặt `MAIL_*` — form vẫn lưu khách, chỉ không gửi thư)
+- [x] Deploy tay lần đầu bằng `pnpm run deploy`
+- [ ] **Nối Cloudflare Workers Build** với repo `dev-gcd/thaco-towner-e` (nhánh `main`, build
+      `pnpm build`, deploy `pnpm exec wrangler deploy`, `NODE_VERSION=20`). Chưa nối thì khách
+      bấm Lưu trong `/admin` → commit lên GitHub nhưng trang KHÔNG tự cập nhật.
 - [ ] Khách cấp mã Google Tag Manager → dán vào `GTM_ID` trong `app/(public)/layout.tsx`
-- [ ] Khách cấp tên miền thật → sửa `metadataBase` cùng file
+- [ ] Khách cấp tên miền riêng → sửa `metadataBase` cùng tệp
+- [ ] Ghi lại ngày hết hạn của `GITHUB_TOKEN` — hết hạn là nút Lưu trong `/admin` báo lỗi
 
 ## Cạm bẫy (kế thừa từ van + truck, đã trả giá thật)
 
@@ -179,6 +183,8 @@ Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác t
 ## Ghi chú kho mã
 
 - Remote: `git@github-gcd:dev-gcd/thaco-towner-e.git` (bí danh SSH `github-gcd`, khoá `~/.ssh/id_git_gcd_dev`).
+- Cloudflare: tài khoản **`dev@gcd.vn`**, account id `93caca5c9d8aa51437c62fefd95ee791` — KHÁC
+  tài khoản của truck/van (`ed367bb9…`). Worker `thaco-towner-e`, miền con `yellow-mouse-f324`.
 - ⚠️ **Repo nằm ở tài khoản cá nhân `dev-gcd`, không phải tổ chức `Syncore-Tech` như 2 project kia.**
   Ngày chuyển repo về tổ chức thì phải làm lại 3 việc, nếu không CMS của khách sẽ hỏng:
   1. sửa hằng `REPO` trong `worker/index.ts`

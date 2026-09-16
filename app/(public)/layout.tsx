@@ -7,8 +7,9 @@ import "../globals.css";
 const GTM_ID = "";
 
 export const metadata: Metadata = {
-  // TODO: đổi sang tên miền thật khi khách cấp.
-  metadataBase: new URL("https://thaco-towner-e.gaupoit.workers.dev"),
+  // Địa chỉ workers.dev của tài khoản dev@gcd.vn (deploy lần đầu 16/09).
+  // Khách cấp tên miền riêng thì đổi sang tên miền đó.
+  metadataBase: new URL("https://thaco-towner-e.yellow-mouse-f324.workers.dev"),
   title: "Thaco Towner E",
   description: "Xe tải van điện thế hệ mới — Thaco Towner E.",
   openGraph: {

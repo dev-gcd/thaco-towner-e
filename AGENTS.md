@@ -67,6 +67,12 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
   · **ba dải cuộn ngang** — Ưu điểm, Nội thất, Trạm sạc — dùng `overflow-x-auto` + `snap-x`
     để vuốt được bằng ngón tay; luôn khai `scroll-pl-*` **bằng đúng** `pl-*`, nếu không thẻ
     dừng ở x=0 thay vì x=80 của khung 1440;
+  · **bấm vào thẻ cũng chuyển thẻ** (`lib/slider.ts` → `bamDeChuyen`), trừ khi bấm trúng
+    nút/liên kết bên trong thẻ (vd "Mở bản đồ");
+  · khối Dòng xe trên điện thoại không trượt ảnh nền được → đổi phiên bản bằng cách **ngắm điểm
+    cắt** sang chiếc xe kia (`16% 56%` ↔ `84% 56%`, tính từ tâm 2 xe trong ảnh gốc 2040px).
+    Khai bằng `[object-position:var(--bg-pos)]` — viết `object-[var(...)]` thì Tailwind
+    không sinh ra CSS vì không đoán được thuộc tính;
   · mọi vùng bấm ≥ 40px (chấm 10px bọc trong nút 44px; dòng liên hệ ở chân trang nới đệm dọc
     rồi thu `gap` lại cho cân);
   · khối Dòng xe phủ tối nửa dưới cho chữ trắng đọc được, và **chừa dải ảnh ~230px** giữa tiêu
@@ -109,9 +115,9 @@ pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
 pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
-pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 5 phép đo: toạ độ so với Figma ·
-                       #    nội dung không lọt khung 1440 · tràn ngang 9 cỡ màn · hiệu ứng ·
-                       #    bản điện thoại 320→1024 (đè chữ, chữ nhỏ, vùng bấm, ảnh méo, băng chuyền)
+pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 6 phép đo (50 mục): toạ độ so với
+                       #    Figma · nội dung không lọt khung 1440 · tràn ngang 9 cỡ màn · hiệu ứng ·
+                       #    bản điện thoại 320→1024 · thao tác trên điện thoại
 ```
 
 Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác truck/van (3000/8788)

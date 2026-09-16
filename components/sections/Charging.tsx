@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { useRef } from "react";
 import { motion } from "motion/react";
+import { bamDeChuyen } from "@/lib/slider";
 import { charging } from "@/lib/content";
 import { SectionLabel } from "@/components/SectionLabel";
 
@@ -10,6 +12,7 @@ import { SectionLabel } from "@/components/SectionLabel";
  * trên nền ảnh, bên dưới là ảnh xe đang sạc kèm một điểm nhấn về tốc độ sạc.
  */
 export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
+  const daiNgang = useRef<HTMLUListElement>(null);
   const { label, heading, description, background, car, mapLabel, stations, highlight } =
     charging;
 
@@ -45,7 +48,9 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
             <p className="max-w-[930px] text-body-lg text-text-heading">{description}</p>
           </motion.div>
 
-          <ul className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scroll-pl-4 px-4 pb-2 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-[24px] sm:overflow-visible sm:px-0 lg:absolute lg:left-[80px] lg:top-[238px] lg:mt-0 lg:w-[1280px] lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
+          <ul
+            ref={daiNgang}
+            className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scroll-pl-4 px-4 pb-2 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-[24px] sm:overflow-visible sm:px-0 lg:absolute lg:left-[80px] lg:top-[238px] lg:mt-0 lg:w-[1280px] lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
             {stations.map((station, si) => (
               <motion.li
                 key={station.name}
@@ -53,6 +58,7 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.6, delay: si * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                onClick={(e) => bamDeChuyen(e, daiNgang.current)}
                 className="flex w-[280px] shrink-0 snap-start flex-col rounded-[24px] bg-bg-soft/90 p-[20px] backdrop-blur-[2px] sm:w-auto sm:shrink lg:h-[372px] lg:w-[302px] lg:p-[24px]"
               >
                 <p className="text-body-lg font-bold text-text-heading">{station.name}</p>

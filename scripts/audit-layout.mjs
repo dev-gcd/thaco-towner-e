@@ -323,6 +323,52 @@ for (const [w, h] of [[320, 568], [360, 780], [390, 844], [430, 932], [768, 1024
   await page.close();
 }
 
+/* ── 6. Thao tác trên điện thoại ─────────────────────────── */
+console.log("\n⑥ Thao tác trên điện thoại (390px)\n");
+{
+  const page = await mo(390, 844, 2);
+  const kiem = (ten, dat, chiTiet = "") => {
+    console.log(`  ${dat ? "✓" : "✗"} ${ten}${chiTiet ? "  " + chiTiet : ""}`);
+    if (!dat) loi++;
+  };
+
+  // đổi phiên bản phải đổi luôn chiếc xe trong ảnh nền
+  await page.evaluate(() => document.querySelector("#dong-xe").scrollIntoView());
+  await page.waitForTimeout(700);
+  const viTri = () =>
+    page.evaluate(() => getComputedStyle(document.querySelector("#dong-xe img")).objectPosition);
+  const p1 = await viTri();
+  await page.click("#dong-xe button[aria-label^='Phiên bản kế tiếp']");
+  await page.waitForTimeout(1400);
+  const p2 = await viTri();
+  kiem("đổi phiên bản đổi luôn chiếc xe trong ảnh nền", p1 !== p2, `${p1} → ${p2}`);
+
+  // bấm vào thẻ thì dải cuộn sang thẻ kế tiếp
+  for (const [ten, khoi] of [["Ưu điểm", "#uu-diem"], ["Nội thất", "#noi-that"], ["Trạm sạc", "#tram-sac"]]) {
+    await page.evaluate((q) => document.querySelector(q).scrollIntoView(), khoi);
+    await page.waitForTimeout(600);
+    const truoc = await page.evaluate((q) => Math.round(document.querySelector(`${q} .snap-x`).scrollLeft), khoi);
+    await page.locator(`${khoi} .snap-x > *`).nth(0).click({ position: { x: 60, y: 60 } });
+    await page.waitForTimeout(900);
+    const sau = await page.evaluate((q) => Math.round(document.querySelector(`${q} .snap-x`).scrollLeft), khoi);
+    kiem(`bấm thẻ ở khối ${ten} thì chuyển thẻ`, sau !== truoc, `${truoc} → ${sau}`);
+  }
+
+  // bấm nút bên trong thẻ thì KHÔNG được chuyển thẻ
+  await page.evaluate(() => document.querySelector("#tram-sac").scrollIntoView());
+  await page.waitForTimeout(600);
+  await page.evaluate(() => { document.querySelector("#tram-sac .snap-x").scrollLeft = 0; });
+  await page.waitForTimeout(400);
+  const t1 = await page.evaluate(() => Math.round(document.querySelector("#tram-sac .snap-x").scrollLeft));
+  await page.locator("#tram-sac li").first().locator("button:has-text('bản đồ')").click();
+  await page.waitForTimeout(800);
+  const t2 = await page.evaluate(() => Math.round(document.querySelector("#tram-sac .snap-x").scrollLeft));
+  const hop = await page.locator("[role='alertdialog']").count();
+  kiem("bấm nút trong thẻ thì mở hộp thoại, không chuyển thẻ", t1 === t2 && hop === 1, `${t1} → ${t2}, hộp thoại=${hop}`);
+
+  await page.close();
+}
+
 await browser.close();
 console.log(loi ? `\n⛔ ${loi} chỗ chưa đạt\n` : "\n✅ Tất cả đều đạt\n");
 process.exit(loi ? 1 : 0);

@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "motion/react";
+import { bamDeChuyen } from "@/lib/slider";
 import { interior } from "@/lib/content";
 
 const CARD_W = 400;
@@ -18,6 +19,7 @@ export function Interior() {
   const { label, ghostTitle, background, car, shadow, hotspots } = interior;
   // Rê chuột = xem lướt; bấm = ghim lại (Figma có riêng trạng thái Click, dấu
   // cộng thu thành dấu trừ). Thẻ hiện khi được ghim, hoặc khi đang rê.
+  const daiNgang = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [pinned, setPinned] = useState<number | null>(null);
   const open = pinned ?? hover;
@@ -141,11 +143,15 @@ export function Interior() {
           {/* Bản điện thoại: không đặt được điểm nóng theo toạ độ khung 1440 nên
               cho 5 thẻ CUỘN NGANG — vuốt bằng ngón tay, khối ngắn lại một nửa và
               ảnh xe phía sau vẫn nhìn được. */}
-          <div className="relative mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scroll-pl-4 px-4 pb-2 [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden">
+          <div
+            ref={daiNgang}
+            className="relative mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scroll-pl-4 px-4 pb-2 [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden"
+          >
             {hotspots.map((spot) => (
               <figure
                 key={spot.title}
-                className="relative h-[240px] w-[280px] shrink-0 snap-start overflow-hidden rounded-[16px] bg-white sm:h-[260px] sm:w-[320px]"
+                onClick={(e) => bamDeChuyen(e, daiNgang.current)}
+                className="relative h-[240px] w-[280px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] bg-white sm:h-[260px] sm:w-[320px]"
               >
                 <Image
                   src={spot.image.src}

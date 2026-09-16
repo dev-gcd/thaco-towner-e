@@ -25,6 +25,13 @@ import { ArrowLeft, ArrowRight } from "@/components/icons";
 const BG_X = [-340 / 1440, -1024 / 1440]; // vị trí ảnh nền theo từng phiên bản
 const PANEL_X = [735 / 1440, 176 / 1440]; // vị trí bảng thông số đang hiển thị
 
+/**
+ * Điện thoại không trượt ảnh nền được (ảnh bị `object-cover` cắt vừa khung), nên
+ * đổi phiên bản bằng cách NGẮM điểm cắt sang chiếc xe kia. Ảnh gốc 2040×1532:
+ * xe của bản 1 nằm quanh x=580, xe của bản 2 quanh x=1460 → quy ra 16% và 84%.
+ */
+const BG_POS = ["16% 56%", "84% 56%"];
+
 export function Versions() {
   const { label, heading, headingAccent, background, priceLabel, items } = versions;
   const [index, setIndex] = useState(0);
@@ -46,8 +53,13 @@ export function Versions() {
           width={2812}
           height={2112}
           sizes="200vw"
-          className="absolute inset-0 h-full w-full object-cover object-[26%_56%] transition-[left] duration-[1022ms] [transition-timing-function:var(--ease-gentle)] lg:left-[var(--bg-x)] lg:top-1/2 lg:mt-[3.13vw] lg:h-auto lg:w-[195.28%] lg:max-w-none lg:-translate-y-1/2 lg:object-[50%_50%]"
-          style={{ "--bg-x": `${BG_X[frame] * 100}%` } as React.CSSProperties}
+          className="absolute inset-0 h-full w-full object-cover [object-position:var(--bg-pos)] transition-[left,object-position] duration-[1022ms] [transition-timing-function:var(--ease-gentle)] lg:left-[var(--bg-x)] lg:top-1/2 lg:mt-[3.13vw] lg:h-auto lg:w-[195.28%] lg:max-w-none lg:-translate-y-1/2 lg:[object-position:50%_50%]"
+          style={
+            {
+              "--bg-x": `${BG_X[frame] * 100}%`,
+              "--bg-pos": BG_POS[frame] ?? BG_POS[BG_POS.length - 1],
+            } as React.CSSProperties
+          }
         />
         <span className="pointer-events-none absolute inset-x-0 top-0 h-[347px] bg-linear-to-b from-bg-soft to-transparent" />
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-[188px] bg-linear-to-t from-bg-soft to-transparent" />

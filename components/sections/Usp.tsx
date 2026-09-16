@@ -104,7 +104,10 @@ export function Usp() {
             <article
               key={`${item.title}-${i}`}
               aria-hidden={i < count || i >= count * 2 ? true : undefined}
-              className="group relative h-[380px] w-[280px] shrink-0 snap-start rounded-[40px] md:h-[440px] md:w-[320px] lg:h-[500px] lg:w-[400px] lg:rounded-[50px]"
+              /* Bấm vào thẻ cũng chuyển sang thẻ kế tiếp — trên điện thoại ít ai
+                 tìm tới 2 nút mũi tên nhỏ bên dưới. */
+              onClick={() => go(index + 1)}
+              className="group relative h-[380px] w-[280px] shrink-0 cursor-pointer snap-start rounded-[40px] md:h-[440px] md:w-[320px] lg:h-[500px] lg:w-[400px] lg:rounded-[50px]"
             >
               {/* Figma: rê chuột thì hiện quầng xanh 10% loe ra 10px quanh thẻ */}
               <span

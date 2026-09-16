@@ -1,9 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "thaco-towner-e",
-  // Cùng tài khoản Cloudflare với thaco-truck/thaco-van. Nếu `wrangler whoami`
-  // sau khi đăng nhập ra tài khoản khác → đổi id này cho khớp.
-  "account_id": "ed367bb99287365b621d89a65c85749a",
+  // Tài khoản Cloudflare dev@gcd.vn ("Dev@gcd.vn's Account") — KHÁC tài khoản của
+  // thaco-truck/thaco-van (ed367bb9…). Đo bằng `wrangler whoami` ngày 16/09.
+  "account_id": "93caca5c9d8aa51437c62fefd95ee791",
   "compatibility_date": "2026-05-18",
   "main": "worker/index.ts",
   "assets": {

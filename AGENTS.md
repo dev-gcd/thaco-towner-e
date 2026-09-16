@@ -71,8 +71,11 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
     nút/liên kết bên trong thẻ (vd "Mở bản đồ");
   · khối Dòng xe trên điện thoại không trượt ảnh nền được → đổi phiên bản bằng cách **ngắm điểm
     cắt** sang chiếc xe kia (`16% 56%` ↔ `84% 56%`, tính từ tâm 2 xe trong ảnh gốc 2040px).
-    Khai bằng `[object-position:var(--bg-pos)]` — viết `object-[var(...)]` thì Tailwind
-    không sinh ra CSS vì không đoán được thuộc tính;
+    Khai bằng `[object-position:var(--bg-pos)]` — dạng rút gọn (tiền tố object- với ngoặc
+    vuông chứa biến) thì Tailwind không sinh ra CSS vì không đoán được thuộc tính;
+  · 🔴 **Tailwind v4 quét CẢ tệp `.md`** (mọi tệp không bị `.gitignore` chặn). Đừng viết tên
+    class mẫu có ngoặc vuông trong tài liệu — nó sinh ra CSS hỏng và làm vỡ build (đã dính:
+    lỗi "Parsing CSS source code failed" ở `globals.css`);
   · mọi vùng bấm ≥ 40px (chấm 10px bọc trong nút 44px; dòng liên hệ ở chân trang nới đệm dọc
     rồi thu `gap` lại cho cân);
   · khối Dòng xe phủ tối nửa dưới cho chữ trắng đọc được, và **chừa dải ảnh ~230px** giữa tiêu

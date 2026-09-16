@@ -6,6 +6,5 @@ lệnh, kiến trúc CMS và việc còn lại.
 
 ```sh
 pnpm install
-pnpm dev:cms     # cửa sổ 1: lưng CMS  :8790
-pnpm dev         # cửa sổ 2: trang     :3002
+pnpm dev:cms     # 1 lệnh chạy cả hai: lưng CMS :8790 + trang :3002
 ```

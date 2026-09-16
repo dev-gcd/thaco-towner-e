@@ -26,7 +26,7 @@ export default function PublicLayout({
   return (
     <html lang="vi" className={`${lexend.variable} ${bigShoulders.variable}`}>
       <head>
-        {GTM_ID && (
+        {GTM_ID ? (
           /* Google Tag Manager — thẻ thô, KHÔNG dùng next/script
              (beforeInteractive không xuất ra <script> thật). */
           <script
@@ -38,10 +38,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','${GTM_ID}');`,
             }}
           />
-        )}
+        ) : null}
       </head>
       <body className="bg-white text-text-heading antialiased">
-        {GTM_ID && (
+        {GTM_ID ? (
           <noscript>
             <iframe
               src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
@@ -50,7 +50,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               style={{ display: "none", visibility: "hidden" }}
             />
           </noscript>
-        )}
+        ) : null}
         {children}
       </body>
     </html>

@@ -264,8 +264,13 @@ server.listen(PORT, () => {
   console.log("[cms-dev] Lưu/Upload trong admin sẽ ghi thẳng vào file local.\n");
 });
 
-// Spawn `next dev` so one command runs everything.
-const child = spawn("pnpm", ["exec", "next", "dev"], { stdio: "inherit", cwd: ROOT });
+// Spawn `next dev` so one command runs everything. Cổng phải khớp package.json
+// (3002 — riêng project này để chạy song song với truck/van).
+const SITE_PORT = 3002;
+const child = spawn("pnpm", ["exec", "next", "dev", "-p", String(SITE_PORT)], {
+  stdio: "inherit",
+  cwd: ROOT,
+});
 
 function shutdown() {
   child.kill("SIGINT");

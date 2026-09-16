@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { motion } from "motion/react";
 import { interior } from "@/lib/content";
 
 const CARD_W = 400;
@@ -44,17 +45,34 @@ export function Interior() {
           aria-hidden
           className="absolute inset-x-0 top-0 hidden h-[1920px] w-[1440px] max-w-none lg:block lg:top-[45px]"
         />
-        <Image
-          src={car.src}
-          alt={car.alt}
-          width={1440}
-          height={1917}
-          sizes="100vw"
-          className="absolute inset-x-0 top-0 h-[900px] w-full object-cover lg:top-[45px] lg:h-[1917px] lg:w-[1440px] lg:max-w-none"
-        />
+        {/* Bản dựng play: xe trôi lên từ dưới khi cuộn tới khối này. */}
+        <motion.div
+          className="absolute inset-x-0 top-0 lg:top-[45px]"
+          initial={{ y: 140, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <Image
+            src={car.src}
+            alt={car.alt}
+            width={1440}
+            height={1917}
+            sizes="100vw"
+            className="h-[900px] w-full object-cover lg:h-[1917px] lg:w-[1440px] lg:max-w-none"
+          />
+        </motion.div>
         <span
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 h-[40%] bg-linear-to-b from-black/70 to-transparent"
+        />
+        {/* Figma: 5 biến thể mở thẻ đều thêm lớp `Cover` #2e2e2e 70% phủ toàn khối
+            để làm nổi thẻ đang xem. */}
+        <span
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 bg-[#2e2e2e] transition-opacity duration-300 ${
+            open === null ? "opacity-0" : "opacity-70"
+          }`}
         />
 
         <div className="relative px-4 py-12 lg:h-full lg:px-0 lg:py-0">

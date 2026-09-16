@@ -54,7 +54,13 @@ export const gtsp = gtspData as GtspContent;
 import uspData from "@/content/usp.json";
 
 // ── USP (ưu điểm nổi bật — băng chuyền) ──────────────────────
-export type UspItem = { image: CmsImage; title: string; subtitle: string };
+export type UspItem = {
+  image: CmsImage;
+  /** Ảnh thứ hai, hiện đè lên khi rê chuột (Figma có 2 biến thể ảnh cho mỗi thẻ). */
+  imageHover: CmsImage;
+  title: string;
+  subtitle: string;
+};
 export type UspContent = { label: string; heading: string; items: UspItem[] };
 export const usp = uspData as UspContent;
 
@@ -142,11 +148,14 @@ export type LeadFormContent = {
   submitLabel: string;
   successMessage: string;
 };
+/** Chữ trong hộp thoại báo thiếu dữ liệu (dùng chung cho brochure và bản đồ). */
+export type NoticeContent = { title: string; message: string };
 export type CtaContent = {
   driveTest: CtaCard;
   /** `file` trống ⇒ ẩn nút tải brochure (khách chưa gửi tệp). */
   brochure: CtaCard & { file: string };
   form: LeadFormContent;
+  notice: NoticeContent;
 };
 export const cta = ctaData as CtaContent;
 

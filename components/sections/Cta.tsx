@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Reveal } from "@/components/Reveal";
 import { cta } from "@/lib/content";
 import { SectionLabel } from "@/components/SectionLabel";
 import { ArrowRight } from "@/components/icons";
@@ -7,13 +8,21 @@ import { ArrowRight } from "@/components/icons";
  * Hai thẻ kêu gọi hành động, khung thiết kế 1440×718: thẻ 630×558 ở 80,80 và
  * 730,80, ảnh tràn ra ngoài mép thẻ rồi bị cắt bởi bo góc 16.
  */
-export function Cta({ onDriveTestClick }: { onDriveTestClick?: () => void }) {
+export function Cta({
+  onDriveTestClick,
+  onMissingFile,
+}: {
+  onDriveTestClick?: () => void;
+  /** Gọi khi khách bấm nút mà CMS chưa nạp tệp/đường dẫn. */
+  onMissingFile?: () => void;
+}) {
   const { driveTest, brochure } = cta;
 
   return (
     <section id="dang-ky" className="bg-white">
       <div className="mx-auto grid w-full max-w-[1440px] gap-6 px-4 py-12 lg:h-[718px] lg:grid-cols-2 lg:gap-[20px] lg:px-[80px] lg:py-[80px]">
         {/* Thẻ 1 — đăng ký lái thử */}
+        <Reveal className="h-full">
         <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft lg:h-[558px]">
           <Image
             src={driveTest.image.src}
@@ -41,7 +50,10 @@ export function Cta({ onDriveTestClick }: { onDriveTestClick?: () => void }) {
           </div>
         </article>
 
+        </Reveal>
+
         {/* Thẻ 2 — tải brochure */}
+        <Reveal delay={0.12} className="h-full">
         <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft lg:h-[558px]">
           <Image
             src={brochure.image.src}
@@ -58,8 +70,9 @@ export function Cta({ onDriveTestClick }: { onDriveTestClick?: () => void }) {
                 {brochure.heading}
               </h2>
             </div>
-            {/* Chưa có tệp thì không hiện nút — tránh nút bấm vào không ra gì */}
-            {brochure.file && (
+            {/* Nút LUÔN hiện. Chưa nạp tệp trong CMS thì bấm vào báo đang cập nhật,
+                thay vì ẩn nút đi khiến người quản trị không biết là còn thiếu. */}
+            {brochure.file ? (
               <a
                 href={brochure.file}
                 download
@@ -68,9 +81,19 @@ export function Cta({ onDriveTestClick }: { onDriveTestClick?: () => void }) {
                 {brochure.buttonLabel}
                 <DownloadIcon />
               </a>
+            ) : (
+              <button
+                type="button"
+                onClick={onMissingFile}
+                className="inline-flex h-[40px] w-fit items-center gap-[6px] rounded-full bg-stroke px-6 text-body-md font-medium text-text-heading transition-colors duration-200 hover:bg-[#cfd2d6]"
+              >
+                {brochure.buttonLabel}
+                <DownloadIcon />
+              </button>
             )}
           </div>
         </article>
+        </Reveal>
       </div>
     </section>
   );

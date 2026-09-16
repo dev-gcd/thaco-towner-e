@@ -11,6 +11,8 @@ import { Cta } from "@/components/sections/Cta";
 import { Charging } from "@/components/sections/Charging";
 import { Footer } from "@/components/sections/Footer";
 import { LeadDialog } from "@/components/LeadDialog";
+import { NoticeDialog } from "@/components/NoticeDialog";
+import { cta } from "@/lib/content";
 
 /**
  * Ghép toàn trang. Giữ ở một chỗ duy nhất trạng thái mở/đóng hộp thoại đăng ký
@@ -18,7 +20,9 @@ import { LeadDialog } from "@/components/LeadDialog";
  */
 export function LandingPage() {
   const [leadOpen, setLeadOpen] = useState(false);
+  const [noticeOpen, setNoticeOpen] = useState(false);
   const openLead = () => setLeadOpen(true);
+  const openNotice = () => setNoticeOpen(true);
 
   return (
     <>
@@ -32,11 +36,17 @@ export function LandingPage() {
         <Exterior />
         <div aria-hidden className="hidden bg-bg-soft lg:block lg:h-[100px]" />
         <Interior />
-        <Cta onDriveTestClick={openLead} />
-        <Charging />
+        <Cta onDriveTestClick={openLead} onMissingFile={openNotice} />
+        <Charging onMissingLink={openNotice} />
       </main>
       <Footer />
       <LeadDialog open={leadOpen} onClose={() => setLeadOpen(false)} />
+      <NoticeDialog
+        open={noticeOpen}
+        title={cta.notice.title}
+        message={cta.notice.message}
+        onClose={() => setNoticeOpen(false)}
+      />
     </>
   );
 }

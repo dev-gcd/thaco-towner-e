@@ -21,14 +21,14 @@ const POSITIONS = [
   ["#gioi-thieu", "tiêu đề", "h2", 144, 168, null, null],
   ["#gioi-thieu", "nút", "button", 144, 359, 242, 40],
   ["#uu-diem", "tiêu đề", "h2", 80, 112, null, null],
-  ["#uu-diem", "thẻ đầu", "article", 80, 216, 400, 500],
+  ["#uu-diem", "thẻ đầu", "article:nth-of-type(6)", 80, 216, 400, 500],
   ["#dong-xe", "tiêu đề", "h2", 80, 112, null, null],
   ["#dong-xe", "ô giá", "div.bg-brand", 735, 590, 371, 32],
   ["#dong-xe", "bảng thông số", "dl", 735, 654, 590, 97],
   ["#dong-xe", "nút trái", "button", 80, 549, 56, 56],
   ["#ngoai-that", "chữ mờ", "p", 80, 112, null, null],
   ["#ngoai-that", "tiêu đề", "h2", 80, 1025, null, null],
-  ["#ngoai-that", "ảnh chi tiết", "figure > div", 80, 1309, 900, 506],
+  ["#ngoai-that", "chú thích ảnh", "figcaption", 80, 1855, null, null],
   ["#noi-that", "chữ mờ", "p", 386, 112, null, null],
   ["#noi-that", "điểm nóng 1", "button", 756, 531, 40, 40],
   ["#tram-sac", "tiêu đề", "h2", 80, 76, null, null],
@@ -57,7 +57,9 @@ async function mo(width, height = 1000, deviceScaleFactor = 1) {
     window.scrollTo(0, 0);
   });
   await page.waitForLoadState("networkidle");
-  await page.waitForTimeout(300);
+  // Chờ các hiệu ứng "hiện khi cuộn tới" chạy xong rồi mới đo — khối Giải pháp
+  // trễ tới 1,1s + 0,7s, đo sớm sẽ thấy phần tử còn lệch 24px.
+  await page.waitForTimeout(2500);
   return page;
 }
 
@@ -66,6 +68,10 @@ console.log("\n① Toạ độ ở đúng 1440px so với Figma (lệch ≤2px c
 {
   const page = await mo(CANVAS);
   for (const [sec, ten, sel, ex, ey, ew, eh] of POSITIONS) {
+    // Cuộn tới khối rồi mới đo: các khối có hiệu ứng "hiện khi cuộn tới" chỉ về
+    // đúng vị trí sau khi đã lọt vào tầm nhìn.
+    await page.evaluate((q) => document.querySelector(q)?.scrollIntoView({ block: "center" }), sec);
+    await page.waitForTimeout(900);
     const r = await page.evaluate(([sec, sel]) => {
       const s = document.querySelector(sec);
       if (!s) return { err: "không thấy khối" };
@@ -129,6 +135,105 @@ for (const [w, h, dpr] of SIZES) {
   console.log(`  ${tran > 0 ? "✗" : "✓"} ${String(w).padStart(4)}×${String(h).padEnd(4)} dpr${dpr}  tràn=${tran}px`);
   if (tran > 0) loi++;
   void js;
+  await page.close();
+}
+
+/* ── 4. Hiệu ứng (đọc từ bản dựng play của Figma) ─────────── */
+console.log("\n④ Hiệu ứng\n");
+{
+  const page = await mo(CANVAS, 1000);
+  const kiem = (ten, dat, chiTiet = "") => {
+    console.log(`  ${dat ? "✓" : "✗"} ${ten}${chiTiet ? "  " + chiTiet : ""}`);
+    if (!dat) loi++;
+  };
+
+  // Thẻ ưu điểm: rê chuột đổi sang ảnh chi tiết
+  await page.evaluate(() => document.querySelector("#uu-diem").scrollIntoView());
+  await page.waitForTimeout(700);
+  const the = page.locator("#uu-diem article").nth(5);
+  const hop = await the.boundingBox();
+  const anh = () =>
+    page.evaluate(() => {
+      const a = [...document.querySelectorAll("#uu-diem article")][5];
+      const [i1, i2] = a.querySelectorAll("img");
+      return [getComputedStyle(i1).opacity, getComputedStyle(i2).opacity];
+    });
+  const truoc = await anh();
+  await page.mouse.move(hop.x + 200, hop.y + 250);
+  await page.waitForTimeout(1000);
+  const sau = await anh();
+  kiem("thẻ ưu điểm đổi sang ảnh chi tiết khi rê chuột", truoc[1] === "0" && sau[1] === "1");
+
+  // Băng chuyền: 3 thẻ đầy + 2 thẻ hé
+  const nhinThay = await page.evaluate(() => {
+    const r = [...document.querySelectorAll("#uu-diem article")]
+      .map((a) => a.getBoundingClientRect())
+      .filter((b) => b.right > 0 && b.left < window.innerWidth);
+    return { tong: r.length, day: r.filter((b) => b.left >= 0 && b.right <= window.innerWidth).length };
+  });
+  kiem("băng chuyền hé 2 thẻ ở rìa", nhinThay.tong === 5 && nhinThay.day === 3,
+    `thấy ${nhinThay.tong} thẻ, ${nhinThay.day} thẻ đầy`);
+
+  // Dòng xe: đổi phiên bản thì nền trượt và bảng đổi bên
+  await page.evaluate(() => document.querySelector("#dong-xe").scrollIntoView());
+  await page.waitForTimeout(600);
+  const doDongXe = () =>
+    page.evaluate(() => {
+      const s = document.querySelector("#dong-xe"), sb = s.getBoundingClientRect();
+      return {
+        nen: Math.round(s.querySelector("img").getBoundingClientRect().left - sb.left),
+        bang: Math.round(s.querySelector("dl").getBoundingClientRect().left - sb.left),
+      };
+    });
+  const v1 = await doDongXe();
+  await page.click("#dong-xe button[aria-label^='Phiên bản kế tiếp']");
+  await page.waitForTimeout(1300);
+  const v2 = await doDongXe();
+  kiem("đổi phiên bản: nền trượt -340 → -1024", Math.abs(v1.nen + 340) <= 2 && Math.abs(v2.nen + 1024) <= 2,
+    `${v1.nen} → ${v2.nen}`);
+  kiem("đổi phiên bản: bảng đổi bên 735 → 176", Math.abs(v1.bang - 735) <= 2 && Math.abs(v2.bang - 176) <= 2,
+    `${v1.bang} → ${v2.bang}`);
+
+  // Ngoại thất: bấm thẻ hé thì hai thẻ đổi chỗ
+  await page.evaluate(() => document.querySelector("#ngoai-that").scrollIntoView({ block: "end" }));
+  await page.waitForTimeout(800);
+  const doNgoai = () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("#ngoai-that figcaption")].map((f) =>
+        Math.round(f.parentElement.getBoundingClientRect().width)
+      )
+    );
+  const n1 = await doNgoai();
+  await page.click("#ngoai-that .cursor-pointer");
+  await page.waitForTimeout(1200);
+  const n2 = await doNgoai();
+  kiem("ngoại thất: hai thẻ đổi cỡ 900 ↔ 340", n1[0] > n1[1] && n2[0] > n2[1] && n1[0] === n2[0],
+    `${n1.join("/")} → ${n2.join("/")}`);
+
+  // Nội thất: bấm điểm nóng thì nền tối 70%
+  await page.evaluate(() => document.querySelector("#noi-that").scrollIntoView());
+  await page.waitForTimeout(800);
+  const phu = () =>
+    page.evaluate(() => {
+      const s = document.querySelector("#noi-that");
+      const el = [...s.querySelectorAll("span")].find((x) =>
+        getComputedStyle(x).backgroundColor.includes("46, 46, 46")
+      );
+      return el ? getComputedStyle(el).opacity : "?";
+    });
+  const p1 = await phu();
+  await page.click("#noi-that button");
+  await page.waitForTimeout(500);
+  const p2 = await phu();
+  kiem("nội thất: bấm điểm nóng thì nền tối 70%", p1 === "0" && Math.abs(Number(p2) - 0.7) < 0.05,
+    `${p1} → ${p2}`);
+
+  // Hai nút luôn hiện dù CMS chưa có dữ liệu
+  const nutBrochure = await page.locator("#dang-ky button:has-text('Brochure'), #dang-ky a:has-text('Brochure')").count();
+  const nutBanDo = await page.locator("#tram-sac button:has-text('bản đồ'), #tram-sac a:has-text('bản đồ')").count();
+  kiem("nút Tải Brochure luôn hiện", nutBrochure === 1);
+  kiem("nút Mở bản đồ hiện đủ 4 trạm", nutBanDo === 4, `đếm được ${nutBanDo}`);
+
   await page.close();
 }
 

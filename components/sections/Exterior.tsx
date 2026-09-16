@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { motion } from "motion/react";
 import { exterior } from "@/lib/content";
 import { SectionLabel } from "@/components/SectionLabel";
 import { ArrowLeft, ArrowRight } from "@/components/icons";
@@ -11,6 +12,9 @@ import { ArrowLeft, ArrowRight } from "@/components/icons";
  *  · 0–1025  : ảnh xe toàn cảnh + thanh trượt xoay 360°
  *  · 1025–2000: tiêu đề lớn + băng chuyền chi tiết (thẻ lớn 900 + thẻ hé 340)
  */
+/** Figma: đổi thẻ 833ms, nhịp lò xo SLOW. */
+const SWAP = { duration: 0.833, ease: [0.22, 1, 0.36, 1] } as const;
+
 export function Exterior() {
   const { label, ghostTitle, view360, heading, headingAccent, description, items } = exterior;
   const [frame, setFrame] = useState(0);
@@ -18,9 +22,9 @@ export function Exterior() {
 
   const hasFrames = view360.frames.length > 1;
   const carSrc = hasFrames ? view360.frames[frame] : view360.car.src;
-  const active = items[index];
-  const next = items[(index + 1) % items.length];
   const go = (n: number) => setIndex(((n % items.length) + items.length) % items.length);
+  // Thẻ đang xem luôn đứng đầu; các thẻ còn lại xếp sau dưới dạng thẻ hé.
+  const ordered = [...items.slice(index), ...items.slice(0, index)];
 
   return (
     <section id="ngoai-that" className="bg-white">
@@ -92,72 +96,79 @@ export function Exterior() {
           <p className="text-body-md font-medium text-text-heading">{description}</p>
         </div>
 
-        <div className="mt-10 flex gap-[40px] lg:absolute lg:left-[80px] lg:top-[284px] lg:mt-0 lg:w-[1280px]">
-          <figure className="flex w-full flex-col gap-[40px] lg:w-[900px]">
-            <div className="relative aspect-[900/506] overflow-hidden rounded-[16px] transition-opacity duration-[833ms] [transition-timing-function:var(--ease-slow)]">
-              <Image
-                src={active.image.src}
-                alt={active.image.alt}
-                width={900}
-                height={506}
-                sizes="(max-width: 1023px) 100vw, 900px"
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-            </div>
-            <figcaption className="flex flex-col gap-[16px]">
-              <span className="flex items-center gap-[8px]">
-                <span className="text-heading-md font-semibold text-brand">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span aria-hidden className="h-[2px] w-[32px] bg-brand" />
-                <span className="text-heading-md font-semibold text-text-heading">
-                  {active.title}
-                </span>
-              </span>
-              <p className="max-w-[718px] text-body-md text-text-heading">
-                {active.description}
-              </p>
-            </figcaption>
-          </figure>
+        {/* Bản dựng play: bấm thẻ hé thì hai thẻ ĐỔI CHỖ và đổi cỡ mượt
+            (900 ↔ 340), 833ms. Dùng hiệu ứng layout của motion để cả vị trí lẫn
+            bề rộng cùng chạy, thay vì đổi ảnh tức thì như trước. */}
+        <div className="mt-10 lg:absolute lg:left-[80px] lg:top-[284px] lg:mt-0 lg:w-[1280px]">
+          <div className="flex flex-col gap-[40px] lg:flex-row">
+            {ordered.map((item, pos) => {
+              const active = pos === 0;
+              const so = String((items.indexOf(item) % items.length) + 1).padStart(2, "0");
+              return (
+                <motion.div
+                  key={item.title}
+                  layout
+                  transition={SWAP}
+                  onClick={() => !active && go(index + pos)}
+                  className={`flex flex-col gap-[40px] ${
+                    active ? "lg:w-[900px]" : "group cursor-pointer lg:w-[340px]"
+                  }`}
+                >
+                  <motion.div
+                    layout
+                    transition={SWAP}
+                    className="relative aspect-[900/506] overflow-hidden rounded-[16px] lg:aspect-auto lg:h-[506px]"
+                  >
+                    <Image
+                      src={item.image.src}
+                      alt={item.image.alt}
+                      width={900}
+                      height={506}
+                      sizes="(max-width: 1439px) 100vw, 900px"
+                      className="absolute inset-0 h-full w-full max-w-none object-cover lg:w-[900px]"
+                    />
+                    {!active && (
+                      <>
+                        <span
+                          aria-hidden
+                          className="absolute inset-0 bg-[#2e2e2e]/60 transition-colors duration-200 group-hover:bg-[#2e2e2e]/80"
+                        />
+                        <span
+                          aria-hidden
+                          className="absolute left-1/2 top-1/2 grid size-[56px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                        >
+                          <ArrowRight className="size-[14px]" />
+                        </span>
+                      </>
+                    )}
+                  </motion.div>
 
-          {/* Thẻ hé bên phải — bấm để chuyển */}
-          <button
-            type="button"
-            onClick={() => go(index + 1)}
-            className="group hidden w-[340px] shrink-0 flex-col gap-[40px] self-start text-left lg:flex"
-          >
-            <span className="relative block h-[506px] overflow-hidden rounded-[16px]">
-              <Image
-                src={next.image.src}
-                alt={next.image.alt}
-                width={900}
-                height={506}
-                sizes="340px"
-                className="absolute inset-0 size-full object-cover"
-              />
-              {/* Figma: lớp phủ đậm dần 60% → 80% và hiện nút mũi tên khi rê chuột (200ms) */}
-              <span
-                aria-hidden
-                className="absolute inset-0 bg-[#2e2e2e]/60 transition-colors duration-200 group-hover:bg-[#2e2e2e]/80"
-              />
-              <span
-                aria-hidden
-                className="absolute left-1/2 top-1/2 grid size-[56px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-              >
-                <ArrowRight className="size-[14px]" />
-              </span>
-            </span>
-            <span className="flex min-w-0 items-center gap-[8px]">
-              <span className="shrink-0 text-heading-md font-semibold text-brand">
-                {String(((index + 1) % items.length) + 1).padStart(2, "0")}
-              </span>
-              <span aria-hidden className="h-[2px] w-[10px] shrink-0 bg-brand" />
-              {/* Thẻ hé chỉ rộng 340px — giữ đúng 1 dòng như Figma, dài quá thì cắt bớt */}
-              <span className="min-w-0 truncate text-heading-md font-semibold text-text-heading">
-                {next.title}
-              </span>
-            </span>
-          </button>
+                  <motion.figcaption layout transition={SWAP} className="flex flex-col gap-[16px]">
+                    <span className="flex min-w-0 items-center gap-[8px]">
+                      <span className="shrink-0 text-heading-md font-semibold text-brand">{so}</span>
+                      <span
+                        aria-hidden
+                        className={`h-[2px] shrink-0 bg-brand ${active ? "w-[32px]" : "w-[10px]"}`}
+                      />
+                      <span className="min-w-0 truncate text-heading-md font-semibold text-text-heading">
+                        {item.title}
+                      </span>
+                    </span>
+                    {active && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.4, delay: 0.25 }}
+                        className="max-w-[718px] text-body-md text-text-heading"
+                      >
+                        {item.description}
+                      </motion.p>
+                    )}
+                  </motion.figcaption>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

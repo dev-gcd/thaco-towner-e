@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "motion/react";
 import { charging } from "@/lib/content";
 import { SectionLabel } from "@/components/SectionLabel";
 
@@ -6,7 +9,7 @@ import { SectionLabel } from "@/components/SectionLabel";
  * Trạm sạc — khung thiết kế 1440×1276: tiêu đề + 4 thẻ trạm (302×372, bo 24)
  * trên nền ảnh, bên dưới là ảnh xe đang sạc kèm một điểm nhấn về tốc độ sạc.
  */
-export function Charging() {
+export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
   const { label, heading, description, background, car, mapLabel, stations, highlight } =
     charging;
 
@@ -28,18 +31,28 @@ export function Charging() {
 
       <div className="relative mx-auto w-full max-w-[1440px] lg:h-[1276px]">
         <div className="relative px-4 py-12 lg:h-full lg:px-0 lg:py-0">
-          <div className="flex flex-col gap-[8px] lg:absolute lg:left-[80px] lg:top-[48px] lg:w-[1251px]">
+          <motion.div
+            className="flex flex-col gap-[8px] lg:absolute lg:left-[80px] lg:top-[48px] lg:w-[1251px]"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
             <SectionLabel>{label}</SectionLabel>
             <h2 className="text-[32px] font-bold uppercase leading-[40px] text-brand-deep lg:whitespace-nowrap lg:text-display-lg">
               {heading}
             </h2>
             <p className="max-w-[930px] text-body-lg text-text-heading">{description}</p>
-          </div>
+          </motion.div>
 
           <ul className="mt-8 grid gap-[24px] sm:grid-cols-2 lg:absolute lg:left-[80px] lg:top-[238px] lg:mt-0 lg:w-[1280px] lg:grid-cols-4">
-            {stations.map((station) => (
-              <li
+            {stations.map((station, si) => (
+              <motion.li
                 key={station.name}
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: si * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className="flex flex-col rounded-[24px] bg-bg-soft/90 p-[20px] backdrop-blur-[2px] lg:h-[372px] lg:w-[302px] lg:p-[24px]"
               >
                 <p className="text-body-lg font-bold text-text-heading">{station.name}</p>
@@ -61,26 +74,24 @@ export function Charging() {
                   ))}
                 </dl>
 
-                {station.mapUrl && (
+                {/* Nút LUÔN hiện; chưa có link bản đồ thì báo đang cập nhật. */}
+                {station.mapUrl ? (
                   <a
                     href={station.mapUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-auto inline-flex h-[40px] items-center justify-center gap-[6px] rounded-full bg-stroke text-body-md font-medium text-text-heading transition-colors duration-200 hover:bg-[#cfd2d6]"
+                    className={MAP_BTN}
                   >
                     {mapLabel}
-                    <svg viewBox="0 0 20 20" fill="none" aria-hidden className="size-5">
-                      <path
-                        d="M5 15 15 5m0 0H7.5M15 5v7.5"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <MapIcon />
                   </a>
+                ) : (
+                  <button type="button" onClick={onMissingLink} className={MAP_BTN}>
+                    {mapLabel}
+                    <MapIcon />
+                  </button>
                 )}
-              </li>
+              </motion.li>
             ))}
           </ul>
 
@@ -90,7 +101,7 @@ export function Charging() {
             width={1220}
             height={809}
             sizes="(max-width: 1023px) 100vw, 1220px"
-            className="relative mt-10 h-auto w-full lg:absolute lg:left-[110px] lg:top-[527px] lg:mt-0 lg:h-[809px] lg:w-[1220px] lg:max-w-none"
+            className="pointer-events-none relative mt-10 h-auto w-full lg:absolute lg:left-[110px] lg:top-[527px] lg:mt-0 lg:h-[809px] lg:w-[1220px] lg:max-w-none"
           />
 
           <div className="relative mt-8 flex items-center gap-[16px] lg:absolute lg:left-[80px] lg:top-[666px] lg:mt-0 lg:w-[494px]">
@@ -109,6 +120,23 @@ export function Charging() {
         </div>
       </div>
     </section>
+  );
+}
+
+const MAP_BTN =
+  "mt-auto inline-flex h-[40px] items-center justify-center gap-[6px] rounded-full bg-stroke text-body-md font-medium text-text-heading transition-colors duration-200 hover:bg-[#cfd2d6]";
+
+function MapIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden className="size-5">
+      <path
+        d="M5 15 15 5m0 0H7.5M15 5v7.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 

@@ -15,6 +15,8 @@ const COL_W = ["lg:w-max lg:shrink-0", "lg:w-max lg:shrink-0", "lg:w-max lg:shri
 export function Footer() {
   const { logo, companyName, registration, subLogo, columns, copyright, socials } = footer;
   const visibleSocials = socials.filter((s) => s.href);
+  // Cột rỗng thì ẩn hẳn — không để tiêu đề trơ trọi không có dòng nào bên dưới.
+  const visibleColumns = columns.filter((c) => c.links.some((l) => l.label.trim()));
 
   return (
     <footer className="bg-linear-to-b from-white to-bg-soft">
@@ -50,12 +52,14 @@ export function Footer() {
           </div>
 
           <div className="flex flex-col gap-10 sm:flex-row sm:gap-[64px]">
-            {columns.map((col, i) => (
+            {visibleColumns.map((col, i) => (
               <div key={`${col.title}-${i}`} className={`flex flex-col gap-[16px] ${COL_W[i] ?? ""}`}>
                 <p className="text-body-lg font-bold text-brand-deep">{col.title}</p>
                 <span aria-hidden className="h-px w-[48px] bg-brand" />
                 <ul className="flex flex-col gap-[14px]">
-                  {col.links.map((link, j) => (
+                  {col.links
+                    .filter((link) => link.label.trim())
+                    .map((link, j) => (
                     <li key={`${link.label}-${j}`}>
                       {link.href ? (
                         <a
@@ -72,7 +76,7 @@ export function Footer() {
                         </span>
                       )}
                     </li>
-                  ))}
+                    ))}
                 </ul>
               </div>
             ))}

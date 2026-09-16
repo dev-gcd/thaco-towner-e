@@ -1,6 +1,6 @@
 {
   "fileKey": "Wh7QFGOJVuKPF6IIjmtKN0",
-  "lastSynced": "2026-09-16T03:35:26.539Z",
+  "lastSynced": "2026-09-16T07:06:18.702Z",
   "note": "Link ảnh của Figma hết hạn sau 7 ngày. Sinh lại bằng GET /v1/files/<key>/images rồi chạy `pnpm sync:assets`.",
   "assets": [
     {
@@ -72,6 +72,31 @@
         {
           "name": "300km",
           "url": "https://s3-alpha-sig.figma.com/img/6c08/4264/a95c3c5fd7498dd200413a2298c0fb4d?Expires=1790553600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=SKzmDSrIWksCuwwSkg212JWqsvK~fQEEEUbPp~j4hOpvNh2Nl18xv8MxzbiYlCNTq0tp0x2DCVljBPoQnkUPeiDaItiul~1ubmIvB1s1XuEM27rdt96L-Z1~cTS~oFatrGmG70skgsiAm0diDDR4ug3JxF5Qo-eszjbzEf9RfWjedu1Xndc-d4ChGKFlVHyR0ce3qrTXMfz5ykC6A4rIFgaTFMdu5Yv6QwU~BbMKjxYRJfz~fyX1bBY7uFKxlu9FTH02UGObXajU2XlSVcH1cJIWVTbJ0oTPg0B07b2uk537f2twmz3xy3~9vxdvcvUmVRa5D3EVmEPUX~9vtXGIKQ__",
+          "ext": "png"
+        },
+        {
+          "name": "300km-hover",
+          "url": "https://s3-alpha-sig.figma.com/img/679d/2a0c/2996c551f8376bdb5e18a3f5c61f81cd?Expires=1790553600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=eamQ~Jsn~3ATEF7FXijCoaymXkTFKc-~HW4-L396~BiaO9KQfkq8CiLZzQO8WgFkOs9UFUN0z~7hfn6lD94iI1MHKCg-uaH6553OJIGfdsWaCfx9IsoYiD3s0RqW3r5RxImhCzqAxBTzyEee8akXMczzCJCVXHuuJLlb601CZYsT9lQLDlQXRsHRMaS~5mdH-2vmq4BmdhPKyJTPSoGeYbrI-k7ndCq1bLePpDPW4AFYH4RiDERGCYDxfhOVK~uxptF3kdA0l4PdXEwWGtWf~gK8QAvja2xyiQ5YNGDSZrhdEEgf42PZBNVIACflTHR7kEb43qCyVBmvNg36BDpkxQ__",
+          "ext": "png"
+        },
+        {
+          "name": "pin-hover",
+          "url": "https://s3-alpha-sig.figma.com/img/40bc/0396/66078db918d9c248a6ee4b73a3854574?Expires=1790553600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=tOQzun2-yA~vD8u1vl~8I90Ng0nZEPf46HItxW7XdL3PL4f2qfFAU35e5hN0FYbcQBkqSdMQqLfZhDJdeVK4ba73~1cs2SPc~Wx5fP7OJ9IBMxNCgjH0rsl0JcI6RthOVTpkhzQqqotvrZMX8e7XXYjfwbNN6FmpwwKUJtiL2lS4-mII8C1HM7f5TmYZkUCH2uaAlMuLTUp2lmgOagmaqXfMAXI2gry5QQ3Kcj~kBkL3OY30LtvD-UsodQxqfKZd15rFSUzgbQaXX8MqwjbBP5fF6aNo2rCU1L0WQ57CWQ2z44O~xKMAzWmLrJmyc8fr~ep8JJQwwDh2WTNQv1s8ow__",
+          "ext": "png"
+        },
+        {
+          "name": "khoang-hang-hover",
+          "url": "https://s3-alpha-sig.figma.com/img/e5c0/71a8/8093018b5e25ff89e30488641fbfda82?Expires=1790553600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=QxLtjYP9IKMa4cYqoiJeL8T-hyYnN~cbyOSKXuhmtcHXUEhrbUzKmEkc13ODc8GDboeWr9MW8ADOgu~h~MbiGaKco3GdITlQiN4hqpFYEFLMxpGH8M6Pf6s35c00EE4bzV4kqqgnTahNII0Jej4evO2ts1YAako9sAF5x2KXeU4idmJdHzPs8WZj-kOPS5AFbKD6p6YxkUydyEHTXn8SzjuUVqtUq3JGaByaOCl2XOn5i0BrxsZeQgNfprA1G~guAcJz00J-6tovWV26o1giO85kr6RUJUbcxJnF0mJeDORwUJYdzAS~Quo7odcwxeMQ-coyyrzwD6Blt5tusXS8bQ__",
+          "ext": "png"
+        },
+        {
+          "name": "dong-co-hover",
+          "url": "https://s3-alpha-sig.figma.com/img/a3f9/2301/9dbe7d652103d00b418e5ffcd092b1df?Expires=1790553600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=pP4BwmCcaa38jL7883MbeGFbKY7wcgNzhpI52ktytVXGIepOR7ljcvVIJAWNVzFNavMlt-e3~OPHEYCNACj8Xk6PmArvux797yAK8SpsVuAWGAP1bXFj~iGl6aI1OBxPkAU1G1f~lckiCdre5KhB5qlFMQcqgfZppNFhUSdVa-6HFb8WraZxbjvy9vnzkguqWeX8069RF7Yd7v24EpP6HNiYzWwdhy4UhzeHJfSFPCS2hCuIumWHt4vhySDrvWlE7iy9Goqm3UbkP3E7jbALdHErzXbjr1aAWf~PvD-ga0teus7IE-JZeFQhZ37CVqrdkINum0IUfFpqtgYJOdqBbg__",
+          "ext": "png"
+        },
+        {
+          "name": "cabin-hover",
+          "url": "https://s3-alpha-sig.figma.com/img/0f58/4eb5/0469744651e202bc667c2f547953ac26?Expires=1790553600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=QSgPd2q7j2ReJJlfa0FgaJCkmN9H4ZLsHZ7ZdqRt8n83SMuhJpPTK2ZkIAyvXxZPOgTkENFcswhAsZ0jtHPaAhoBtPPF3pgQtAPR5PZVjcFT-DvS8E5hvG3qCrs30Qeyb-0W~EsmpRgrklIyztRZiNRSfpZurmFJcAnXgCSBDgs-2y-gFgqWRqqWJTGlyLkT7aug~BLvWbCh3E8WLryxEp0pP2Owmaz46P80MyVeHtsm3LN9h4kZ~7aDFx7ioytghHAupyA-twM2F5EgAs9AgUnRUjHgz8yE81GuO4Ld~LPme18rG8~eVuS4vslrFXhb6vUF10yBhfXdtiZFOAl8dQ__",
           "ext": "png"
         }
       ]

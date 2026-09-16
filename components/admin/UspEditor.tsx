@@ -51,17 +51,33 @@ export function UspEditor() {
           }
           onRemove={() => setData({ ...data, items: removeAt(data.items, i) })}
         >
-          <ImageInput
-            label="Ảnh thẻ"
-            hint="Khuyến nghị: 400×500px (dọc), .webp."
-            value={item.image.src}
-            onChange={(src) =>
-              setData({
-                ...data,
-                items: replaceAt(data.items, i, { ...item, image: { ...item.image, src } }),
-              })
-            }
-          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <ImageInput
+              label="Ảnh thường"
+              hint="Khuyến nghị: 400×500px (dọc), .webp."
+              value={item.image.src}
+              onChange={(src) =>
+                setData({
+                  ...data,
+                  items: replaceAt(data.items, i, { ...item, image: { ...item.image, src } }),
+                })
+              }
+            />
+            <ImageInput
+              label="Ảnh khi rê chuột"
+              hint="Cùng khổ 400×500px. Hiện đè lên ảnh thường khi khách đưa chuột vào thẻ."
+              value={item.imageHover.src}
+              onChange={(src) =>
+                setData({
+                  ...data,
+                  items: replaceAt(data.items, i, {
+                    ...item,
+                    imageHover: { ...item.imageHover, src },
+                  }),
+                })
+              }
+            />
+          </div>
           <Field label="Mô tả ảnh (alt)">
             <TextInput
               value={item.image.alt}
@@ -103,7 +119,15 @@ export function UspEditor() {
         onClick={() =>
           setData({
             ...data,
-            items: [...data.items, { image: { src: "", alt: "" }, title: "Tiêu đề", subtitle: "" }],
+            items: [
+              ...data.items,
+              {
+                image: { src: "", alt: "" },
+                imageHover: { src: "", alt: "" },
+                title: "Tiêu đề",
+                subtitle: "",
+              },
+            ],
           })
         }
       />

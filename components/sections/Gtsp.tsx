@@ -1,6 +1,13 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "motion/react";
 import { gtsp } from "@/lib/content";
 import { ArrowRight } from "@/components/icons";
+
+/** Figma play: xe chạy vào từ mép phải ~1,6s rồi chữ mới hiện. */
+const DRIVE = { duration: 1.6, ease: [0.16, 1, 0.3, 1] } as const;
+const WHEEL = { duration: 1.6, ease: [0.16, 1, 0.3, 1] } as const;
 
 /**
  * Khối giới thiệu sản phẩm — thẻ trắng bo góc 16px nằm trên quầng xanh 10%.
@@ -34,8 +41,16 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
               className="pointer-events-none absolute left-0 top-0 h-[317px] w-[753px] bg-white/30"
             />
 
-            {/* Xe + 2 bánh (ảnh rời để sau này có thể cho quay) */}
-            <div aria-hidden className="pointer-events-none hidden lg:block">
+            {/* Xe chạy vào từ mép phải, hai bánh quay theo — bánh là ảnh rời nên
+                quay được thật. Cả cụm trượt cùng nhau để xe và bánh không lệch. */}
+            <motion.div
+              aria-hidden
+              className="pointer-events-none hidden lg:block"
+              initial={{ x: 900 }}
+              whileInView={{ x: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={DRIVE}
+            >
               <Image
                 src={car.src}
                 alt={car.alt}
@@ -43,23 +58,33 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
                 height={306}
                 className="absolute left-[544px] top-[87px] h-[306px] w-[678px] max-w-none"
               />
-              <Image
-                src={wheelFront.src}
-                alt=""
-                width={81}
-                height={81}
-                className="absolute left-[638px] top-[294px] size-[81px] max-w-none"
-              />
-              <Image
-                src={wheelRear.src}
-                alt=""
-                width={81}
-                height={81}
-                className="absolute left-[1023px] top-[294px] size-[81px] max-w-none"
-              />
-            </div>
+              <motion.span
+                className="absolute left-[638px] top-[294px] block size-[81px]"
+                initial={{ rotate: 0 }}
+                whileInView={{ rotate: 900 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={WHEEL}
+              >
+                <Image src={wheelFront.src} alt="" width={81} height={81} className="size-[81px] max-w-none" />
+              </motion.span>
+              <motion.span
+                className="absolute left-[1023px] top-[294px] block size-[81px]"
+                initial={{ rotate: 0 }}
+                whileInView={{ rotate: 900 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={WHEEL}
+              >
+                <Image src={wheelRear.src} alt="" width={81} height={81} className="size-[81px] max-w-none" />
+              </motion.span>
+            </motion.div>
 
-            <div className="relative flex flex-col gap-[28px] p-6 lg:absolute lg:left-[64px] lg:top-[48px] lg:w-[505px] lg:p-0">
+            <motion.div
+              className="relative flex flex-col gap-[28px] p-6 lg:absolute lg:left-[64px] lg:top-[48px] lg:w-[505px] lg:p-0"
+              initial={{ opacity: 0, x: -24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.7, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
+            >
               <div className="flex flex-col gap-[11px]">
                 <h2 className="whitespace-pre-line text-display-sm font-bold uppercase text-brand-deep">
                   {title}
@@ -74,7 +99,7 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
                 {ctaLabel}
                 <ArrowRight className="size-5" />
               </button>
-            </div>
+            </motion.div>
 
             {/* Ảnh xe bản điện thoại: nằm dưới chữ cho khỏi che */}
             <Image

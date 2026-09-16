@@ -33,10 +33,18 @@ curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
 về trong JSON nhưng KHÔNG vẽ. Đã dựng nhầm 2 lần: chấm tròn 4px trước mỗi mục menu, và bộ đếm
 "01 — Towner E V2.6-2S" ở khối Dòng xe. Lọc bằng `n.get("visible") is False` khi duyệt cây.
 
-**Hiệu ứng** đọc thẳng từ `interactions` trong JSON, không cần quay video: 43 tương tác, nhịp
-gốc là hover 200ms LINEAR · nút mũi tên 300ms · băng chuyền 833ms SLOW · đổi phiên bản 1022ms
-GENTLE. SLOW/GENTLE là lò xo của Figma, CSS không có → xấp xỉ bằng `--ease-slow` / `--ease-gentle`
-khai trong `app/globals.css`.
+**Hiệu ứng** đọc từ hai nguồn, KHÔNG đoán:
+1. `interactions` trong JSON — 43 tương tác: hover 200ms LINEAR · nút mũi tên 300ms · băng chuyền
+   833ms SLOW · đổi phiên bản 1022ms GENTLE. SLOW/GENTLE là lò xo của Figma, CSS không có → xấp xỉ
+   bằng `--ease-slow` / `--ease-gentle` trong `app/globals.css`.
+2. **Bản quay màn hình bản dựng play**: `_docs/figma/figma_play.mov` (93 giây, local-only). Xem bằng
+   `ffmpeg -ss <giây> -t <số giây> -i … -vf "fps=4,scale=600:-1" /tmp/x%02d.jpg` rồi ghép lưới.
+   Ba thứ CHỈ có trong video, JSON không nói: xe chạy vào + bánh xoay ở khối Giải pháp · xe trôi lên
+   ở khối Nội thất · băng chuyền ưu điểm hé 2 thẻ ở rìa.
+
+⚠️ **So kích thước trong Figma với kích thước tệp ảnh.** Đã dính 2 lần: ảnh nền khối Dòng xe
+(tệp 2040px, Figma vẽ 2812px) và cơ chế trượt nền của chính khối đó — ảnh gốc có SẴN 2 chiếc xe,
+chiếc thứ hai là xe của bản V2.7, lộ ra sau khi nền trượt 684px. Đừng "sửa" cho mất nó.
 
 ⚠️ **Tailwind v4 đặt phóng to vào thuộc tính `scale`, không phải `transform`** → muốn chạy mượt
 phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác dụng.
@@ -45,8 +53,8 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
 |---|---|---|---|---|
 | 1 | Header | `222:2152` | 1064 | nav 6 mục + ảnh lớn đầu trang |
 | 2 | GTSP | `222:2162` | 684 | giới thiệu + nút "Đăng ký lái thử ngay" |
-| 3 | USP | `222:2165` | 900 | **5 thẻ** chạy vòng (Figma nhân bản ×10 để mô phỏng băng chuyền) |
-| 4 | Dòng xe | `222:2166` | 951 | 2 phiên bản V2.6-2S / V2.7-2S, mỗi bản 4 thông số + giá |
+| 3 | USP | `222:2165` | 900 | **5 thẻ**, mỗi thẻ **2 ảnh** (thường + chi tiết khi rê chuột, mã ảnh khác hẳn nhau). Khung nhìn tràn viền: 3 thẻ đầy + 2 thẻ hé |
+| 4 | Dòng xe | `222:2166` | 951 | 2 phiên bản. **Đổi bản = nền trượt ngang 684px + bảng thông số đổi bên** (V2.6 x=735 phải, V2.7 x=176 trái). Hai góc dưới bo 80px |
 | 5 | Ngoại thất | `222:2168` | 2000 | 2 khối con: ảnh lớn + danh sách 4 điểm đánh số |
 | 6 | Nội thất | `222:2172` | 1200 | 5 điểm nóng trên ảnh xe (AVN, điều hoà, kính, ghế, cần số) |
 | 7 | CTA 1 | `222:2173` | 718 | 2 nút: "Đăng ký lái thử" + "Tải Brochure" — **không có form nhập** |
@@ -89,8 +97,8 @@ pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
 pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
-pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — đo 21 toạ độ so với Figma,
-                       #    kiểm nội dung không lọt ra ngoài khung 1440, kiểm tràn ngang 9 cỡ màn
+pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 4 phép đo: toạ độ so với Figma ·
+                       #    nội dung không lọt ra ngoài khung 1440 · tràn ngang 9 cỡ màn · hiệu ứng
 ```
 
 Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác truck/van (3000/8788)

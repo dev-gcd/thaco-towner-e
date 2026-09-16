@@ -89,7 +89,7 @@ export function CtaEditor() {
         </Field>
         <FileInput
           label="Tệp brochure (.pdf)"
-          hint="Chưa có tệp thì nút tải brochure sẽ tự ẩn trên trang. Tải tệp lên là nút hiện ra."
+          hint="Nút “Tải Brochure” LUÔN hiện trên trang. Chưa có tệp thì khách bấm vào sẽ thấy hộp thoại “Đang cập nhật” (sửa chữ ở thẻ cuối trang này)."
           value={data.brochure.file}
           onChange={(file) => setData({ ...data, brochure: { ...data.brochure, file } })}
         />
@@ -104,6 +104,31 @@ export function CtaEditor() {
             })
           }
         />
+      </Card>
+
+      <Card className="flex flex-col gap-4">
+        <p className="text-sm font-semibold text-gray-800">
+          Hộp thoại “Đang cập nhật”
+        </p>
+        <p className="-mt-2 text-xs text-gray-500">
+          Hiện khi khách bấm “Tải Brochure” mà chưa có tệp, hoặc bấm “Mở bản đồ” ở khối Trạm
+          sạc mà trạm đó chưa có link.
+        </p>
+        <Field label="Tiêu đề">
+          <TextInput
+            value={data.notice.title}
+            onChange={(e) => setData({ ...data, notice: { ...data.notice, title: e.target.value } })}
+          />
+        </Field>
+        <Field label="Nội dung">
+          <TextArea
+            rows={2}
+            value={data.notice.message}
+            onChange={(e) =>
+              setData({ ...data, notice: { ...data.notice, message: e.target.value } })
+            }
+          />
+        </Field>
       </Card>
 
       <Card className="flex flex-col gap-4">

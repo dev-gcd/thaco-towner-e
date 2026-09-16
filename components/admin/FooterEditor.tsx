@@ -35,7 +35,7 @@ export function FooterEditor() {
   return (
     <EditorShell
       title="Chân trang"
-      description="Thông tin công ty, các cột liên kết và dòng bản quyền."
+      description="Thông tin công ty, các cột liên kết và dòng bản quyền. Cột không có dòng nào sẽ tự ẩn trên trang."
       dirty={dirty}
       saving={saving}
       status={status}

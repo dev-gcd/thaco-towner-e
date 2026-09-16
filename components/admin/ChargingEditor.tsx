@@ -127,7 +127,7 @@ export function ChargingEditor() {
           </div>
           <Field
             label="Link bản đồ"
-            hint="Dán link Google Maps. Để trống thì nút “Mở bản đồ” của trạm này sẽ tự ẩn."
+            hint="Dán link Google Maps. Nút “Mở bản đồ” LUÔN hiện; để trống thì khách bấm vào sẽ thấy hộp thoại “Đang cập nhật” (sửa chữ ở mục Đăng ký & Brochure)."
           >
             <TextInput
               value={station.mapUrl}

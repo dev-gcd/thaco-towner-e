@@ -10,13 +10,38 @@ dựng giao diện từ Figma trước, sau đó thêm trang quản trị cho kh
 ## Nguồn thiết kế
 
 - Figma: `Wh7QFGOJVuKPF6IIjmtKN0` — trang `Working File`, frame **`Thaco Towner E - Full`** (1440 × 9473).
-- 🔴 **Chưa đọc được qua MCP**: ghế Figma hiện tại không có Dev Mode (file thuộc tổ chức
-  *Thaco E-Magazine*, phải admin bên đó nâng ghế). Đang chờ khách nâng; nếu không được thì
-  chuyển sang đọc qua **Figma REST API** bằng personal access token (`FIGMA_TOKEN` trong `.dev.vars`).
-- 9 khối đọc được từ bảng Layers (thứ tự trên trang):
-  `Header · GTSP (giới thiệu) · USP (ưu điểm) · Dòng xe (phiên bản) · Ngoại thất ·
-  Nội thất · CTA 1 · Trạm sạc · Footer`.
+- ⚠️ **KHÔNG đọc được qua Figma MCP** — ghế hiện tại không có Dev Mode (file thuộc tổ chức
+  *Thaco E-Magazine*, chỉ admin bên đó nâng được). Đang chờ khách; **đường đang dùng là
+  Figma REST API** với personal access token (`FIGMA_TOKEN` trong `.dev.vars`, chỉ đọc).
+  Bản kết xuất để tra cứu: `_docs/figma/*.json` (local-only).
+
+```sh
+set -a && . ./.dev.vars && set +a
+curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
+  "https://api.figma.com/v1/files/$FIGMA_FILE_KEY/nodes?ids=222:2151" -o _docs/figma/full-frame-deep.json
+```
+
+- Frame chính: **`222:2151` "Thaco Towner E - Full"** — 1440 × 9473. (`90:3978` là bản bấm thử,
+  cùng kích thước; trang `Element` = kho component.)
+- Phông thật của thiết kế: **Montserrat** (400/500/600/700/800). Cỡ tiêu đề lớn: 32px, 40px, 64px, 136px.
+- Màu thật: `#1e7ed8` (xanh chủ đạo) · `#00529c` (xanh đậm) · `#2e2e2e` (chữ) · `#f9fcff` (nền nhạt)
+  · `#e5e7eb` `#ededed` `#cccccc` `#ababab` (viền/phụ) · `#d7edff`.
+- 9 khối nội dung + 2 khối `Spacing` (50px, 100px), thứ tự trên trang:
+
+| # | Khối | id | Cao | Ghi chú |
+|---|---|---|---|---|
+| 1 | Header | `222:2152` | 1064 | nav 6 mục + ảnh lớn đầu trang |
+| 2 | GTSP | `222:2162` | 684 | giới thiệu + nút "Đăng ký lái thử ngay" |
+| 3 | USP | `222:2165` | 900 | **5 thẻ** chạy vòng (Figma nhân bản ×10 để mô phỏng băng chuyền) |
+| 4 | Dòng xe | `222:2166` | 951 | 2 phiên bản V2.6-2S / V2.7-2S, mỗi bản 4 thông số + giá |
+| 5 | Ngoại thất | `222:2168` | 2000 | 2 khối con: ảnh lớn + danh sách 4 điểm đánh số |
+| 6 | Nội thất | `222:2172` | 1200 | 5 điểm nóng trên ảnh xe (AVN, điều hoà, kính, ghế, cần số) |
+| 7 | CTA 1 | `222:2173` | 718 | 2 nút: "Đăng ký lái thử" + "Tải Brochure" — **không có form nhập** |
+| 8 | Trạm sạc | `222:2174` | 1276 | danh sách trạm + nút "Mở bản đồ" |
+| 9 | Footer | `222:2294` | 530 | 3 cột + hotline + thông tin pháp nhân |
+
   Menu đầu trang: Giới thiệu · Ưu điểm · Dòng xe · Ngoại thất · Nội thất · Trạm sạc.
+- Trang có **30 ảnh khác nhau** (đếm theo `imageRef` duy nhất) — xuất qua `/v1/images`.
 
 ## Stack
 

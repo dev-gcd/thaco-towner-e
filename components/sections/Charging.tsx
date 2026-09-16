@@ -1,9 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
 import { motion } from "motion/react";
-import { bamDeChuyen } from "@/lib/slider";
 import { charging } from "@/lib/content";
 import { SectionLabel } from "@/components/SectionLabel";
 
@@ -12,7 +10,6 @@ import { SectionLabel } from "@/components/SectionLabel";
  * trên nền ảnh, bên dưới là ảnh xe đang sạc kèm một điểm nhấn về tốc độ sạc.
  */
 export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
-  const daiNgang = useRef<HTMLUListElement>(null);
   const { label, heading, description, background, car, mapLabel, stations, highlight } =
     charging;
 
@@ -48,9 +45,9 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
             <p className="max-w-[930px] text-body-lg text-text-heading">{description}</p>
           </motion.div>
 
-          <ul
-            ref={daiNgang}
-            className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scroll-pl-4 px-4 pb-2 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-[24px] sm:overflow-visible sm:px-0 lg:absolute lg:left-[80px] lg:top-[238px] lg:mt-0 lg:w-[1280px] lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
+          {/* Điện thoại: lưới 2 cột thay cho dải cuộn ngang. Dải ngang chỉ lộ 1 thẻ,
+              khách cuộn dọc lướt qua sẽ tưởng chỉ có 1 trạm sạc. */}
+          <ul className="mt-8 grid grid-cols-2 gap-3 px-4 sm:gap-[24px] sm:px-6 lg:absolute lg:left-[80px] lg:top-[238px] lg:mt-0 lg:w-[1280px] lg:grid-cols-4 lg:px-0">
             {stations.map((station, si) => (
               <motion.li
                 key={station.name}
@@ -58,23 +55,22 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.6, delay: si * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                onClick={(e) => bamDeChuyen(e, daiNgang.current)}
-                className="flex w-[280px] shrink-0 snap-start flex-col rounded-[24px] bg-bg-soft/90 p-[20px] backdrop-blur-[2px] sm:w-auto sm:shrink lg:h-[372px] lg:w-[302px] lg:p-[24px]"
+                className="flex min-w-0 flex-col rounded-[16px] bg-bg-soft/90 p-3 backdrop-blur-[2px] sm:rounded-[24px] sm:p-[20px] lg:h-[372px] lg:w-[302px] lg:p-[24px]"
               >
-                <p className="text-body-lg font-bold text-text-heading">{station.name}</p>
-                <p className="text-body-lg text-text-heading">{station.area}</p>
+                <p className="text-body-md font-bold text-text-heading sm:text-body-lg">{station.name}</p>
+                <p className="text-body-sm text-text-heading sm:text-body-lg">{station.area}</p>
 
-                <dl className="mt-[20px] flex flex-col gap-[12px] lg:mt-[48px] lg:gap-[16px]">
+                <dl className="mt-3 mb-3 flex flex-col gap-2 sm:mt-[20px] sm:gap-[12px] lg:mt-[48px] lg:gap-[16px]">
                   {station.specs.map((spec) => (
-                    <div key={spec.label} className="flex items-center gap-[16px]">
-                      <span className="grid size-[44px] shrink-0 place-items-center rounded-full bg-brand/5 text-brand">
+                    <div key={spec.label} className="flex min-w-0 items-center gap-2 sm:gap-[16px]">
+                      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand/5 text-brand sm:size-[44px]">
                         <SpecIcon name={spec.icon} />
                       </span>
-                      <div className="flex flex-col">
-                        <dd className="text-body-lg font-semibold text-text-heading">
+                      <div className="flex min-w-0 flex-col">
+                        <dd className="text-body-sm font-semibold text-text-heading sm:text-body-lg">
                           {spec.value}
                         </dd>
-                        <dt className="text-body-md text-text-heading">{spec.label}</dt>
+                        <dt className="text-body-xs text-text-heading sm:text-body-md">{spec.label}</dt>
                       </div>
                     </div>
                   ))}
@@ -130,7 +126,7 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
 }
 
 const MAP_BTN =
-  "mt-auto inline-flex h-[40px] items-center justify-center gap-[6px] rounded-full bg-stroke text-body-md font-medium text-text-heading transition-colors duration-200 hover:bg-[#cfd2d6]";
+  "mt-auto inline-flex h-[40px] items-center justify-center gap-1 rounded-full bg-stroke px-2 text-body-sm font-medium whitespace-nowrap text-text-heading transition-colors duration-200 hover:bg-[#cfd2d6] sm:gap-[6px] sm:text-body-md";
 
 function MapIcon() {
   return (

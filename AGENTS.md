@@ -64,11 +64,15 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
   Menu đầu trang: Giới thiệu · Ưu điểm · Dòng xe · Ngoại thất · Nội thất · Trạm sạc.
 - **Không có bản điện thoại trong Figma.** Luật tự đặt, đã kiểm ở 6 cỡ màn 320 → 1024:
   · 6 mục menu thu vào nút ba gạch (theo `thaco-truck-sale-page`);
-  · **ba dải cuộn ngang** — Ưu điểm, Nội thất, Trạm sạc — dùng `overflow-x-auto` + `snap-x`
+  · **hai dải cuộn ngang** — Ưu điểm, Nội thất — dùng `overflow-x-auto` + `snap-x`
     để vuốt được bằng ngón tay; luôn khai `scroll-pl-*` **bằng đúng** `pl-*`, nếu không thẻ
     dừng ở x=0 thay vì x=80 của khung 1440;
   · **bấm vào thẻ cũng chuyển thẻ** (`lib/slider.ts` → `bamDeChuyen`), trừ khi bấm trúng
-    nút/liên kết bên trong thẻ (vd "Mở bản đồ");
+    nút/liên kết bên trong thẻ;
+  · **Trạm sạc KHÔNG cuộn ngang** mà là lưới 2 cột thu gọn (chốt 16/09): dải ngang chỉ lộ 1 thẻ,
+    khách cuộn dọc lướt qua sẽ tưởng chỉ có 1 trạm;
+  · **Thiết kế mạnh mẽ trên điện thoại hiện đủ mọi mục xếp dọc**, mục nào cũng sáng, không có
+    bấm-để-đổi (chốt 16/09) — kiểu đổi thẻ 900 ↔ 340 chỉ giữ từ `md` trở lên;
   · khối Dòng xe trên điện thoại không trượt ảnh nền được → đổi phiên bản bằng cách **ngắm điểm
     cắt** sang chiếc xe kia (`16% 56%` ↔ `84% 56%`, tính từ tâm 2 xe trong ảnh gốc 2040px).
     Khai bằng `[object-position:var(--bg-pos)]` — dạng rút gọn (tiền tố object- với ngoặc

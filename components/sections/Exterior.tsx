@@ -99,8 +99,40 @@ export function Exterior() {
         {/* Bản dựng play: bấm thẻ hé thì hai thẻ ĐỔI CHỖ và đổi cỡ mượt
             (900 ↔ 340), 833ms. Dùng hiệu ứng layout của motion để cả vị trí lẫn
             bề rộng cùng chạy, thay vì đổi ảnh tức thì như trước. */}
-        <div className="mt-10 lg:absolute lg:left-[80px] lg:top-[284px] lg:mt-0 lg:w-[1280px]">
-          <div className="flex flex-col gap-[24px] md:flex-row md:gap-[20px] lg:gap-[40px]">
+        {/* Điện thoại: khách cuộn từ trên xuống nên hiện ĐỦ mọi mục theo đúng thứ
+            tự, mục nào cũng sáng, không có bấm-để-đổi và không có thẻ tối. */}
+        <ol className="mt-10 flex flex-col gap-[32px] md:hidden">
+          {items.map((item, i) => (
+            <li key={item.title} className="flex flex-col gap-[16px]">
+              <div className="relative aspect-[900/506] overflow-hidden rounded-[16px]">
+                <Image
+                  src={item.image.src}
+                  alt={item.image.alt}
+                  width={900}
+                  height={506}
+                  sizes="100vw"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              </div>
+              <div className="flex flex-col gap-[8px]">
+                <span className="flex items-center gap-[8px]">
+                  <span className="shrink-0 text-heading-sm font-semibold text-brand">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span aria-hidden className="h-[2px] w-[24px] shrink-0 bg-brand" />
+                  <span className="text-heading-sm font-semibold text-text-heading">
+                    {item.title}
+                  </span>
+                </span>
+                <p className="text-body-md text-text-heading">{item.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        {/* Từ máy tính bảng trở lên: giữ cơ chế đổi thẻ như bản dựng play. */}
+        <div className="mt-10 hidden md:block lg:absolute lg:left-[80px] lg:top-[284px] lg:mt-0 lg:w-[1280px]">
+          <div className="flex flex-row gap-[20px] lg:gap-[40px]">
             {ordered.map((item, pos) => {
               const active = pos === 0;
               const so = String((items.indexOf(item) % items.length) + 1).padStart(2, "0");

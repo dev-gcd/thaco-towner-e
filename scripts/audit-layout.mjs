@@ -344,7 +344,7 @@ console.log("\n⑥ Thao tác trên điện thoại (390px)\n");
   kiem("đổi phiên bản đổi luôn chiếc xe trong ảnh nền", p1 !== p2, `${p1} → ${p2}`);
 
   // bấm vào thẻ thì dải cuộn sang thẻ kế tiếp
-  for (const [ten, khoi] of [["Ưu điểm", "#uu-diem"], ["Nội thất", "#noi-that"], ["Trạm sạc", "#tram-sac"]]) {
+  for (const [ten, khoi] of [["Ưu điểm", "#uu-diem"], ["Nội thất", "#noi-that"]]) {
     await page.evaluate((q) => document.querySelector(q).scrollIntoView(), khoi);
     await page.waitForTimeout(600);
     const truoc = await page.evaluate((q) => Math.round(document.querySelector(`${q} .snap-x`).scrollLeft), khoi);
@@ -354,17 +354,42 @@ console.log("\n⑥ Thao tác trên điện thoại (390px)\n");
     kiem(`bấm thẻ ở khối ${ten} thì chuyển thẻ`, sau !== truoc, `${truoc} → ${sau}`);
   }
 
-  // bấm nút bên trong thẻ thì KHÔNG được chuyển thẻ
+  // Trạm sạc: lưới 2 cột — thấy cùng lúc trạm 1 + 2, cả 4 trạm đều nằm trong màn
   await page.evaluate(() => document.querySelector("#tram-sac").scrollIntoView());
-  await page.waitForTimeout(600);
-  await page.evaluate(() => { document.querySelector("#tram-sac .snap-x").scrollLeft = 0; });
-  await page.waitForTimeout(400);
-  const t1 = await page.evaluate(() => Math.round(document.querySelector("#tram-sac .snap-x").scrollLeft));
+  await page.waitForTimeout(900);
+  const tram = await page.evaluate(() => {
+    const li = [...document.querySelectorAll("#tram-sac li")].map((x) => x.getBoundingClientRect());
+    return {
+      soTram: li.length,
+      canhNhau: li.length > 1 && Math.abs(li[0].top - li[1].top) < 2 && li[1].left > li[0].right,
+      trongMan: li.every((r) => r.left >= 0 && r.right <= window.innerWidth),
+    };
+  });
+  kiem("trạm sạc: trạm 1 và 2 nằm cạnh nhau", tram.canhNhau);
+  kiem("trạm sạc: cả 4 trạm nằm trọn trong màn, không cần kéo ngang", tram.trongMan, `${tram.soTram} trạm`);
   await page.locator("#tram-sac li").first().locator("button:has-text('bản đồ')").click();
-  await page.waitForTimeout(800);
-  const t2 = await page.evaluate(() => Math.round(document.querySelector("#tram-sac .snap-x").scrollLeft));
-  const hop = await page.locator("[role='alertdialog']").count();
-  kiem("bấm nút trong thẻ thì mở hộp thoại, không chuyển thẻ", t1 === t2 && hop === 1, `${t1} → ${t2}, hộp thoại=${hop}`);
+  await page.waitForTimeout(600);
+  kiem("trạm sạc: nút Mở bản đồ mở hộp thoại", (await page.locator("[role='alertdialog']").count()) === 1);
+  await page.keyboard.press("Escape");
+
+  // Thiết kế mạnh mẽ: hiện đủ mọi mục theo thứ tự, không thẻ tối, không bấm-đổi
+  await page.evaluate(() => document.querySelector("#ngoai-that ol").scrollIntoView());
+  await page.waitForTimeout(700);
+  const ext = await page.evaluate(() => {
+    const ol = document.querySelector("#ngoai-that ol");
+    const hien = ol && getComputedStyle(ol).display !== "none";
+    const muc = ol ? [...ol.querySelectorAll("li")].map((li) => li.textContent.trim().slice(0, 22)) : [];
+    const khoiDoi = document.querySelector("#ngoai-that ol + div");
+    return {
+      hien,
+      muc,
+      moTa: ol ? ol.querySelectorAll("p").length : 0,
+      anKhoiDoi: khoiDoi ? getComputedStyle(khoiDoi).display === "none" : false,
+    };
+  });
+  kiem("thiết kế mạnh mẽ: hiện đủ mọi mục theo thứ tự", ext.hien && ext.muc.length >= 2 && ext.moTa === ext.muc.length,
+    ext.muc.join(" | "));
+  kiem("thiết kế mạnh mẽ: tắt kiểu bấm-để-đổi trên điện thoại", ext.anKhoiDoi);
 
   await page.close();
 }

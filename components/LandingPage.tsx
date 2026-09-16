@@ -32,8 +32,8 @@ export function LandingPage() {
         <Exterior />
         <div aria-hidden className="hidden bg-bg-soft lg:block lg:h-[100px]" />
         <Interior />
-        <Charging />
         <Cta onDriveTestClick={openLead} />
+        <Charging />
       </main>
       <Footer />
       <LeadDialog open={leadOpen} onClose={() => setLeadOpen(false)} />

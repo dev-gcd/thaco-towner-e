@@ -40,12 +40,12 @@ export function Charging() {
             {stations.map((station) => (
               <li
                 key={station.name}
-                className="flex flex-col rounded-[24px] bg-bg-soft/90 p-[24px] backdrop-blur-[2px] lg:h-[372px] lg:w-[302px]"
+                className="flex flex-col rounded-[24px] bg-bg-soft/90 p-[20px] backdrop-blur-[2px] lg:h-[372px] lg:w-[302px] lg:p-[24px]"
               >
                 <p className="text-body-lg font-bold text-text-heading">{station.name}</p>
                 <p className="text-body-lg text-text-heading">{station.area}</p>
 
-                <dl className="mt-[48px] flex flex-col gap-[16px]">
+                <dl className="mt-[20px] flex flex-col gap-[12px] lg:mt-[48px] lg:gap-[16px]">
                   {station.specs.map((spec) => (
                     <div key={spec.label} className="flex items-center gap-[16px]">
                       <span className="grid size-[44px] shrink-0 place-items-center rounded-full bg-brand/5 text-brand">
@@ -66,7 +66,7 @@ export function Charging() {
                     href={station.mapUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-auto inline-flex h-[40px] items-center justify-center gap-[6px] rounded-full bg-white text-body-md font-medium text-text-heading transition-colors hover:bg-brand hover:text-white"
+                    className="mt-auto inline-flex h-[40px] items-center justify-center gap-[6px] rounded-full bg-stroke text-body-md font-medium text-text-heading transition-colors duration-200 hover:bg-[#cfd2d6]"
                   >
                     {mapLabel}
                     <svg viewBox="0 0 20 20" fill="none" aria-hidden className="size-5">

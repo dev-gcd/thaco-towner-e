@@ -36,22 +36,33 @@ export function Usp() {
 
           <div className="mt-8 overflow-hidden lg:absolute lg:left-[80px] lg:top-[216px] lg:mt-0 lg:h-[500px] lg:w-[1280px]">
             <div
-              className="flex gap-[20px] transition-transform duration-500 ease-out lg:gap-[40px]"
-              style={{ transform: `translate3d(-${index * STEP}px, 0, 0)` }}
+              className="flex gap-[20px] transition-transform lg:gap-[40px]"
+              style={{
+                transform: `translate3d(-${index * STEP}px, 0, 0)`,
+                // Figma: băng chuyền chạy 833ms, nhịp lò xo SLOW
+                transitionDuration: "833ms",
+                transitionTimingFunction: "var(--ease-slow)",
+              }}
             >
               {loop.map((item, i) => (
                 <article
                   key={`${item.title}-${i}`}
                   aria-hidden={i >= count ? true : undefined}
-                  className="relative h-[380px] w-[280px] shrink-0 overflow-hidden rounded-[50px] lg:h-[500px] lg:w-[400px]"
+                  className="group relative h-[380px] w-[280px] shrink-0 rounded-[50px] lg:h-[500px] lg:w-[400px]"
                 >
+                  {/* Figma: rê chuột thì hiện quầng xanh 10% loe ra 10px quanh thẻ */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -inset-[10px] rounded-[50px] bg-brand/10 opacity-0 transition-opacity duration-[833ms] [transition-timing-function:var(--ease-slow)] group-hover:opacity-100"
+                  />
+                  <span className="absolute inset-0 overflow-hidden rounded-[50px]">
                   <Image
                     src={item.image.src}
                     alt={item.image.alt}
                     width={400}
                     height={500}
                     sizes="400px"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className="absolute inset-0 h-full w-full object-cover transition-[scale] duration-[833ms] [transition-timing-function:var(--ease-slow)] group-hover:scale-[1.125]"
                   />
                   {/* Hai lớp chuyển màu chồng nhau đúng như bản thiết kế */}
                   <span
@@ -62,6 +73,7 @@ export function Usp() {
                     aria-hidden
                     className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-black"
                   />
+                  </span>
                   <div className="absolute bottom-[40px] left-[32px] right-[32px] flex flex-col gap-[4px] text-white">
                     <h3 className="whitespace-pre-line text-heading-lg font-medium uppercase">
                       {item.title}
@@ -111,13 +123,18 @@ function NavButton({
   children: React.ReactNode;
 }) {
   return (
+    // Figma: khi rê chuột hiện quầng xanh 10% rộng 70px quanh nút, 300ms.
     <button
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="grid size-[56px] place-items-center rounded-full bg-white text-text-heading shadow-[0_4px_16px_rgba(30,126,216,0.12)] transition-colors hover:bg-brand hover:text-white"
+      className="group relative grid size-[56px] place-items-center rounded-full bg-white text-text-heading shadow-[0_4px_16px_rgba(30,126,216,0.12)]"
     >
-      {children}
+      <span
+        aria-hidden
+        className="absolute size-[70px] rounded-full bg-brand/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      />
+      <span className="relative">{children}</span>
     </button>
   );
 }

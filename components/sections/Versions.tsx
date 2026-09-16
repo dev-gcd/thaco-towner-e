@@ -38,11 +38,14 @@ export function Versions() {
         />
         <span className="pointer-events-none absolute inset-x-0 top-0 h-[347px] bg-linear-to-b from-bg-soft to-transparent" />
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-[188px] bg-linear-to-t from-bg-soft to-transparent" />
+        {/* Bản thiết kế chỉ có bản máy tính. Trên điện thoại ảnh nền bị cắt sáng
+            nên chữ trắng không đọc được — phủ thêm một lớp tối, bỏ ở màn rộng. */}
+        <span className="pointer-events-none absolute inset-0 bg-black/45 lg:hidden" />
       </div>
 
       {/* NỘI DUNG neo trong khung 1440 căn giữa */}
       <div className="relative mx-auto w-full max-w-[1440px] lg:h-[951px]">
-        <div className="relative px-4 py-12 lg:h-full lg:px-0 lg:py-0">
+        <div className="relative px-4 pb-24 pt-12 lg:h-full lg:px-0 lg:py-0">
           <div className="flex flex-col gap-[12px] lg:absolute lg:left-[80px] lg:top-[80px] lg:w-[686px]">
             <SectionLabel>{label}</SectionLabel>
             <h2 className="text-display-sm font-medium uppercase text-brand-deep lg:whitespace-nowrap">
@@ -50,19 +53,25 @@ export function Versions() {
             </h2>
           </div>
 
-          <div className="mt-10 lg:absolute lg:left-[735px] lg:top-[390px] lg:mt-0 lg:w-[590px]">
+          {/* Figma: đổi phiên bản chạy 1022ms, nhịp lò xo GENTLE */}
+          <div
+            key={index}
+            className="mt-10 motion-safe:animate-[version-in_1022ms_var(--ease-gentle)] lg:absolute lg:left-[735px] lg:top-[390px] lg:mt-0 lg:w-[590px]"
+          >
             <div className="flex flex-col gap-[16px]">
               <div className="flex flex-col">
-                <span className="text-display-sm font-medium uppercase text-white">
+                <span className="text-heading-md font-medium uppercase text-white sm:text-display-sm">
                   {item.name}
                 </span>
-                <span className="text-[64px] font-normal uppercase leading-[72px] text-white lg:text-[136px] lg:leading-[144px]">
+                <span className="text-[44px] font-normal uppercase leading-[52px] text-white sm:text-[64px] sm:leading-[72px] lg:text-[136px] lg:leading-[144px]">
                   {item.code}
                 </span>
               </div>
-              <div className="flex w-fit items-center gap-[8px] rounded-[4px] bg-brand px-[8px] py-[6px] lg:h-[32px] lg:py-0">
-                <span className="text-body-md text-white">{priceLabel}</span>
-                <span className="text-heading-md font-semibold text-white">{item.price}</span>
+              <div className="flex w-fit max-w-full flex-wrap items-center gap-x-[8px] rounded-[4px] bg-brand px-[8px] py-[6px] lg:h-[32px] lg:flex-nowrap lg:py-0">
+                <span className="text-body-sm text-white sm:text-body-md">{priceLabel}</span>
+                <span className="whitespace-nowrap text-body-lg font-semibold text-white sm:text-heading-md">
+                  {item.price}
+                </span>
               </div>
             </div>
 
@@ -81,24 +90,23 @@ export function Versions() {
             </dl>
           </div>
 
-          <div className="mt-8 flex items-center gap-[16px] text-body-md text-text-heading lg:absolute lg:left-[634px] lg:top-[888px] lg:mt-0">
-            <span className="font-semibold">{String(index + 1).padStart(2, "0")}</span>
-            <span>{item.displayName}</span>
-          </div>
+          {/* Bản thiết kế có bộ đếm "01 — Towner E V2.6-2S" ở (634,888) nhưng
+              đặt `visible: false` → cố ý ẩn, nên không dựng. Tên phiên bản vẫn
+              sửa được trong CMS vì còn dùng cho nhãn trợ năng của 2 nút. */}
 
           <button
             type="button"
-            aria-label="Phiên bản trước"
+            aria-label={`Phiên bản trước (${item.displayName})`}
             onClick={() => go(index - 1)}
-            className="absolute left-4 top-1/2 grid size-[56px] -translate-y-1/2 place-items-center rounded-full bg-stroke-soft text-text-heading transition-colors hover:bg-white lg:left-[80px] lg:top-[549px] lg:translate-y-0"
+            className="absolute bottom-4 left-4 grid size-[48px] place-items-center rounded-full bg-white/90 text-text-heading transition-colors duration-300 hover:bg-white lg:bottom-auto lg:left-[80px] lg:top-[549px] lg:size-[56px] lg:bg-stroke-soft"
           >
             <ArrowLeft className="size-[14px]" />
           </button>
           <button
             type="button"
-            aria-label="Phiên bản kế tiếp"
+            aria-label={`Phiên bản kế tiếp (${item.displayName})`}
             onClick={() => go(index + 1)}
-            className="absolute right-4 top-1/2 grid size-[56px] -translate-y-1/2 place-items-center rounded-full bg-white text-text-heading transition-colors hover:bg-brand hover:text-white lg:left-[1304px] lg:right-auto lg:top-[549px] lg:translate-y-0"
+            className="absolute bottom-4 left-[76px] grid size-[48px] place-items-center rounded-full bg-white text-text-heading shadow-[0_0_0_7px_rgba(30,126,216,0)] transition-shadow duration-300 hover:shadow-[0_0_0_7px_rgba(30,126,216,0.1)] lg:bottom-auto lg:left-[1304px] lg:top-[549px] lg:size-[56px]"
           >
             <ArrowRight className="size-[14px]" />
           </button>

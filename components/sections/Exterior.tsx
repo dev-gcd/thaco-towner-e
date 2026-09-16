@@ -94,7 +94,7 @@ export function Exterior() {
 
         <div className="mt-10 flex gap-[40px] lg:absolute lg:left-[80px] lg:top-[284px] lg:mt-0 lg:w-[1280px]">
           <figure className="flex w-full flex-col gap-[40px] lg:w-[900px]">
-            <div className="relative aspect-[900/506] overflow-hidden rounded-[16px]">
+            <div className="relative aspect-[900/506] overflow-hidden rounded-[16px] transition-opacity duration-[833ms] [transition-timing-function:var(--ease-slow)]">
               <Image
                 src={active.image.src}
                 alt={active.image.alt}
@@ -124,7 +124,7 @@ export function Exterior() {
           <button
             type="button"
             onClick={() => go(index + 1)}
-            className="hidden w-[340px] shrink-0 flex-col gap-[40px] self-start text-left lg:flex"
+            className="group hidden w-[340px] shrink-0 flex-col gap-[40px] self-start text-left lg:flex"
           >
             <span className="relative block h-[506px] overflow-hidden rounded-[16px]">
               <Image
@@ -135,7 +135,17 @@ export function Exterior() {
                 sizes="340px"
                 className="absolute inset-0 size-full object-cover"
               />
-              <span aria-hidden className="absolute inset-0 bg-[#2e2e2e]/60" />
+              {/* Figma: lớp phủ đậm dần 60% → 80% và hiện nút mũi tên khi rê chuột (200ms) */}
+              <span
+                aria-hidden
+                className="absolute inset-0 bg-[#2e2e2e]/60 transition-colors duration-200 group-hover:bg-[#2e2e2e]/80"
+              />
+              <span
+                aria-hidden
+                className="absolute left-1/2 top-1/2 grid size-[56px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              >
+                <ArrowRight className="size-[14px]" />
+              </span>
             </span>
             <span className="flex min-w-0 items-center gap-[8px]">
               <span className="shrink-0 text-heading-md font-semibold text-brand">
@@ -168,9 +178,13 @@ function RoundButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="grid size-[56px] place-items-center rounded-full bg-white text-text-heading shadow-[0_4px_16px_rgba(30,126,216,0.12)] transition-colors hover:bg-brand hover:text-white"
+      className="group relative grid size-[56px] place-items-center rounded-full bg-white text-text-heading shadow-[0_4px_16px_rgba(30,126,216,0.12)]"
     >
-      {children}
+      <span
+        aria-hidden
+        className="absolute size-[70px] rounded-full bg-brand/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      />
+      <span className="relative">{children}</span>
     </button>
   );
 }

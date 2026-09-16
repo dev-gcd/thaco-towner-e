@@ -26,14 +26,14 @@ export function Cta({ onDriveTestClick }: { onDriveTestClick?: () => void }) {
           <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 lg:p-[40px]">
             <div className="flex flex-col gap-[12px]">
               <SectionLabel>{driveTest.label}</SectionLabel>
-              <h2 className="whitespace-pre-line text-[32px] font-bold uppercase leading-[40px] text-brand-deep lg:text-display-md">
+              <h2 className="whitespace-pre-line text-heading-lg font-bold uppercase text-brand-deep sm:text-[32px] sm:leading-[40px] lg:text-display-md">
                 {driveTest.heading}
               </h2>
             </div>
             <button
               type="button"
               onClick={onDriveTestClick}
-              className="inline-flex h-[40px] w-fit items-center gap-[6px] rounded-full bg-brand px-6 text-body-md font-medium text-white transition-colors hover:bg-brand-deep"
+              className="inline-flex h-[40px] w-fit items-center gap-[6px] rounded-full bg-brand px-6 text-body-md font-medium text-white transition-colors duration-200 hover:bg-brand-deep"
             >
               {driveTest.buttonLabel}
               <ArrowRight className="size-5" />
@@ -54,7 +54,7 @@ export function Cta({ onDriveTestClick }: { onDriveTestClick?: () => void }) {
           <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 lg:p-[40px]">
             <div className="flex flex-col gap-[12px]">
               <SectionLabel>{brochure.label}</SectionLabel>
-              <h2 className="whitespace-pre-line text-[32px] font-bold uppercase leading-[40px] text-brand-deep lg:text-display-md">
+              <h2 className="whitespace-pre-line text-heading-lg font-bold uppercase text-brand-deep sm:text-[32px] sm:leading-[40px] lg:text-display-md">
                 {brochure.heading}
               </h2>
             </div>
@@ -63,7 +63,7 @@ export function Cta({ onDriveTestClick }: { onDriveTestClick?: () => void }) {
               <a
                 href={brochure.file}
                 download
-                className="inline-flex h-[40px] w-fit items-center gap-[6px] rounded-full bg-stroke px-6 text-body-md font-medium text-text-heading transition-colors hover:bg-brand hover:text-white"
+                className="inline-flex h-[40px] w-fit items-center gap-[6px] rounded-full bg-stroke px-6 text-body-md font-medium text-text-heading transition-colors duration-200 hover:bg-[#cfd2d6]"
               >
                 {brochure.buttonLabel}
                 <DownloadIcon />

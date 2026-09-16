@@ -29,6 +29,18 @@ curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
   · `#e5e7eb` `#ededed` `#cccccc` `#ababab` (viền/phụ) · `#d7edff`.
 - 9 khối nội dung + 2 khối `Spacing` (50px, 100px), thứ tự trên trang:
 
+🔴 **Đọc `visible` trước khi dựng.** File có **107 nhánh đặt `visible: false`** — Figma vẫn trả
+về trong JSON nhưng KHÔNG vẽ. Đã dựng nhầm 2 lần: chấm tròn 4px trước mỗi mục menu, và bộ đếm
+"01 — Towner E V2.6-2S" ở khối Dòng xe. Lọc bằng `n.get("visible") is False` khi duyệt cây.
+
+**Hiệu ứng** đọc thẳng từ `interactions` trong JSON, không cần quay video: 43 tương tác, nhịp
+gốc là hover 200ms LINEAR · nút mũi tên 300ms · băng chuyền 833ms SLOW · đổi phiên bản 1022ms
+GENTLE. SLOW/GENTLE là lò xo của Figma, CSS không có → xấp xỉ bằng `--ease-slow` / `--ease-gentle`
+khai trong `app/globals.css`.
+
+⚠️ **Tailwind v4 đặt phóng to vào thuộc tính `scale`, không phải `transform`** → muốn chạy mượt
+phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác dụng.
+
 | # | Khối | id | Cao | Ghi chú |
 |---|---|---|---|---|
 | 1 | Header | `222:2152` | 1064 | nav 6 mục + ảnh lớn đầu trang |
@@ -38,10 +50,13 @@ curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
 | 5 | Ngoại thất | `222:2168` | 2000 | 2 khối con: ảnh lớn + danh sách 4 điểm đánh số |
 | 6 | Nội thất | `222:2172` | 1200 | 5 điểm nóng trên ảnh xe (AVN, điều hoà, kính, ghế, cần số) |
 | 7 | CTA 1 | `222:2173` | 718 | 2 nút: "Đăng ký lái thử" + "Tải Brochure" — **không có form nhập** |
-| 8 | Trạm sạc | `222:2174` | 1276 | danh sách trạm + nút "Mở bản đồ" |
+| 8 | Trạm sạc | `222:2174` | 1276 | danh sách trạm + nút "Mở bản đồ". ⚠️ **Đứng SAU CTA**, không phải trước |
 | 9 | Footer | `222:2294` | 530 | 3 cột + hotline + thông tin pháp nhân |
 
   Menu đầu trang: Giới thiệu · Ưu điểm · Dòng xe · Ngoại thất · Nội thất · Trạm sạc.
+- **Không có bản điện thoại trong Figma.** Cách xử lý màn hẹp lấy theo `thaco-truck-sale-page`:
+  6 mục menu thu vào nút ba gạch, các khối xếp dọc, khối Dòng xe phủ thêm lớp tối cho chữ trắng
+  đọc được (ảnh nền sáng).
 - Trang có **30 ảnh khác nhau** (đếm theo `imageRef` duy nhất) — xuất qua `/v1/images`.
 
 ## Stack

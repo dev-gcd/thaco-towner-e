@@ -69,7 +69,7 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
               <button
                 type="button"
                 onClick={onCtaClick}
-                className="inline-flex h-[40px] w-fit items-center gap-[6px] rounded-full bg-brand px-6 text-body-md font-medium text-white transition-colors hover:bg-brand-deep"
+                className="inline-flex h-[40px] w-fit items-center gap-[6px] rounded-full bg-brand px-6 text-body-md font-medium text-white transition-colors duration-200 hover:bg-brand-deep"
               >
                 {ctaLabel}
                 <ArrowRight className="size-5" />

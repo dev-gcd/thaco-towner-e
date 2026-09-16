@@ -15,7 +15,11 @@ const CARD_GAP = 16;
  */
 export function Interior() {
   const { label, ghostTitle, background, car, shadow, hotspots } = interior;
-  const [open, setOpen] = useState<number | null>(null);
+  // Rê chuột = xem lướt; bấm = ghim lại (Figma có riêng trạng thái Click, dấu
+  // cộng thu thành dấu trừ). Thẻ hiện khi được ghim, hoặc khi đang rê.
+  const [hover, setHover] = useState<number | null>(null);
+  const [pinned, setPinned] = useState<number | null>(null);
+  const open = pinned ?? hover;
 
   return (
     <section id="noi-that" className="relative overflow-hidden bg-black">
@@ -73,19 +77,20 @@ export function Interior() {
                   type="button"
                   aria-label={spot.title}
                   aria-expanded={open === i}
-                  onMouseEnter={() => setOpen(i)}
-                  onFocus={() => setOpen(i)}
-                  onClick={() => setOpen(open === i ? null : i)}
-                  className="absolute grid size-[40px] place-items-center rounded-full bg-bg-soft/65 text-text-heading transition-colors hover:bg-white"
+                  onMouseEnter={() => setHover(i)}
+                  onMouseLeave={() => setHover((v) => (v === i ? null : v))}
+                  onFocus={() => setHover(i)}
+                  onClick={() => setPinned((v) => (v === i ? null : i))}
+                  className="absolute grid size-[40px] place-items-center rounded-full bg-bg-soft/65 text-text-heading transition-colors duration-200 hover:bg-white"
                   style={{ left: spot.x, top: spot.y }}
                 >
-                  <PlusIcon />
+                  <PlusIcon open={open === i} />
                 </button>
 
                 {open === i && (
                   <figure
-                    onMouseLeave={() => setOpen(null)}
-                    className="absolute overflow-hidden rounded-[16px] bg-white"
+                    onMouseLeave={() => setHover(null)}
+                    className="absolute overflow-hidden rounded-[16px] bg-white motion-safe:animate-[version-in_300ms_ease-out]"
                     style={{
                       left: spot.x,
                       top: spot.y - CARD_H - CARD_GAP,
@@ -147,10 +152,18 @@ export function Interior() {
   );
 }
 
-function PlusIcon() {
+/** Figma: khi mở thẻ, dấu cộng thu lại thành dấu trừ trong 300ms. */
+function PlusIcon({ open }: { open: boolean }) {
   return (
     <svg viewBox="0 0 14 14" fill="none" aria-hidden className="size-[14px]">
-      <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M1 7h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path
+        d="M7 1v12"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        className={`origin-center transition-transform duration-300 ${open ? "scale-y-0" : "scale-y-100"}`}
+      />
     </svg>
   );
 }

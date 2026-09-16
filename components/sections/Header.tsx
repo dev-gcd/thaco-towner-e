@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { header } from "@/lib/content";
 
 /**
@@ -10,27 +13,69 @@ import { header } from "@/lib/content";
  * Ảnh lớn đặt bằng đơn vị `vw` theo đúng tỉ lệ Figma (1938×1551 tại -249,-244
  * trên khung 1440) nên bố cục ảnh giữ nguyên ở mọi bề ngang, không lộ thêm/mất
  * bớt phần nào. Chiều cao khối vì thế cũng co giãn theo: 1024/1440 = 71.11vw.
+ *
+ * Bản thiết kế KHÔNG có phiên bản điện thoại — dưới `lg` dùng lại cách của
+ * `thaco-truck-sale-page`: thu 6 mục vào nút ba gạch, mở ra danh sách dọc.
  */
 export function Header() {
   const { menu, logo, background, title, description } = header;
+  const [open, setOpen] = useState(false);
 
   return (
     <header className="relative">
       {/* Thanh menu — nền tràn viền, các mục neo trong khung 1440 */}
       <nav className="w-full bg-brand-deep">
-        <ul className="mx-auto flex max-w-[1440px] overflow-x-auto px-4 lg:overflow-visible lg:px-[40px]">
-          {menu.map((item) => (
-            <li key={item.href} className="shrink-0 lg:w-[117px]">
-              <a
-                href={item.href}
-                className="flex h-[40px] items-center gap-[10px] px-3 text-body-xs text-white transition-opacity hover:opacity-70 lg:justify-center lg:px-0"
-              >
-                <span aria-hidden className="size-[4px] shrink-0 rounded-full bg-white" />
-                <span className="whitespace-nowrap">{item.label}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div className="mx-auto flex max-w-[1440px] items-center lg:px-[40px]">
+          {/* Máy tính: 6 mục nằm ngang, mỗi mục 117px như Figma */}
+          <ul className="hidden lg:flex">
+            {menu.map((item) => (
+              <li key={item.href} className="w-[117px]">
+                <a
+                  href={item.href}
+                  className="flex h-[40px] items-center justify-center text-body-xs text-white transition-colors duration-200 hover:bg-white/15"
+                >
+                  {/* Figma có chấm tròn 4px trước chữ nhưng đặt `visible: false`
+                      — thiết kế cố ý ẩn, nên không vẽ. */}
+                  <span className="whitespace-nowrap">{item.label}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          {/* Điện thoại: nút ba gạch */}
+          <button
+            type="button"
+            aria-label={open ? "Đóng danh mục" : "Mở danh mục"}
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className="flex h-[44px] items-center gap-2 px-4 text-body-sm font-medium text-white transition-colors hover:bg-white/15 lg:hidden"
+          >
+            <svg viewBox="0 0 20 20" className="size-5" fill="none" aria-hidden>
+              {open ? (
+                <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              ) : (
+                <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              )}
+            </svg>
+            Danh mục
+          </button>
+        </div>
+
+        {open && (
+          <ul className="border-t border-white/15 bg-brand-deep lg:hidden">
+            {menu.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center px-4 py-3 text-body-sm text-white transition-colors hover:bg-white/15"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </nav>
 
       {/* Ảnh lớn — tràn viền */}
@@ -54,17 +99,17 @@ export function Header() {
 
         {/* Nội dung — neo trong khung 1440 căn giữa */}
         <div className="relative mx-auto w-full max-w-[1440px] lg:h-full">
-          <div className="px-6 py-10 lg:absolute lg:left-[80px] lg:top-[95px] lg:w-[640px] lg:p-0">
+          <div className="px-4 py-8 sm:px-6 sm:py-10 lg:absolute lg:left-[80px] lg:top-[95px] lg:w-[640px] lg:p-0">
             <Image
               src={logo.src}
               alt={logo.alt}
               width={640}
               height={142}
               priority
-              className="h-auto w-[280px] lg:w-[640px]"
+              className="h-auto w-[240px] sm:w-[320px] lg:w-[640px]"
             />
-            <div className="mt-6 flex flex-col gap-[12px] lg:mt-[39px] lg:pl-[13px]">
-              <h1 className="text-display-sm font-normal uppercase text-text-heading">
+            <div className="mt-5 flex flex-col gap-[10px] sm:mt-6 sm:gap-[12px] lg:mt-[39px] lg:pl-[13px]">
+              <h1 className="text-heading-lg font-normal uppercase text-text-heading sm:text-display-sm">
                 {title}
               </h1>
               <p className="whitespace-pre-line text-body-md text-text-heading">

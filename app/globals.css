@@ -120,6 +120,15 @@ body {
   font-feature-settings: "liga" 0, "lnum" 1, "pnum" 1;
 }
 
+/* ── Nhịp chuyển động, đọc từ bản dựng play của Figma ──────
+   Figma dùng lò xo (SLOW / GENTLE) — CSS không có, nên xấp xỉ bằng đường cong
+   bezier cùng thời lượng. Số liệu gốc: hover 200ms LINEAR, nút mũi tên 300ms
+   LINEAR, băng chuyền 833ms SLOW, đổi phiên bản xe 1022ms GENTLE. */
+:root {
+  --ease-slow: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-gentle: cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
 /* ── Hiệu ứng dùng lại (kế thừa từ truck; xoá nếu không dùng) ── */
 @keyframes marquee {
   from { transform: translateX(0); }
@@ -132,6 +141,12 @@ body {
 
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+/* Đổi phiên bản xe — Figma: SMART_ANIMATE 1022ms, nhịp GENTLE. */
+@keyframes version-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Ken Burns: phóng chậm + trôi nhẹ cho ảnh nền đầu trang. */

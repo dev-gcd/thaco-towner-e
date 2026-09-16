@@ -176,7 +176,7 @@ export const charging = chargingData as ChargingContent;
 import footerData from "@/content/footer.json";
 
 // ── Footer ───────────────────────────────────────────────────
-export type FooterLink = { label: string; href: string };
+export type FooterLink = { icon: string; label: string; href: string };
 export type FooterColumn = { title: string; links: FooterLink[] };
 export type FooterContent = {
   logo: CmsImage;

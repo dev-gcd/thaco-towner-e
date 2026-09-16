@@ -82,10 +82,20 @@
   --radius-2xs: 4px;
 
   /* ── Mốc màn hình ─────────────────────────────────────── */
-  /* Bố cục dựng theo toạ độ tuyệt đối của khung 1440 chỉ được bật khi màn hình
-     đủ 1440px. Mốc `lg` mặc định của Tailwind là 1024 — dùng nó sẽ tràn ngang
-     ở dải 1024–1439 (đã đo: tràn 356px ở 1024, 100px ở 1280). */
-  --breakpoint-dsk: 1440px;
+  /* Bố cục dựng theo toạ độ tuyệt đối của khung 1440 chỉ được bật từ 1440px.
+     KHÔNG tạo mốc tên riêng (vd `dsk`): Tailwind xếp mốc tự đặt ĐỨNG TRƯỚC
+     sm/md/lg trong tệp CSS, nên ở màn rộng `sm:` lại thắng `dsk:` (đã trả giá:
+     dải ảnh 360° co còn 420px, 4 thẻ trạm sạc xếp 2×2). Thay vào đó định nghĩa
+     lại chính `lg` — thứ tự sm < md < lg do Tailwind bảo đảm.
+     Hệ quả: KHÔNG dùng `xl:`/`2xl:` (1280/1536) vì chúng nhỏ hơn lg. */
+  /* Xoá sạch bộ mốc mặc định rồi khai lại theo đúng thứ tự tăng dần — nếu chỉ
+     khai đè 1 mốc, Tailwind đặt nó SAI CHỖ trong tệp CSS (đo thật: khối
+     `min-width:1440px` bị xuất trước `min-width:640px`, nên `sm:` thắng `lg:`
+     ở màn rộng). Không dùng `xl:`/`2xl:` nữa — đã xoá khỏi bộ. */
+  --breakpoint-*: initial;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1440px;
 
   /* ── Bề rộng nội dung (khung Figma = 1440) ────────────── */
   --container-content: 1184px;

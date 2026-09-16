@@ -12,21 +12,21 @@ export function Cta({ onDriveTestClick }: { onDriveTestClick?: () => void }) {
 
   return (
     <section id="dang-ky" className="bg-white">
-      <div className="mx-auto grid w-full max-w-[1440px] gap-6 px-4 py-12 dsk:h-[718px] dsk:grid-cols-2 dsk:gap-[20px] dsk:px-[80px] dsk:py-[80px]">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-6 px-4 py-12 lg:h-[718px] lg:grid-cols-2 lg:gap-[20px] lg:px-[80px] lg:py-[80px]">
         {/* Thẻ 1 — đăng ký lái thử */}
-        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft dsk:h-[558px]">
+        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft lg:h-[558px]">
           <Image
             src={driveTest.image.src}
             alt={driveTest.image.alt}
             width={705}
             height={558}
             sizes="(max-width: 1023px) 100vw, 705px"
-            className="absolute inset-y-0 right-0 h-full w-full object-cover dsk:left-[-13px] dsk:w-[705px] dsk:max-w-none"
+            className="absolute inset-y-0 right-0 h-full w-full object-cover lg:left-[-13px] lg:w-[705px] lg:max-w-none"
           />
-          <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 dsk:p-[40px]">
+          <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 lg:p-[40px]">
             <div className="flex flex-col gap-[12px]">
               <SectionLabel>{driveTest.label}</SectionLabel>
-              <h2 className="whitespace-pre-line text-[32px] font-bold uppercase leading-[40px] text-brand-deep dsk:text-display-md">
+              <h2 className="whitespace-pre-line text-[32px] font-bold uppercase leading-[40px] text-brand-deep lg:text-display-md">
                 {driveTest.heading}
               </h2>
             </div>
@@ -42,19 +42,19 @@ export function Cta({ onDriveTestClick }: { onDriveTestClick?: () => void }) {
         </article>
 
         {/* Thẻ 2 — tải brochure */}
-        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft dsk:h-[558px]">
+        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft lg:h-[558px]">
           <Image
             src={brochure.image.src}
             alt={brochure.image.alt}
             width={732}
             height={676}
             sizes="(max-width: 1023px) 100vw, 732px"
-            className="absolute inset-y-0 right-0 h-full w-full object-cover dsk:left-[-91px] dsk:top-[-36px] dsk:h-[676px] dsk:w-[732px] dsk:max-w-none"
+            className="absolute inset-y-0 right-0 h-full w-full object-cover lg:left-[-91px] lg:top-[-36px] lg:h-[676px] lg:w-[732px] lg:max-w-none"
           />
-          <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 dsk:p-[40px]">
+          <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 lg:p-[40px]">
             <div className="flex flex-col gap-[12px]">
               <SectionLabel>{brochure.label}</SectionLabel>
-              <h2 className="whitespace-pre-line text-[32px] font-bold uppercase leading-[40px] text-brand-deep dsk:text-display-md">
+              <h2 className="whitespace-pre-line text-[32px] font-bold uppercase leading-[40px] text-brand-deep lg:text-display-md">
                 {brochure.heading}
               </h2>
             </div>

@@ -10,7 +10,8 @@
     "deploy": "next build && wrangler deploy",
     "optimize:images": "tsx scripts/optimize-images.ts --delete-originals",
     "test:screens": "node scripts/screenshot-resolutions.mjs",
-    "sync:assets": "tsx scripts/sync-figma-assets.ts"
+    "sync:assets": "tsx scripts/sync-figma-assets.ts",
+    "audit:layout": "node scripts/audit-layout.mjs"
   },
   "dependencies": {
     "motion": "^12.38.0",

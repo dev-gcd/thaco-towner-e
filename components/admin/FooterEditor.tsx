@@ -9,7 +9,20 @@ import { AddButton, EditorShell, ItemCard } from "./EditorShell";
 
 const SOCIALS = [
   { value: "facebook", label: "Facebook" },
+  { value: "linkedin", label: "LinkedIn" },
   { value: "youtube", label: "YouTube" },
+];
+
+const LINK_ICONS = [
+  { value: "truck", label: "Xe tải" },
+  { value: "doc", label: "Tài liệu" },
+  { value: "wrench", label: "Cờ lê (sửa chữa)" },
+  { value: "shield", label: "Khiên (bảo dưỡng)" },
+  { value: "check", label: "Dấu tích (bảo hành)" },
+  { value: "location", label: "Ghim bản đồ" },
+  { value: "phone", label: "Điện thoại" },
+  { value: "headset", label: "Tai nghe (hỗ trợ)" },
+  { value: "mail", label: "Phong bì" },
 ];
 
 export function FooterEditor() {
@@ -87,7 +100,27 @@ export function FooterEditor() {
             />
           </Field>
           {col.links.map((link, j) => (
-            <div key={j} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+            <div key={j} className="grid gap-3 sm:grid-cols-[auto_1fr_1fr_auto] sm:items-end">
+              <Field label="Biểu tượng">
+                <Select
+                  value={link.icon}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      columns: replaceAt(data.columns, i, {
+                        ...col,
+                        links: replaceAt(col.links, j, { ...link, icon: e.target.value }),
+                      }),
+                    })
+                  }
+                >
+                  {LINK_ICONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
               <Field label="Chữ hiển thị">
                 <TextInput
                   value={link.label}
@@ -138,7 +171,7 @@ export function FooterEditor() {
                 ...data,
                 columns: replaceAt(data.columns, i, {
                   ...col,
-                  links: [...col.links, { label: "", href: "" }],
+                  links: [...col.links, { icon: "truck", label: "", href: "" }],
                 }),
               })
             }

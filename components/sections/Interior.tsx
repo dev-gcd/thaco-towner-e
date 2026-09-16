@@ -19,15 +19,18 @@ export function Interior() {
 
   return (
     <section id="noi-that" className="relative overflow-hidden bg-black">
-      <div className="relative mx-auto w-full max-w-[1440px] dsk:h-[1200px]">
-        <Image
-          src={background.srcMobile || background.src}
-          alt={background.alt}
-          width={1440}
-          height={1917}
-          sizes="100vw"
-          className="absolute inset-x-0 top-0 h-[900px] w-full object-cover dsk:h-[1917px] dsk:w-[1440px] dsk:max-w-none"
-        />
+      {/* NỀN đường nhựa tràn hết bề ngang. Ảnh xe + các điểm nóng neo trong khung
+          1440 vì toạ độ điểm nóng gắn với khung đó. */}
+      <Image
+        src={background.srcMobile || background.src}
+        alt=""
+        width={1440}
+        height={1917}
+        sizes="100vw"
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="relative mx-auto w-full max-w-[1440px] lg:h-[1200px]">
         <Image
           src={shadow.src}
           alt=""
@@ -35,7 +38,7 @@ export function Interior() {
           height={1920}
           sizes="100vw"
           aria-hidden
-          className="absolute inset-x-0 top-0 hidden h-[1920px] w-[1440px] max-w-none dsk:block dsk:top-[45px]"
+          className="absolute inset-x-0 top-0 hidden h-[1920px] w-[1440px] max-w-none lg:block lg:top-[45px]"
         />
         <Image
           src={car.src}
@@ -43,27 +46,27 @@ export function Interior() {
           width={1440}
           height={1917}
           sizes="100vw"
-          className="absolute inset-x-0 top-0 h-[900px] w-full object-cover dsk:top-[45px] dsk:h-[1917px] dsk:w-[1440px] dsk:max-w-none"
+          className="absolute inset-x-0 top-0 h-[900px] w-full object-cover lg:top-[45px] lg:h-[1917px] lg:w-[1440px] lg:max-w-none"
         />
         <span
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 h-[40%] bg-linear-to-b from-black/70 to-transparent"
         />
 
-        <div className="relative px-4 py-12 dsk:h-full dsk:px-0 dsk:py-0">
-          <div className="flex flex-col items-center gap-[12px] text-white dsk:absolute dsk:left-[386px] dsk:top-[80px] dsk:w-[669px]">
+        <div className="relative px-4 py-12 lg:h-full lg:px-0 lg:py-0">
+          <div className="flex flex-col items-center gap-[12px] text-white lg:absolute lg:left-[386px] lg:top-[80px] lg:w-[669px]">
             <span className="flex items-center gap-[8px] text-body-md font-medium">
               <span aria-hidden className="h-px w-[24px] bg-white" />
               {label}
               <span aria-hidden className="h-px w-[24px] bg-white" />
             </span>
-            <p className="text-[64px] font-medium uppercase leading-[72px] dsk:whitespace-nowrap dsk:text-[136px] dsk:leading-[144px]">
+            <p className="text-[64px] font-medium uppercase leading-[72px] lg:whitespace-nowrap lg:text-[136px] lg:leading-[144px]">
               {ghostTitle}
             </p>
           </div>
 
           {/* Điểm nóng — chỉ có ở màn rộng, vì toạ độ gắn với khung 1440 */}
-          <div className="hidden dsk:block">
+          <div className="hidden lg:block">
             {hotspots.map((spot, i) => (
               <div key={spot.title}>
                 <button
@@ -113,7 +116,7 @@ export function Interior() {
           </div>
 
           {/* Bản điện thoại: danh sách thẻ */}
-          <ul className="relative mt-8 grid gap-4 sm:grid-cols-2 dsk:hidden">
+          <ul className="relative mt-8 grid gap-4 sm:grid-cols-2 lg:hidden">
             {hotspots.map((spot) => (
               <li
                 key={spot.title}

@@ -52,10 +52,17 @@ curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
 - Host: **Cloudflare Workers Static Assets** + **D1** (khách đăng ký), wrangler **v3**
 - Quản lý gói: **pnpm** (Node 20 — `.nvmrc`)
 - **Chỉ tiếng Việt.** Mọi ô chữ là chuỗi thường, không có cặp `{vi, en}` như bản truck.
-- **Mốc màn hình desktop là `dsk` = 1440px**, KHÔNG phải `lg` (1024) của Tailwind. Bố cục dựng
-  theo toạ độ tuyệt đối của khung 1440, nên bật ở 1024 sẽ tràn ngang (đo thật: tràn 356px ở
-  1024, 100px ở 1280). Khai báo ở `app/globals.css` (`--breakpoint-dsk`). Viết `dsk:` cho mọi
-  quy tắc thuộc bố cục 1440; `sm:`/`lg:` chỉ dùng cho việc xếp lại thẻ ở màn hẹp.
+- **Bộ mốc màn hình chỉ còn `sm` 640 · `md` 768 · `lg` 1440** — khai lại toàn bộ trong
+  `app/globals.css` bằng `--breakpoint-*: initial` rồi liệt kê tăng dần. **Không dùng
+  `xl:`/`2xl:`** (đã xoá khỏi bộ). 🔴 Đừng đặt mốc tên riêng (vd `dsk`) và cũng đừng chỉ khai
+  đè một mốc: Tailwind xuất khối `@media` đó SAI CHỖ, nên ở màn rộng `sm:` lại thắng `lg:`.
+  Đã trả giá: dải ảnh 360° co còn 420px thay vì 960, 4 thẻ trạm sạc xếp 2×2 thay vì 1 hàng.
+- **Luật bố cục màn rộng (chốt 16/09 — "trung sách"):** NỀN (ảnh, dải màu, thanh menu) tràn hết
+  bề ngang; NỘI DUNG (chữ, thẻ, nút) neo trong khung 1440 căn giữa. Ảnh nền đặt bằng **phần trăm
+  / vw theo đúng số đo Figma**, không bằng px cứng, để bố cục ảnh giữ nguyên ở mọi bề ngang.
+  ⚠️ Kích thước trong Figma ≠ kích thước tệp ảnh: Figma thường phóng ảnh lên (ảnh nền khối Dòng
+  xe: tệp 2040px nhưng Figma vẽ ở 2812px). Lấy nhầm cỡ tệp thì lọt **chiếc xe thứ hai** trong
+  ảnh vào khung. Luôn đối chiếu `absoluteBoundingBox` trong `_docs/figma/*.json`.
 
 ## Lệnh
 
@@ -66,7 +73,9 @@ pnpm dev:cms           # 1 lệnh chạy cả hai: lưng CMS :8790 + trang :3002
 pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
-pnpm test:screens      # chụp + kiểm tràn ngang ở nhiều độ phân giải
+pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
+pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — đo 21 toạ độ so với Figma,
+                       #    kiểm nội dung không lọt ra ngoài khung 1440, kiểm tràn ngang 9 cỡ màn
 ```
 
 Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác truck/van (3000/8788)

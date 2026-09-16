@@ -25,25 +25,25 @@ export function Usp() {
 
   return (
     <section id="uu-diem" className="bg-bg-soft">
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-12 dsk:h-[900px] dsk:px-0 dsk:py-0">
-        <div className="relative dsk:h-full">
-          <div className="flex flex-col gap-[12px] dsk:absolute dsk:left-[80px] dsk:top-[80px] dsk:w-[399px]">
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-12 lg:h-[900px] lg:px-0 lg:py-0">
+        <div className="relative lg:h-full">
+          <div className="flex flex-col gap-[12px] lg:absolute lg:left-[80px] lg:top-[80px] lg:w-[399px]">
             <SectionLabel>{label}</SectionLabel>
-            <h2 className="text-display-sm font-bold uppercase text-brand-deep dsk:whitespace-nowrap">
+            <h2 className="text-display-sm font-bold uppercase text-brand-deep lg:whitespace-nowrap">
               {heading}
             </h2>
           </div>
 
-          <div className="mt-8 overflow-hidden dsk:absolute dsk:left-[80px] dsk:top-[216px] dsk:mt-0 dsk:h-[500px] dsk:w-[1280px]">
+          <div className="mt-8 overflow-hidden lg:absolute lg:left-[80px] lg:top-[216px] lg:mt-0 lg:h-[500px] lg:w-[1280px]">
             <div
-              className="flex gap-[20px] transition-transform duration-500 ease-out dsk:gap-[40px]"
+              className="flex gap-[20px] transition-transform duration-500 ease-out lg:gap-[40px]"
               style={{ transform: `translate3d(-${index * STEP}px, 0, 0)` }}
             >
               {loop.map((item, i) => (
                 <article
                   key={`${item.title}-${i}`}
                   aria-hidden={i >= count ? true : undefined}
-                  className="relative h-[380px] w-[280px] shrink-0 overflow-hidden rounded-[50px] dsk:h-[500px] dsk:w-[400px]"
+                  className="relative h-[380px] w-[280px] shrink-0 overflow-hidden rounded-[50px] lg:h-[500px] lg:w-[400px]"
                 >
                   <Image
                     src={item.image.src}
@@ -73,7 +73,7 @@ export function Usp() {
             </div>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-[24px] dsk:absolute dsk:left-1/2 dsk:top-[764px] dsk:mt-0 dsk:-translate-x-1/2 dsk:gap-[64px]">
+          <div className="mt-8 flex items-center justify-center gap-[24px] lg:absolute lg:left-1/2 lg:top-[764px] lg:mt-0 lg:-translate-x-1/2 lg:gap-[64px]">
             <NavButton label="Ưu điểm trước" onClick={() => go(index - 1)}>
               <ArrowLeft className="size-[14px]" />
             </NavButton>

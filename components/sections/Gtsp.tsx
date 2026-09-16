@@ -11,15 +11,15 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
 
   return (
     <section id="gioi-thieu" className="bg-bg-soft">
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-12 dsk:h-[684px] dsk:px-0 dsk:py-0">
-        <div className="relative dsk:h-full">
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-12 lg:h-[684px] lg:px-0 lg:py-0">
+        <div className="relative lg:h-full">
           {/* Quầng xanh nhạt phía sau thẻ */}
           <span
             aria-hidden
-            className="pointer-events-none absolute left-[60px] top-[100px] hidden h-[484px] w-[1320px] rounded-[26px] bg-brand/10 dsk:block"
+            className="pointer-events-none absolute left-[60px] top-[100px] hidden h-[484px] w-[1320px] rounded-[26px] bg-brand/10 lg:block"
           />
 
-          <div className="relative overflow-hidden rounded-[16px] bg-white dsk:absolute dsk:left-[80px] dsk:top-[120px] dsk:h-[444px] dsk:w-[1280px]">
+          <div className="relative overflow-hidden rounded-[16px] bg-white lg:absolute lg:left-[80px] lg:top-[120px] lg:h-[444px] lg:w-[1280px]">
             <Image
               src={background.srcMobile || background.src}
               alt={background.alt}
@@ -35,7 +35,7 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
             />
 
             {/* Xe + 2 bánh (ảnh rời để sau này có thể cho quay) */}
-            <div aria-hidden className="pointer-events-none hidden dsk:block">
+            <div aria-hidden className="pointer-events-none hidden lg:block">
               <Image
                 src={car.src}
                 alt={car.alt}
@@ -59,7 +59,7 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
               />
             </div>
 
-            <div className="relative flex flex-col gap-[28px] p-6 dsk:absolute dsk:left-[64px] dsk:top-[48px] dsk:w-[505px] dsk:p-0">
+            <div className="relative flex flex-col gap-[28px] p-6 lg:absolute lg:left-[64px] lg:top-[48px] lg:w-[505px] lg:p-0">
               <div className="flex flex-col gap-[11px]">
                 <h2 className="whitespace-pre-line text-display-sm font-bold uppercase text-brand-deep">
                   {title}
@@ -82,12 +82,12 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
               alt={car.alt}
               width={678}
               height={306}
-              className="relative mx-auto h-auto w-full max-w-[420px] px-4 pb-6 dsk:hidden"
+              className="relative mx-auto h-auto w-full max-w-[420px] px-4 pb-6 lg:hidden"
             />
           </div>
         </div>
       </div>
-      <div className="mx-auto hidden h-px max-w-[1280px] bg-stroke dsk:block" />
+      <div className="mx-auto hidden h-px max-w-[1280px] bg-stroke lg:block" />
     </section>
   );
 }

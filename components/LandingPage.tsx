@@ -28,9 +28,9 @@ export function LandingPage() {
         <Usp />
         <Versions />
         {/* 2 khoảng trống có sẵn trong bản thiết kế (50px và 100px) */}
-        <div aria-hidden className="hidden bg-white dsk:block dsk:h-[50px]" />
+        <div aria-hidden className="hidden bg-white lg:block lg:h-[50px]" />
         <Exterior />
-        <div aria-hidden className="hidden bg-bg-soft dsk:block dsk:h-[100px]" />
+        <div aria-hidden className="hidden bg-bg-soft lg:block lg:h-[100px]" />
         <Interior />
         <Charging />
         <Cta onDriveTestClick={openLead} />

@@ -1,25 +1,27 @@
 {
   "logo": {
     "src": "/images/footer/logo-kia.webp",
-    "alt": "Thaco Towner E"
+    "alt": "Thaco Truck"
   },
   "companyName": "công ty TNHH phân phối thaco auto",
-  "registration": "Giấy CNĐKKD: 3600252847 - Ngày cấp: 06/04/2007\nNơi cấp: Phòng ĐKKD Sở kế hoạch và Đầu tư tỉnh Quảng Nam",
+  "registration": "Giấy CNĐKKD: 3600252847 - Ngày cấp: 06/04/2007\nNơi cấp: Phòng ĐKKD Sở kế hoạch và Đầu tư tỉnh Đồng Nai",
   "subLogo": {
     "src": "/images/footer/logo-thaco-truck.webp",
-    "alt": "Thaco Truck"
+    "alt": "Đã thông báo Bộ Công Thương"
   },
   "columns": [
     {
       "title": "Thương hiệu",
       "links": [
         {
+          "icon": "truck",
           "label": "Thaco Truck",
-          "href": "#"
+          "href": ""
         },
         {
+          "icon": "truck",
           "label": "Thaco Truck",
-          "href": "#"
+          "href": ""
         }
       ]
     },
@@ -27,20 +29,24 @@
       "title": "Thương hiệu",
       "links": [
         {
+          "icon": "doc",
           "label": "Giới thiệu chung",
-          "href": "#"
+          "href": ""
         },
         {
+          "icon": "wrench",
           "label": "Dịch vụ sửa chữa",
-          "href": "#"
+          "href": ""
         },
         {
+          "icon": "shield",
           "label": "Bảo dưỡng định kỳ",
-          "href": "#"
+          "href": ""
         },
         {
+          "icon": "check",
           "label": "Chế độ bảo hành",
-          "href": "#"
+          "href": ""
         }
       ]
     },
@@ -48,18 +54,22 @@
       "title": "Liên hệ",
       "links": [
         {
+          "icon": "location",
           "label": "Địa chỉ: Toà nhà Sadora, Số 2 đường 13,\nPhường An Khánh, TP. Hồ Chí Minh",
           "href": ""
         },
         {
+          "icon": "phone",
           "label": "Kinh doanh xe tải: 0933 805 902",
           "href": "tel:0933805902"
         },
         {
+          "icon": "headset",
           "label": "Hỗ trợ kỹ thuật và phụ tùng: 0903 892 892",
           "href": "tel:0903892892"
         },
         {
+          "icon": "mail",
           "label": "Hỗ trợ: thacoauto.marketingtaibus@thaco.com.vn",
           "href": "mailto:thacoauto.marketingtaibus@thaco.com.vn"
         }
@@ -69,11 +79,11 @@
   "copyright": "© 2026 Thaco Auto. All Rights Reserved.",
   "socials": [
     {
-      "icon": "facebook",
+      "icon": "linkedin",
       "href": ""
     },
     {
-      "icon": "youtube",
+      "icon": "facebook",
       "href": ""
     }
   ]

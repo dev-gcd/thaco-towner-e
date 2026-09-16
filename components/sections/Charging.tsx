@@ -12,38 +12,35 @@ export function Charging() {
 
   return (
     <section id="tram-sac" className="relative overflow-hidden bg-bg-soft">
-      <div className="relative mx-auto w-full max-w-[1440px] dsk:h-[1276px]">
+      {/* NỀN tràn hết bề ngang; thẻ trạm + ảnh xe neo trong khung 1440. */}
+      <div aria-hidden className="absolute inset-0 overflow-hidden">
         <Image
           src={background.srcMobile || background.src}
-          alt={background.alt}
+          alt=""
           width={1440}
           height={1315}
           sizes="100vw"
-          className="absolute inset-x-0 top-0 h-full w-full object-cover dsk:top-[35px] dsk:h-[1315px]"
+          className="absolute inset-x-0 top-0 h-full w-full object-cover object-top lg:top-[35px] lg:h-[1315px]"
         />
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[697px] bg-linear-to-b from-bg-soft via-bg-soft/70 to-transparent"
-        />
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[460px] bg-linear-to-t from-bg-soft to-transparent"
-        />
+        <span className="pointer-events-none absolute inset-x-0 top-0 h-[697px] bg-linear-to-b from-bg-soft via-bg-soft/70 to-transparent" />
+        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-[460px] bg-linear-to-t from-bg-soft to-transparent" />
+      </div>
 
-        <div className="relative px-4 py-12 dsk:h-full dsk:px-0 dsk:py-0">
-          <div className="flex flex-col gap-[8px] dsk:absolute dsk:left-[80px] dsk:top-[48px] dsk:w-[1251px]">
+      <div className="relative mx-auto w-full max-w-[1440px] lg:h-[1276px]">
+        <div className="relative px-4 py-12 lg:h-full lg:px-0 lg:py-0">
+          <div className="flex flex-col gap-[8px] lg:absolute lg:left-[80px] lg:top-[48px] lg:w-[1251px]">
             <SectionLabel>{label}</SectionLabel>
-            <h2 className="text-[32px] font-bold uppercase leading-[40px] text-brand-deep dsk:whitespace-nowrap dsk:text-display-lg">
+            <h2 className="text-[32px] font-bold uppercase leading-[40px] text-brand-deep lg:whitespace-nowrap lg:text-display-lg">
               {heading}
             </h2>
             <p className="max-w-[930px] text-body-lg text-text-heading">{description}</p>
           </div>
 
-          <ul className="mt-8 grid gap-[24px] sm:grid-cols-2 dsk:absolute dsk:left-[80px] dsk:top-[238px] dsk:mt-0 dsk:w-[1280px] dsk:grid-cols-4">
+          <ul className="mt-8 grid gap-[24px] sm:grid-cols-2 lg:absolute lg:left-[80px] lg:top-[238px] lg:mt-0 lg:w-[1280px] lg:grid-cols-4">
             {stations.map((station) => (
               <li
                 key={station.name}
-                className="flex flex-col rounded-[24px] bg-bg-soft/90 p-[24px] backdrop-blur-[2px] dsk:h-[372px] dsk:w-[302px]"
+                className="flex flex-col rounded-[24px] bg-bg-soft/90 p-[24px] backdrop-blur-[2px] lg:h-[372px] lg:w-[302px]"
               >
                 <p className="text-body-lg font-bold text-text-heading">{station.name}</p>
                 <p className="text-body-lg text-text-heading">{station.area}</p>
@@ -93,10 +90,10 @@ export function Charging() {
             width={1220}
             height={809}
             sizes="(max-width: 1023px) 100vw, 1220px"
-            className="relative mt-10 h-auto w-full dsk:absolute dsk:left-[110px] dsk:top-[527px] dsk:mt-0 dsk:h-[809px] dsk:w-[1220px] dsk:max-w-none"
+            className="relative mt-10 h-auto w-full lg:absolute lg:left-[110px] lg:top-[527px] lg:mt-0 lg:h-[809px] lg:w-[1220px] lg:max-w-none"
           />
 
-          <div className="relative mt-8 flex items-center gap-[16px] dsk:absolute dsk:left-[80px] dsk:top-[666px] dsk:mt-0 dsk:w-[494px]">
+          <div className="relative mt-8 flex items-center gap-[16px] lg:absolute lg:left-[80px] lg:top-[666px] lg:mt-0 lg:w-[494px]">
             <span className="grid size-[88px] shrink-0 place-items-center rounded-[24px] bg-white/70 text-brand backdrop-blur-[2px]">
               <BoltIcon />
             </span>

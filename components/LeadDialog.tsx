@@ -110,7 +110,9 @@ export function LeadDialog({ open, onClose }: { open: boolean; onClose: () => vo
                 required
                 inputMode="tel"
                 maxLength={30}
-                pattern="[0-9+() .-]{8,}"
+                // Trình duyệt mới biên dịch `pattern` ở chế độ `v`: trong lớp ký tự
+                // KHÔNG được để ( ) chưa thoát, và `-` phải thoát.
+                pattern="[0-9+\-. ]{8,}"
                 placeholder={form.phonePlaceholder}
                 className={inputCls}
               />

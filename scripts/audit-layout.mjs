@@ -237,6 +237,92 @@ console.log("\n④ Hiệu ứng\n");
   await page.close();
 }
 
+/* ── 5. Bản điện thoại / máy tính bảng ───────────────────── */
+console.log("\n⑤ Bản điện thoại & máy tính bảng (320 → 1024)\n");
+for (const [w, h] of [[320, 568], [360, 780], [390, 844], [430, 932], [768, 1024], [1024, 768]]) {
+  const page = await mo(w, h, 2);
+  const kq = await page.evaluate((vw) => {
+    const ra = [];
+    for (const s of document.querySelectorAll("main > section, header, footer")) {
+      const id = s.id || s.tagName.toLowerCase();
+
+      // tràn ngang (bỏ qua thứ đã bị tổ tiên cắt/cuộn)
+      for (const el of s.querySelectorAll("*")) {
+        const r = el.getBoundingClientRect();
+        if (r.width < 4 || r.right <= vw + 2) continue;
+        let cat = false;
+        for (let a = el.parentElement; a; a = a.parentElement) {
+          const ov = getComputedStyle(a).overflowX;
+          if (["hidden", "clip", "auto", "scroll"].includes(ov)) { cat = true; break; }
+        }
+        if (!cat) { ra.push(`${id}: tràn ${Math.round(r.right - vw)}px (${el.tagName})`); break; }
+      }
+
+      // chữ đè chữ
+      const chu = [...s.querySelectorAll("h1,h2,h3,p,span,dd,dt,li,a,button")]
+        .filter((e) => e.textContent.trim() && !e.children.length)
+        .map((e) => ({ e, r: e.getBoundingClientRect() }))
+        .filter((o) => o.r.width > 8 && o.r.height > 8);
+      outer: for (let i = 0; i < chu.length; i++)
+        for (let j = i + 1; j < chu.length; j++) {
+          const A = chu[i], B = chu[j];
+          if (A.e.contains(B.e) || B.e.contains(A.e)) continue;
+          const ox = Math.min(A.r.right, B.r.right) - Math.max(A.r.left, B.r.left);
+          const oy = Math.min(A.r.bottom, B.r.bottom) - Math.max(A.r.top, B.r.top);
+          if (ox > 6 && oy > 6) {
+            ra.push(`${id}: đè chữ "${A.e.textContent.trim().slice(0, 16)}" ⨯ "${B.e.textContent.trim().slice(0, 16)}"`);
+            break outer;
+          }
+        }
+
+      // chữ nhỏ hơn 12px
+      for (const el of s.querySelectorAll("p,span,li,dd,dt,a")) {
+        if (!el.textContent.trim() || el.children.length) continue;
+        const fs = parseFloat(getComputedStyle(el).fontSize);
+        if (fs && fs < 12) { ra.push(`${id}: chữ ${fs}px quá nhỏ`); break; }
+      }
+
+      // vùng bấm nhỏ hơn 40px
+      const be = [...s.querySelectorAll("button,a")].filter((e) => {
+        const r = e.getBoundingClientRect();
+        return r.width > 2 && (r.height < 40 || r.width < 40);
+      });
+      if (be.length) ra.push(`${id}: ${be.length} vùng bấm < 40px`);
+
+      // ảnh méo tỉ lệ
+      for (const im of s.querySelectorAll("img")) {
+        const r = im.getBoundingClientRect();
+        if (r.width < 4 || !im.naturalWidth || r.height < 4) continue;
+        const fit = getComputedStyle(im).objectFit;
+        if (fit !== "fill" && fit !== "none") continue;
+        const lech = Math.abs(r.width / r.height - im.naturalWidth / im.naturalHeight) /
+          (im.naturalWidth / im.naturalHeight);
+        if (lech > 0.12) { ra.push(`${id}: ảnh méo ${Math.round(lech * 100)}%`); break; }
+      }
+    }
+    return [...new Set(ra)];
+  }, w);
+
+  // băng chuyền phải khớp bước trượt thật
+  const bang = await page.evaluate(() => {
+    const out = [];
+    for (const t of document.querySelectorAll(".snap-x")) {
+      const con = [...t.children];
+      if (con.length < 2) continue;
+      const b = Math.round(con[1].getBoundingClientRect().left - con[0].getBoundingClientRect().left);
+      const rong = Math.round(con[0].getBoundingClientRect().width);
+      if (b <= rong) out.push(`bước trượt ${b} ≤ bề rộng thẻ ${rong}`);
+    }
+    return out;
+  });
+
+  const tat = [...kq, ...bang];
+  console.log(`  ${tat.length ? "✗" : "✓"} ${String(w).padStart(4)}×${String(h).padEnd(4)}${tat.length ? "" : "  sạch"}`);
+  tat.forEach((x) => console.log(`        • ${x}`));
+  loi += tat.length;
+  await page.close();
+}
+
 await browser.close();
 console.log(loi ? `\n⛔ ${loi} chỗ chưa đạt\n` : "\n✅ Tất cả đều đạt\n");
 process.exit(loi ? 1 : 0);

@@ -22,7 +22,7 @@ export function Footer() {
     <footer className="bg-linear-to-b from-white to-bg-soft">
       <div className="mx-auto w-full max-w-[1440px] px-4 lg:px-[80px]">
         <div className="grid gap-10 py-10 lg:h-[430px] lg:grid-cols-[485px_795px] lg:gap-0 lg:py-[100px]">
-          <div className="flex flex-col items-start gap-[16px]">
+          <div className="flex min-w-0 flex-col items-start gap-[16px]">
             <div className="flex flex-col items-start gap-[8px]">
               <span className="relative block h-[60px] w-[139px] shrink-0">
                 <Image
@@ -37,7 +37,7 @@ export function Footer() {
                 {companyName}
               </p>
             </div>
-            <p className="whitespace-pre-line text-body-sm font-medium text-text-muted">
+            <p className="whitespace-pre-line wrap-anywhere text-body-sm font-medium text-text-muted">
               {registration}
             </p>
             <span className="relative mt-[16px] block h-[66px] w-[175px] shrink-0">
@@ -53,10 +53,13 @@ export function Footer() {
 
           <div className="flex flex-col gap-10 sm:flex-row sm:gap-[64px]">
             {visibleColumns.map((col, i) => (
-              <div key={`${col.title}-${i}`} className={`flex flex-col gap-[16px] ${COL_W[i] ?? ""}`}>
+              <div
+                key={`${col.title}-${i}`}
+                className={`flex min-w-0 flex-col gap-[16px] ${COL_W[i] ?? ""}`}
+              >
                 <p className="text-body-lg font-bold text-brand-deep">{col.title}</p>
                 <span aria-hidden className="h-px w-[48px] bg-brand" />
-                <ul className="flex flex-col gap-[14px]">
+                <ul className="flex flex-col gap-[2px] lg:gap-[14px]">
                   {col.links
                     .filter((link) => link.label.trim())
                     .map((link, j) => (
@@ -64,15 +67,21 @@ export function Footer() {
                       {link.href ? (
                         <a
                           href={link.href}
-                          className="flex items-start gap-[10px] text-body-md text-text-heading transition-colors hover:text-brand"
+                          className="flex items-start gap-[10px] py-[10px] text-body-md text-text-heading transition-colors hover:text-brand lg:py-0"
                         >
                           <FooterIcon name={link.icon} />
-                          <span className="whitespace-pre-line">{link.label}</span>
+                          {/* Địa chỉ thư điện tử không có chỗ ngắt tự nhiên — ở màn
+                              320px nó đẩy cả cột rộng 368px và làm tràn ngang. */}
+                          <span className="min-w-0 whitespace-pre-line wrap-anywhere">
+                            {link.label}
+                          </span>
                         </a>
                       ) : (
-                        <span className="flex items-start gap-[10px] text-body-md text-text-heading">
+                        <span className="flex items-start gap-[10px] py-[10px] text-body-md text-text-heading lg:py-0">
                           <FooterIcon name={link.icon} />
-                          <span className="whitespace-pre-line">{link.label}</span>
+                          <span className="min-w-0 whitespace-pre-line wrap-anywhere">
+                            {link.label}
+                          </span>
                         </span>
                       )}
                     </li>
@@ -86,7 +95,7 @@ export function Footer() {
         <div className="flex h-[100px] items-center justify-between border-t border-stroke-mute">
           <p className="text-body-sm font-medium text-text-heading">{copyright}</p>
           {visibleSocials.length > 0 && (
-            <div className="flex items-center gap-[12px]">
+            <div className="-mr-[11px] flex items-center">
               {visibleSocials.map((s) => (
                 <a
                   key={s.icon}
@@ -94,7 +103,7 @@ export function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={s.icon}
-                  className="grid place-items-center rounded-[4px] text-text-heading transition-colors hover:text-brand"
+                  className="grid size-[44px] place-items-center rounded-[4px] text-text-heading transition-colors hover:text-brand"
                 >
                   <SocialIcon name={s.icon} />
                 </a>

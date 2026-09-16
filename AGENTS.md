@@ -62,9 +62,21 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
 | 9 | Footer | `222:2294` | 530 | 3 cột + hotline + thông tin pháp nhân |
 
   Menu đầu trang: Giới thiệu · Ưu điểm · Dòng xe · Ngoại thất · Nội thất · Trạm sạc.
-- **Không có bản điện thoại trong Figma.** Cách xử lý màn hẹp lấy theo `thaco-truck-sale-page`:
-  6 mục menu thu vào nút ba gạch, các khối xếp dọc, khối Dòng xe phủ thêm lớp tối cho chữ trắng
-  đọc được (ảnh nền sáng).
+- **Không có bản điện thoại trong Figma.** Luật tự đặt, đã kiểm ở 6 cỡ màn 320 → 1024:
+  · 6 mục menu thu vào nút ba gạch (theo `thaco-truck-sale-page`);
+  · **ba dải cuộn ngang** — Ưu điểm, Nội thất, Trạm sạc — dùng `overflow-x-auto` + `snap-x`
+    để vuốt được bằng ngón tay; luôn khai `scroll-pl-*` **bằng đúng** `pl-*`, nếu không thẻ
+    dừng ở x=0 thay vì x=80 của khung 1440;
+  · mọi vùng bấm ≥ 40px (chấm 10px bọc trong nút 44px; dòng liên hệ ở chân trang nới đệm dọc
+    rồi thu `gap` lại cho cân);
+  · khối Dòng xe phủ tối nửa dưới cho chữ trắng đọc được, và **chừa dải ảnh ~230px** giữa tiêu
+    đề với bảng thông số — không chừa thì bảng che gần hết chiếc xe.
+- 🔴 **`style` nội tuyến KHÔNG theo mốc màn hình.** Toạ độ chỉ dành cho khung 1440 phải đi qua
+  biến CSS rồi dùng ở `lg:` (`style={{"--bg-x": …}}` + `lg:left-[var(--bg-x)]`). Đã trả giá:
+  `left: -23.61%` của ảnh nền khối Dòng xe áp cả trên điện thoại, cắt mất chiếc xe.
+- 🔴 **Đừng ghi cứng bước trượt băng chuyền.** Đo từ DOM (`thẻ[1].left - thẻ[0].left`) và đo lại
+  khi đổi kích thước màn. Bản cũ ghi 440px (đúng cho khung 1440) nên ở màn hẹp — thẻ 280 + cách
+  20 = 300 — thẻ đầu tiên nằm ngoài màn 84px và chữ bị cắt.
 - Trang có **30 ảnh khác nhau** (đếm theo `imageRef` duy nhất) — xuất qua `/v1/images`.
 
 ## Stack
@@ -97,8 +109,9 @@ pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
 pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
-pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 4 phép đo: toạ độ so với Figma ·
-                       #    nội dung không lọt ra ngoài khung 1440 · tràn ngang 9 cỡ màn · hiệu ứng
+pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 5 phép đo: toạ độ so với Figma ·
+                       #    nội dung không lọt khung 1440 · tràn ngang 9 cỡ màn · hiệu ứng ·
+                       #    bản điện thoại 320→1024 (đè chữ, chữ nhỏ, vùng bấm, ảnh méo, băng chuyền)
 ```
 
 Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác truck/van (3000/8788)

@@ -46,12 +46,14 @@ export function Versions() {
           width={2812}
           height={2112}
           sizes="200vw"
-          className="absolute inset-0 h-full w-full object-cover transition-[left] duration-[1022ms] [transition-timing-function:var(--ease-gentle)] lg:top-1/2 lg:mt-[3.13vw] lg:h-auto lg:w-[195.28%] lg:max-w-none lg:-translate-y-1/2"
-          style={{ left: `${BG_X[frame] * 100}%` }}
+          className="absolute inset-0 h-full w-full object-cover object-[26%_56%] transition-[left] duration-[1022ms] [transition-timing-function:var(--ease-gentle)] lg:left-[var(--bg-x)] lg:top-1/2 lg:mt-[3.13vw] lg:h-auto lg:w-[195.28%] lg:max-w-none lg:-translate-y-1/2 lg:object-[50%_50%]"
+          style={{ "--bg-x": `${BG_X[frame] * 100}%` } as React.CSSProperties}
         />
         <span className="pointer-events-none absolute inset-x-0 top-0 h-[347px] bg-linear-to-b from-bg-soft to-transparent" />
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-[188px] bg-linear-to-t from-bg-soft to-transparent" />
-        <span className="pointer-events-none absolute inset-0 bg-black/45 lg:hidden" />
+        {/* Điện thoại: ảnh nền sáng, chữ trắng khó đọc. Phủ tối phần dưới (chỗ có
+            chữ) thay vì phủ đều cả khối — phủ đều làm mất luôn chiếc xe. */}
+        <span className="pointer-events-none absolute inset-x-0 bottom-0 top-1/4 bg-linear-to-b from-transparent via-black/45 to-black/70 lg:hidden" />
       </div>
 
       {/* NỘI DUNG neo trong khung 1440 căn giữa */}
@@ -66,8 +68,8 @@ export function Versions() {
 
           {/* Bảng thông số — trượt sang bên kia khi đổi phiên bản */}
           <div
-            className="mt-10 transition-[left,opacity] duration-[1022ms] [transition-timing-function:var(--ease-gentle)] lg:absolute lg:top-[390px] lg:mt-0 lg:w-[590px]"
-            style={{ left: `${PANEL_X[frame] * 100}%` }}
+            className="mt-[230px] transition-[left,opacity] duration-[1022ms] [transition-timing-function:var(--ease-gentle)] sm:mt-[280px] lg:absolute lg:left-[var(--panel-x)] lg:top-[390px] lg:mt-0 lg:w-[590px]"
+            style={{ "--panel-x": `${PANEL_X[frame] * 100}%` } as React.CSSProperties}
           >
             <div key={index} className="flex flex-col gap-[16px] motion-safe:animate-[version-in_1022ms_var(--ease-gentle)]">
               <div className="flex flex-col">

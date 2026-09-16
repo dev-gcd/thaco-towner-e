@@ -82,7 +82,7 @@ export function Interior() {
               {label}
               <span aria-hidden className="h-px w-[24px] bg-white" />
             </span>
-            <p className="text-[64px] font-medium uppercase leading-[72px] lg:whitespace-nowrap lg:text-[136px] lg:leading-[144px]">
+            <p className="text-[40px] font-medium uppercase leading-[46px] sm:text-[64px] sm:leading-[72px] lg:whitespace-nowrap lg:text-[136px] lg:leading-[144px]">
               {ghostTitle}
             </p>
           </div>
@@ -138,32 +138,34 @@ export function Interior() {
             ))}
           </div>
 
-          {/* Bản điện thoại: danh sách thẻ */}
-          <ul className="relative mt-8 grid gap-4 sm:grid-cols-2 lg:hidden">
+          {/* Bản điện thoại: không đặt được điểm nóng theo toạ độ khung 1440 nên
+              cho 5 thẻ CUỘN NGANG — vuốt bằng ngón tay, khối ngắn lại một nửa và
+              ảnh xe phía sau vẫn nhìn được. */}
+          <div className="relative mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scroll-pl-4 px-4 pb-2 [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden">
             {hotspots.map((spot) => (
-              <li
+              <figure
                 key={spot.title}
-                className="relative h-[260px] overflow-hidden rounded-[16px] bg-white"
+                className="relative h-[240px] w-[280px] shrink-0 snap-start overflow-hidden rounded-[16px] bg-white sm:h-[260px] sm:w-[320px]"
               >
                 <Image
                   src={spot.image.src}
                   alt={spot.image.alt}
                   width={CARD_W}
                   height={CARD_H}
-                  sizes="(max-width: 639px) 100vw, 50vw"
+                  sizes="320px"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
                 <span
                   aria-hidden
                   className="absolute inset-x-0 bottom-0 h-[137px] bg-linear-to-t from-black/80 to-transparent"
                 />
-                <div className="absolute inset-x-[16px] bottom-[16px] flex flex-col gap-[4px] text-white">
+                <figcaption className="absolute inset-x-[16px] bottom-[16px] flex flex-col gap-[4px] text-white">
                   <span className="text-body-md font-semibold uppercase">{spot.title}</span>
-                  <span className="text-body-md">{spot.description}</span>
-                </div>
-              </li>
+                  <span className="text-body-sm">{spot.description}</span>
+                </figcaption>
+              </figure>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </section>

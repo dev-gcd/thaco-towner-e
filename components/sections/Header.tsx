@@ -87,7 +87,7 @@ export function Header() {
           height={1551}
           priority
           sizes="140vw"
-          className="h-auto w-full object-cover lg:absolute lg:left-[-17.29vw] lg:top-[-16.94vw] lg:h-auto lg:w-[134.58vw] lg:max-w-none"
+          className="h-[62vw] max-h-[460px] w-full object-cover object-[62%_60%] sm:h-[56vw] lg:absolute lg:left-[-17.29vw] lg:top-[-16.94vw] lg:h-auto lg:max-h-none lg:w-[134.58vw] lg:max-w-none lg:object-[50%_50%]"
         />
 
         {/* Vệt sáng trắng làm nền cho chữ (Figma: ellipse trắng, mờ 356px,
@@ -99,17 +99,17 @@ export function Header() {
 
         {/* Nội dung — neo trong khung 1440 căn giữa */}
         <div className="relative mx-auto w-full max-w-[1440px] lg:h-full">
-          <div className="px-4 py-8 sm:px-6 sm:py-10 lg:absolute lg:left-[80px] lg:top-[95px] lg:w-[640px] lg:p-0">
+          <div className="px-4 py-8 sm:px-6 sm:py-10 md:px-10 md:py-12 lg:absolute lg:left-[80px] lg:top-[95px] lg:w-[640px] lg:p-0">
             <Image
               src={logo.src}
               alt={logo.alt}
               width={640}
               height={142}
               priority
-              className="h-auto w-[240px] sm:w-[320px] lg:w-[640px]"
+              className="h-auto w-[240px] sm:w-[320px] md:w-[420px] lg:w-[640px]"
             />
             <div className="mt-5 flex flex-col gap-[10px] sm:mt-6 sm:gap-[12px] lg:mt-[39px] lg:pl-[13px]">
-              <h1 className="text-heading-lg font-normal uppercase text-text-heading sm:text-display-sm">
+              <h1 className="text-heading-lg font-normal uppercase text-text-heading sm:text-heading-lg md:text-display-sm">
                 {title}
               </h1>
               <p className="whitespace-pre-line text-body-md text-text-heading">

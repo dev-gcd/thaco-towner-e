@@ -20,10 +20,10 @@ export function Cta({
 
   return (
     <section id="dang-ky" className="bg-white">
-      <div className="mx-auto grid w-full max-w-[1440px] gap-6 px-4 py-12 lg:h-[718px] lg:grid-cols-2 lg:gap-[20px] lg:px-[80px] lg:py-[80px]">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-6 px-4 py-12 md:grid-cols-2 md:gap-5 lg:h-[718px] lg:gap-[20px] lg:px-[80px] lg:py-[80px]">
         {/* Thẻ 1 — đăng ký lái thử */}
         <Reveal className="h-full">
-        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft lg:h-[558px]">
+        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft md:h-[480px] lg:h-[558px]">
           <Image
             src={driveTest.image.src}
             alt={driveTest.image.alt}
@@ -54,7 +54,7 @@ export function Cta({
 
         {/* Thẻ 2 — tải brochure */}
         <Reveal delay={0.12} className="h-full">
-        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft lg:h-[558px]">
+        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft md:h-[480px] lg:h-[558px]">
           <Image
             src={brochure.image.src}
             alt={brochure.image.alt}

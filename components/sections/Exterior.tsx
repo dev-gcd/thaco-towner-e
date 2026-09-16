@@ -31,7 +31,7 @@ export function Exterior() {
       {/* ── Khối 1: ảnh toàn cảnh + thanh trượt 360° ───────────── */}
       {/* Ảnh tràn hết bề ngang; chữ và thanh trượt neo trong khung 1440. */}
       <div className="relative w-full lg:h-[1025px]">
-        <div className="relative h-[280px] sm:h-[420px] lg:absolute lg:inset-x-0 lg:top-[65px] lg:h-[960px]">
+        <div className="relative h-[380px] sm:h-[520px] md:h-[620px] lg:absolute lg:inset-x-0 lg:top-[65px] lg:h-[960px]">
           <Image
             src={view360.background.srcMobile || view360.background.src}
             alt={view360.background.alt}
@@ -60,7 +60,7 @@ export function Exterior() {
 
         <div className="relative mx-auto flex w-full max-w-[1440px] flex-col gap-[12px] px-4 pt-10 lg:absolute lg:inset-x-0 lg:top-[80px] lg:px-[80px] lg:pt-0">
           <SectionLabel>{label}</SectionLabel>
-          <p className="text-[64px] font-medium uppercase leading-[72px] text-brand-deep lg:text-[136px] lg:leading-[144px]">
+          <p className="text-[40px] font-medium uppercase leading-[46px] text-brand-deep sm:text-[64px] sm:leading-[72px] lg:text-[136px] lg:leading-[144px]">
             {ghostTitle}
           </p>
         </div>
@@ -87,9 +87,9 @@ export function Exterior() {
       </div>
 
       {/* ── Khối 2: tiêu đề + băng chuyền chi tiết ─────────────── */}
-      <div className="relative mx-auto w-full max-w-[1440px] px-4 pb-12 lg:h-[975px] lg:px-0 lg:pb-0">
+      <div className="relative mx-auto w-full max-w-[1440px] px-4 pb-12 pt-10 sm:pt-14 lg:h-[975px] lg:px-0 lg:pb-0 lg:pt-0">
         <div className="flex flex-col gap-[32px] lg:absolute lg:left-[80px] lg:top-0 lg:w-[797px]">
-          <h2 className="flex flex-col gap-[8px] text-[40px] font-extrabold uppercase leading-[48px] lg:text-[64px] lg:leading-[72px]">
+          <h2 className="flex flex-col gap-[4px] text-[28px] font-extrabold uppercase leading-[34px] sm:gap-[8px] sm:text-[40px] sm:leading-[48px] lg:text-[64px] lg:leading-[72px]">
             <span className="text-brand-deep">{heading}</span>
             <span className="text-brand">{headingAccent}</span>
           </h2>
@@ -100,7 +100,7 @@ export function Exterior() {
             (900 ↔ 340), 833ms. Dùng hiệu ứng layout của motion để cả vị trí lẫn
             bề rộng cùng chạy, thay vì đổi ảnh tức thì như trước. */}
         <div className="mt-10 lg:absolute lg:left-[80px] lg:top-[284px] lg:mt-0 lg:w-[1280px]">
-          <div className="flex flex-col gap-[40px] lg:flex-row">
+          <div className="flex flex-col gap-[24px] md:flex-row md:gap-[20px] lg:gap-[40px]">
             {ordered.map((item, pos) => {
               const active = pos === 0;
               const so = String((items.indexOf(item) % items.length) + 1).padStart(2, "0");
@@ -110,8 +110,8 @@ export function Exterior() {
                   layout
                   transition={SWAP}
                   onClick={() => !active && go(index + pos)}
-                  className={`flex flex-col gap-[40px] ${
-                    active ? "lg:w-[900px]" : "group cursor-pointer lg:w-[340px]"
+                  className={`flex flex-col gap-[20px] lg:gap-[40px] ${
+                    active ? "md:flex-1 lg:w-[900px] lg:flex-none" : "group cursor-pointer md:w-[36%] lg:w-[340px]"
                   }`}
                 >
                   <motion.div

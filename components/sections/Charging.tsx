@@ -30,22 +30,22 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
       </div>
 
       <div className="relative mx-auto w-full max-w-[1440px] lg:h-[1276px]">
-        <div className="relative px-4 py-12 lg:h-full lg:px-0 lg:py-0">
+        <div className="relative py-12 lg:h-full lg:py-0">
           <motion.div
-            className="flex flex-col gap-[8px] lg:absolute lg:left-[80px] lg:top-[48px] lg:w-[1251px]"
+            className="flex flex-col gap-[8px] px-4 lg:absolute lg:left-[80px] lg:top-[48px] lg:w-[1251px] lg:px-0"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <SectionLabel>{label}</SectionLabel>
-            <h2 className="text-[32px] font-bold uppercase leading-[40px] text-brand-deep lg:whitespace-nowrap lg:text-display-lg">
+            <h2 className="text-heading-lg font-bold uppercase text-brand-deep sm:text-[32px] sm:leading-[40px] lg:whitespace-nowrap lg:text-display-lg">
               {heading}
             </h2>
             <p className="max-w-[930px] text-body-lg text-text-heading">{description}</p>
           </motion.div>
 
-          <ul className="mt-8 grid gap-[24px] sm:grid-cols-2 lg:absolute lg:left-[80px] lg:top-[238px] lg:mt-0 lg:w-[1280px] lg:grid-cols-4">
+          <ul className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scroll-pl-4 px-4 pb-2 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-[24px] sm:overflow-visible sm:px-0 lg:absolute lg:left-[80px] lg:top-[238px] lg:mt-0 lg:w-[1280px] lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
             {stations.map((station, si) => (
               <motion.li
                 key={station.name}
@@ -53,7 +53,7 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.6, delay: si * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="flex flex-col rounded-[24px] bg-bg-soft/90 p-[20px] backdrop-blur-[2px] lg:h-[372px] lg:w-[302px] lg:p-[24px]"
+                className="flex w-[280px] shrink-0 snap-start flex-col rounded-[24px] bg-bg-soft/90 p-[20px] backdrop-blur-[2px] sm:w-auto sm:shrink lg:h-[372px] lg:w-[302px] lg:p-[24px]"
               >
                 <p className="text-body-lg font-bold text-text-heading">{station.name}</p>
                 <p className="text-body-lg text-text-heading">{station.area}</p>
@@ -101,10 +101,10 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
             width={1220}
             height={809}
             sizes="(max-width: 1023px) 100vw, 1220px"
-            className="pointer-events-none relative mt-10 h-auto w-full lg:absolute lg:left-[110px] lg:top-[527px] lg:mt-0 lg:h-[809px] lg:w-[1220px] lg:max-w-none"
+            className="pointer-events-none relative mt-10 h-auto w-full px-4 lg:absolute lg:px-0 lg:left-[110px] lg:top-[527px] lg:mt-0 lg:h-[809px] lg:w-[1220px] lg:max-w-none"
           />
 
-          <div className="relative mt-8 flex items-center gap-[16px] lg:absolute lg:left-[80px] lg:top-[666px] lg:mt-0 lg:w-[494px]">
+          <div className="relative mt-8 flex items-center gap-[16px] px-4 lg:absolute lg:left-[80px] lg:top-[666px] lg:mt-0 lg:w-[494px] lg:px-0">
             <span className="grid size-[88px] shrink-0 place-items-center rounded-[24px] bg-white/70 text-brand backdrop-blur-[2px]">
               <BoltIcon />
             </span>

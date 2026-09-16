@@ -86,7 +86,7 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
               transition={{ duration: 0.7, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
             >
               <div className="flex flex-col gap-[11px]">
-                <h2 className="whitespace-pre-line text-display-sm font-bold uppercase text-brand-deep">
+                <h2 className="whitespace-pre-line text-heading-lg font-bold uppercase text-brand-deep sm:text-display-sm">
                   {title}
                 </h2>
                 <p className="text-body-lg text-text-heading">{description}</p>

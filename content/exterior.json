@@ -2,21 +2,71 @@
   "label": "Thaco Towner E",
   "ghostTitle": "ngoại thất",
   "view360": {
-    "background": { "src": "/images/exterior/bg-360.webp", "srcMobile": "", "alt": "" },
-    "car": { "src": "/images/exterior/xe.webp", "alt": "Ngoại thất Thaco Towner E" },
-    "frames": []
+    "background": {
+      "src": "/images/exterior/bg-360.webp",
+      "srcMobile": "",
+      "alt": ""
+    },
+    "car": {
+      "src": "/images/exterior/xe.webp",
+      "alt": "Ngoại thất Thaco Towner E"
+    },
+    "frames": [
+      "/images/360/20260917-095451-du25/01.webp",
+      "/images/360/20260917-095451-du25/02.webp",
+      "/images/360/20260917-095451-du25/03.webp",
+      "/images/360/20260917-095451-du25/04.webp",
+      "/images/360/20260917-095451-du25/05.webp",
+      "/images/360/20260917-095451-du25/06.webp",
+      "/images/360/20260917-095451-du25/07.webp",
+      "/images/360/20260917-095451-du25/08.webp",
+      "/images/360/20260917-095451-du25/09.webp",
+      "/images/360/20260917-095451-du25/10.webp",
+      "/images/360/20260917-095451-du25/11.webp",
+      "/images/360/20260917-095451-du25/12.webp",
+      "/images/360/20260917-095451-du25/13.webp",
+      "/images/360/20260917-095451-du25/14.webp",
+      "/images/360/20260917-095451-du25/15.webp",
+      "/images/360/20260917-095451-du25/16.webp",
+      "/images/360/20260917-095451-du25/17.webp",
+      "/images/360/20260917-095451-du25/18.webp",
+      "/images/360/20260917-095451-du25/19.webp",
+      "/images/360/20260917-095451-du25/20.webp",
+      "/images/360/20260917-095451-du25/21.webp",
+      "/images/360/20260917-095451-du25/22.webp",
+      "/images/360/20260917-095451-du25/23.webp",
+      "/images/360/20260917-095451-du25/24.webp",
+      "/images/360/20260917-095451-du25/25.webp",
+      "/images/360/20260917-095451-du25/26.webp",
+      "/images/360/20260917-095451-du25/27.webp",
+      "/images/360/20260917-095451-du25/28.webp",
+      "/images/360/20260917-095451-du25/29.webp",
+      "/images/360/20260917-095451-du25/30.webp",
+      "/images/360/20260917-095451-du25/31.webp",
+      "/images/360/20260917-095451-du25/32.webp",
+      "/images/360/20260917-095451-du25/33.webp",
+      "/images/360/20260917-095451-du25/34.webp",
+      "/images/360/20260917-095451-du25/35.webp",
+      "/images/360/20260917-095451-du25/36.webp"
+    ]
   },
   "heading": "thiết kế mạnh mẽ",
   "headingAccent": "phong cách hiện đại",
   "description": "Thiết kế tối ưu cho vận hành đô thị, kết hợp hài hoà giữa tính thẩm mỹ và công năng sử dụng.",
   "items": [
     {
-      "image": { "src": "/images/exterior/detail-1.webp", "alt": "Mặt ga-lăng" },
+      "image": {
+        "src": "/images/exterior/detail-1.webp",
+        "alt": "Mặt ga-lăng"
+      },
       "title": "Mặt Ga-lăng",
       "description": "Cấu trúc hình thoi liên kết với nhau tạo cảm giác chuyển động khi tương tác với ánh sáng."
     },
     {
-      "image": { "src": "/images/exterior/detail-2.webp", "alt": "Đèn Halogen Projector" },
+      "image": {
+        "src": "/images/exterior/detail-2.webp",
+        "alt": "Đèn Halogen Projector"
+      },
       "title": "Đèn Halogen Projector",
       "description": "Cường độ sáng cao hơn, khoảng cách chiếu sáng xa hơn so với đèn Halogen thông thường."
     }

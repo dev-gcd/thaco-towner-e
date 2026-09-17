@@ -63,13 +63,13 @@ export function GtspEditor() {
         <div className="grid gap-4 sm:grid-cols-2">
           <ImageInput
             label="Bánh trước"
-            hint="81×81px, nền trong suốt."
+            hint="Ảnh VUÔNG (vd 222×222px), chỉ có bánh xe nằm giữa, nền trong suốt. Không dùng ảnh cả chiếc xe."
             value={data.wheelFront.src}
             onChange={(src) => setData({ ...data, wheelFront: { ...data.wheelFront, src } })}
           />
           <ImageInput
             label="Bánh sau"
-            hint="81×81px, nền trong suốt."
+            hint="Ảnh VUÔNG (vd 222×222px), chỉ có bánh xe nằm giữa, nền trong suốt. Không dùng ảnh cả chiếc xe."
             value={data.wheelRear.src}
             onChange={(src) => setData({ ...data, wheelRear: { ...data.wheelRear, src } })}
           />

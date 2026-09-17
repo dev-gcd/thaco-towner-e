@@ -42,7 +42,12 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
             />
 
             {/* Xe chạy vào từ mép phải, hai bánh quay theo — bánh là ảnh rời nên
-                quay được thật. Cả cụm trượt cùng nhau để xe và bánh không lệch. */}
+                quay được thật. Cả cụm trượt cùng nhau để xe và bánh không lệch.
+                Xe đi sang TRÁI nên bánh quay ngược chiều kim đồng hồ (720° → 0°),
+                dừng ở 0° = đúng tư thế Figma (tệp bánh đã được xoay sẵn 180°).
+                Ảnh bánh phải là ảnh VUÔNG, bánh nằm giữa — Figma gốc để bánh trong cả
+                khung 1869×842 rồi cắt bằng imageTransform; nhét nguyên khung vào ô
+                81px thì bánh teo thành 1 đốm (khách đã hỏi 17/09). */}
             <motion.div
               aria-hidden
               className="pointer-events-none hidden lg:block"
@@ -60,8 +65,8 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
               />
               <motion.span
                 className="absolute left-[638px] top-[294px] block size-[81px]"
-                initial={{ rotate: 0 }}
-                whileInView={{ rotate: 900 }}
+                initial={{ rotate: 720 }}
+                whileInView={{ rotate: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={WHEEL}
               >
@@ -69,8 +74,8 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
               </motion.span>
               <motion.span
                 className="absolute left-[1023px] top-[294px] block size-[81px]"
-                initial={{ rotate: 0 }}
-                whileInView={{ rotate: 900 }}
+                initial={{ rotate: 720 }}
+                whileInView={{ rotate: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={WHEEL}
               >

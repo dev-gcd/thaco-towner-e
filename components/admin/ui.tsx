@@ -32,8 +32,9 @@ function blobToBase64(blob: Blob): Promise<string> {
  * browser. WebP and anything the canvas can't handle pass through unchanged so
  * the Worker can still validate/reject them. Alpha is preserved.
  */
-async function prepareUpload(
-  file: File
+export async function prepareUpload(
+  file: File,
+  maxWidth: number = MAX_WIDTH
 ): Promise<{ filename: string; dataBase64: string; mime: string }> {
   const convertible = file.type === "image/png" || file.type === "image/jpeg";
   if (!convertible) {
@@ -45,7 +46,7 @@ async function prepareUpload(
   }
   try {
     const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, MAX_WIDTH / bitmap.width);
+    const scale = Math.min(1, maxWidth / bitmap.width);
     const w = Math.round(bitmap.width * scale);
     const h = Math.round(bitmap.height * scale);
     const canvas = document.createElement("canvas");

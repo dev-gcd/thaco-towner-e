@@ -12,7 +12,8 @@ import { createServer } from "node:http";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, rm, readdir } from "node:fs/promises";
+import { createHash } from "node:crypto";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = 8790; // riêng project này (truck/van dùng 8788) — xem PORT.md
@@ -212,6 +213,86 @@ async function handleUpload(req, res) {
   return sendJson(res, 200, { ok: true, path: publicPath });
 }
 
+/* ─────────────── Bộ ảnh xoay 360° (mô phỏng worker) ─────────────── */
+// Phải khớp worker/index.ts. Ở máy: bước 1 giữ ảnh trong bộ nhớ (như blob chưa
+// gắn nhánh), bước 2 mới ghi ra đĩa + content/exterior.json + xoá bộ cũ.
+
+const FRAMES_DIR = "public/images/360";
+const BATCH_RE = /^[a-z0-9][a-z0-9-]{5,40}$/;
+const FRAME_PATH_RE = /^public\/images\/360\/[a-z0-9][a-z0-9-]{5,40}\/\d{2,3}\.webp$/;
+const pendingBlobs = new Map(); // sha → Buffer
+
+async function handle360Blobs(req, res) {
+  const body = JSON.parse((await readBody(req)) || "{}");
+  if (!BATCH_RE.test(body.batch || "")) return sendJson(res, 400, { error: "Mã lô không hợp lệ" });
+  const files = Array.isArray(body.files) ? body.files : [];
+  if (!files.length) return sendJson(res, 400, { error: "Không có ảnh nào" });
+  if (files.length > 20) return sendJson(res, 400, { error: "Mỗi lượt tối đa 20 ảnh" });
+  const out = [];
+  for (const f of files) {
+    const index = Number(f.index);
+    if (!Number.isInteger(index) || index < 1 || index > 72 || typeof f.dataBase64 !== "string")
+      return sendJson(res, 400, { error: "Ảnh trong lô không hợp lệ" });
+    const buf = Buffer.from(f.dataBase64, "base64");
+    if (buf.subarray(0, 4).toString() !== "RIFF" || buf.subarray(8, 12).toString() !== "WEBP")
+      return sendJson(res, 400, { error: `Ảnh số ${index} không phải WebP` });
+    const sha = createHash("sha1").update(buf).digest("hex");
+    pendingBlobs.set(sha, buf);
+    out.push({ path: `${FRAMES_DIR}/${body.batch}/${String(index).padStart(2, "0")}.webp`, sha });
+  }
+  return sendJson(res, 200, { ok: true, blobs: out });
+}
+
+async function listFrames(dir) {
+  const out = [];
+  let entries = [];
+  try { entries = await readdir(dir, { withFileTypes: true }); } catch { return out; }
+  for (const e of entries) {
+    const full = join(dir, e.name);
+    if (e.isDirectory()) out.push(...(await listFrames(full)));
+    else out.push(full);
+  }
+  return out;
+}
+
+async function handle360Commit(req, res) {
+  const body = JSON.parse((await readBody(req)) || "{}");
+  const blobs = Array.isArray(body.blobs) ? body.blobs : [];
+  if (blobs.length > 72) return sendJson(res, 400, { error: "Tối đa 72 ảnh" });
+  for (const b of blobs) {
+    if (!FRAME_PATH_RE.test(b.path || "")) return sendJson(res, 400, { error: "Đường dẫn ảnh không hợp lệ" });
+    if (!pendingBlobs.has(b.sha)) return sendJson(res, 400, { error: "Mã ảnh không hợp lệ" });
+  }
+  const content = body.content;
+  const frames = content?.view360?.frames;
+  if (!Array.isArray(frames)) return sendJson(res, 400, { error: "Danh sách ảnh 360 không hợp lệ" });
+  const inContent = new Set(frames);
+  for (const b of blobs)
+    if (!inContent.has(b.path.replace(/^public/, "")))
+      return sendJson(res, 400, { error: "Danh sách ảnh không khớp với ảnh đã tải" });
+
+  for (const b of blobs) {
+    const full = join(ROOT, b.path);
+    await mkdir(dirname(full), { recursive: true });
+    await writeFile(full, pendingBlobs.get(b.sha));
+    pendingBlobs.delete(b.sha);
+  }
+  const keep = new Set([...inContent].map((f) => join(ROOT, "public", f)));
+  let removed = 0;
+  for (const f of await listFrames(join(ROOT, FRAMES_DIR))) {
+    if (!keep.has(f)) { await rm(f); removed++; }
+  }
+  // Git không giữ thư mục rỗng — dọn luôn ở máy cho khớp.
+  for (const e of await readdir(join(ROOT, FRAMES_DIR), { withFileTypes: true }).catch(() => [])) {
+    if (!e.isDirectory()) continue;
+    const dir = join(ROOT, FRAMES_DIR, e.name);
+    if (!(await readdir(dir)).length) await rm(dir, { recursive: true });
+  }
+  await writeFile(join(ROOT, CONTENT_FILES.exterior), JSON.stringify(content, null, 2) + "\n");
+  console.log(`[cms-dev] 360: ghi ${blobs.length} ảnh, xoá ${removed} ảnh cũ, cập nhật exterior.json`);
+  return sendJson(res, 200, { ok: true, commit: "local-dev", frames: blobs.length, removed });
+}
+
 /* ───────────────────────── router ───────────────────────── */
 
 async function route(req, res) {
@@ -256,6 +337,8 @@ async function route(req, res) {
     if (contentMatch && method === "PUT") return handlePutContent(req, res, contentMatch[1]);
 
     if (pathname === "/api/admin/upload" && method === "POST") return handleUpload(req, res);
+    if (pathname === "/api/admin/360/blobs" && method === "POST") return handle360Blobs(req, res);
+    if (pathname === "/api/admin/360/commit" && method === "POST") return handle360Commit(req, res);
   }
 
   return sendJson(res, 404, { error: "Not Found" });

@@ -6,9 +6,10 @@ import type { ExteriorContent } from "@/lib/content";
 import { useContentEditor, replaceAt, removeAt, move } from "./useContent";
 import { Card, Field, TextInput, TextArea, ImageInput, ResponsiveImageInput } from "./ui";
 import { AddButton, EditorShell, ItemCard } from "./EditorShell";
+import { Frame360Input } from "./Frame360Input";
 
 export function ExteriorEditor() {
-  const { data, setData, dirty, saving, status, save, reset } = useContentEditor<ExteriorContent>(
+  const { data, setData, dirty, saving, status, save, reset, applySaved } = useContentEditor<ExteriorContent>(
     "exterior",
     exterior,
     defaults as ExteriorContent
@@ -48,24 +49,17 @@ export function ExteriorEditor() {
             setData({ ...data, view360: { ...data.view360, car: { ...data.view360.car, src } } })
           }
         />
-        <Field
-          label="Bộ ảnh xoay 360°"
-          hint="Mỗi dòng một đường dẫn ảnh. Để trống thì chỉ hiện 1 ảnh và ẩn thanh trượt. Cần tối thiểu 2 ảnh mới hiện thanh trượt."
-        >
-          <TextArea
-            rows={4}
-            value={data.view360.frames.join("\n")}
-            onChange={(e) =>
-              setData({
-                ...data,
-                view360: {
-                  ...data.view360,
-                  frames: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean),
-                },
-              })
-            }
-          />
-        </Field>
+      </Card>
+
+      <Card className="flex flex-col gap-4">
+        <Frame360Input
+          data={data}
+          dirtyOther={dirty}
+          onSaved={applySaved}
+          onManualChange={(frames) =>
+            setData({ ...data, view360: { ...data.view360, frames } })
+          }
+        />
       </Card>
 
       <Card className="flex flex-col gap-4">

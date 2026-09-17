@@ -53,7 +53,17 @@ export function useContentEditor<T>(name: string, initial: T, defaults?: T) {
     }
   }, [name, data]);
 
-  return { data, setData, dirty, saving, status, save, reset };
+  /**
+   * Nhận một bản đã được lưu bằng đường khác (vd bộ ảnh 360 lưu kèm ảnh trong
+   * cùng 1 commit) — cập nhật cả bản đang sửa lẫn bản đã lưu để hết "chưa lưu".
+   */
+  const applySaved = useCallback((next: T, msg: string) => {
+    setData(clone(next));
+    setSaved(clone(next));
+    setStatus({ kind: "ok", msg });
+  }, []);
+
+  return { data, setData, dirty, saving, status, save, reset, applySaved };
 }
 
 function clone<T>(v: T): T {

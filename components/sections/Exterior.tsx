@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { exterior } from "@/lib/content";
 import { SectionLabel } from "@/components/SectionLabel";
 import { ArrowLeft, ArrowRight } from "@/components/icons";
+import { Car360 } from "@/components/Car360";
 
 /**
  * Ngoại thất = 2 khối chồng nhau (khung thiết kế 1440×2000):
@@ -21,7 +22,6 @@ export function Exterior() {
   const [index, setIndex] = useState(0);
 
   const hasFrames = view360.frames.length > 1;
-  const carSrc = hasFrames ? view360.frames[frame] : view360.car.src;
   const go = (n: number) => setIndex(((n % items.length) + items.length) % items.length);
   // Thẻ đang xem luôn đứng đầu; các thẻ còn lại xếp sau dưới dạng thẻ hé.
   const ordered = [...items.slice(index), ...items.slice(0, index)];
@@ -48,13 +48,13 @@ export function Exterior() {
             aria-hidden
             className="pointer-events-none absolute inset-x-0 bottom-0 h-[352px] bg-linear-to-t from-white to-transparent"
           />
-          <Image
-            src={carSrc}
+          <Car360
+            frames={view360.frames}
+            fallbackSrc={view360.car.src}
             alt={view360.car.alt}
-            width={1440}
-            height={960}
-            sizes="100vw"
-            className="absolute inset-0 h-full w-full object-contain object-bottom"
+            frame={frame}
+            onFrame={setFrame}
+            className="absolute inset-0 outline-none"
           />
         </div>
 

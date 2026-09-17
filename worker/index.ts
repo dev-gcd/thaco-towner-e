@@ -303,6 +303,14 @@ async function handleAdmin(req: Request, env: Env, url: URL): Promise<Response> 
     return handleUpload(req, env);
   }
 
+  // Bộ ảnh xoay 360°: gửi ảnh theo lô (tạo blob), rồi gộp tất cả thành 1 commit.
+  if (path === "/api/admin/360/blobs" && req.method === "POST") {
+    return handle360Blobs(req, env);
+  }
+  if (path === "/api/admin/360/commit" && req.method === "POST") {
+    return handle360Commit(req, env);
+  }
+
   return json({ error: "Not Found" }, 404);
 }
 
@@ -574,6 +582,192 @@ async function handleUpload(req: Request, env: Env): Promise<Response> {
   } catch (err) {
     console.error("Upload commit failed", err);
     return json({ error: "Tải lên thất bại" }, 502);
+  }
+}
+
+/* ──────────────── Bộ ảnh xoay 360° → 1 commit ──────────────── */
+/*
+ * Tải từng ảnh bằng /api/admin/upload thì N ảnh = N commit = N lần Cloudflare
+ * build lại. Ở đây tách làm 2 bước để ra ĐÚNG 1 commit:
+ *
+ *   1. /360/blobs  (gọi nhiều lần, mỗi lần ≤ 20 ảnh)
+ *      → tạo blob trên GitHub cho từng ảnh, trả về sha. Blob chưa gắn vào nhánh
+ *        nào nên chưa có gì thay đổi trên repo.
+ *   2. /360/commit (gọi 1 lần)
+ *      → lấy đầu nhánh, dựng cây mới gồm: các blob ảnh + content/exterior.json
+ *        + xoá bộ ảnh 360 cũ, tạo commit, dời nhánh tới commit đó.
+ *
+ * Mỗi lần Worker chạy chỉ được gọi ra ngoài giới hạn số lần (gói miễn phí: 50).
+ * Bước 1 tốn 1 lần/ảnh nên chặn 20 ảnh/lô; bước 2 tốn cố định 6 lần.
+ */
+
+const FRAMES_DIR = "public/images/360";
+const MAX_BLOBS_PER_CALL = 20;
+const MAX_FRAMES = 72;
+/** Mã lô: chữ thường, số, gạch ngang. Ảnh: 01.webp … 72.webp. */
+const BATCH_RE = /^[a-z0-9][a-z0-9-]{5,40}$/;
+const FRAME_PATH_RE = /^public\/images\/360\/[a-z0-9][a-z0-9-]{5,40}\/\d{2,3}\.webp$/;
+const GH_SHA_RE = /^[0-9a-f]{40}$/;
+
+type BlobInput = { index?: unknown; dataBase64?: unknown };
+
+async function handle360Blobs(req: Request, env: Env): Promise<Response> {
+  if (!env.GITHUB_TOKEN) return json({ error: "GITHUB_TOKEN chưa được cấu hình" }, 500);
+
+  let body: { batch?: unknown; files?: unknown };
+  try {
+    body = await req.json();
+  } catch {
+    return json({ error: "Invalid JSON" }, 400);
+  }
+  const batch = typeof body.batch === "string" ? body.batch : "";
+  if (!BATCH_RE.test(batch)) return json({ error: "Mã lô không hợp lệ" }, 400);
+  if (!Array.isArray(body.files) || body.files.length === 0) {
+    return json({ error: "Không có ảnh nào" }, 400);
+  }
+  if (body.files.length > MAX_BLOBS_PER_CALL) {
+    return json({ error: `Mỗi lượt tối đa ${MAX_BLOBS_PER_CALL} ảnh` }, 400);
+  }
+
+  const out: { path: string; sha: string }[] = [];
+  for (const raw of body.files as BlobInput[]) {
+    const index = Number(raw.index);
+    const data = typeof raw.dataBase64 === "string" ? raw.dataBase64 : "";
+    if (!Number.isInteger(index) || index < 1 || index > MAX_FRAMES || !data) {
+      return json({ error: "Ảnh trong lô không hợp lệ" }, 400);
+    }
+    // Chỉ nhận WebP (trình duyệt đã chuyển sẵn). Kiểm chữ ký RIFF....WEBP ở đầu tệp.
+    const head = atob(data.slice(0, 16));
+    if (!(head.startsWith("RIFF") && head.slice(8, 12) === "WEBP")) {
+      return json({ error: `Ảnh số ${index} không phải WebP` }, 400);
+    }
+    const res = await fetch(`https://api.github.com/repos/${REPO}/git/blobs`, {
+      method: "POST",
+      headers: ghHeaders(env),
+      body: JSON.stringify({ content: data, encoding: "base64" }),
+    });
+    if (!res.ok) {
+      console.error("GitHub blob failed", res.status, await res.text());
+      return json({ error: `GitHub ${res.status} khi tải ảnh số ${index}` }, 502);
+    }
+    const blob = (await res.json()) as { sha?: string };
+    if (!blob.sha) return json({ error: "GitHub không trả mã ảnh" }, 502);
+    const name = String(index).padStart(2, "0");
+    out.push({ path: `${FRAMES_DIR}/${batch}/${name}.webp`, sha: blob.sha });
+  }
+  return json({ ok: true, blobs: out });
+}
+
+async function handle360Commit(req: Request, env: Env): Promise<Response> {
+  if (!env.GITHUB_TOKEN) return json({ error: "GITHUB_TOKEN chưa được cấu hình" }, 500);
+
+  let body: { blobs?: unknown; content?: unknown };
+  try {
+    body = await req.json();
+  } catch {
+    return json({ error: "Invalid JSON" }, 400);
+  }
+
+  const blobs = Array.isArray(body.blobs) ? (body.blobs as { path?: unknown; sha?: unknown }[]) : [];
+  if (blobs.length > MAX_FRAMES) return json({ error: `Tối đa ${MAX_FRAMES} ảnh` }, 400);
+  for (const b of blobs) {
+    if (typeof b.path !== "string" || !FRAME_PATH_RE.test(b.path)) {
+      return json({ error: "Đường dẫn ảnh không hợp lệ" }, 400);
+    }
+    if (typeof b.sha !== "string" || !GH_SHA_RE.test(b.sha)) {
+      return json({ error: "Mã ảnh không hợp lệ" }, 400);
+    }
+  }
+
+  const content = body.content as { view360?: { frames?: unknown } } | null;
+  if (!content || typeof content !== "object" || !content.view360) {
+    return json({ error: "Thiếu nội dung khối Ngoại thất" }, 400);
+  }
+  const frames = content.view360.frames;
+  if (!Array.isArray(frames) || frames.some((f) => typeof f !== "string")) {
+    return json({ error: "Danh sách ảnh 360 không hợp lệ" }, 400);
+  }
+  // Mọi ảnh vừa tải lên phải có mặt trong danh sách lưu — chặn lưu lệch nhau.
+  const inContent = new Set(frames as string[]);
+  for (const b of blobs) {
+    if (!inContent.has((b.path as string).replace(/^public/, ""))) {
+      return json({ error: "Danh sách ảnh không khớp với ảnh đã tải" }, 400);
+    }
+  }
+
+  const branch = env.CONTENT_BRANCH || "main";
+  const api = `https://api.github.com/repos/${REPO}/git`;
+  const gh = ghHeaders(env);
+
+  try {
+    // Thử lại 1 lần nếu nhánh vừa bị người khác đẩy commit mới giữa chừng.
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const refRes = await fetch(`${api}/ref/heads/${encodeURIComponent(branch)}`, { headers: gh });
+      if (!refRes.ok) return json({ error: `GitHub ${refRes.status} khi đọc nhánh` }, 502);
+      const headSha = ((await refRes.json()) as { object: { sha: string } }).object.sha;
+
+      const commitRes = await fetch(`${api}/commits/${headSha}`, { headers: gh });
+      if (!commitRes.ok) return json({ error: `GitHub ${commitRes.status} khi đọc commit` }, 502);
+      const baseTree = ((await commitRes.json()) as { tree: { sha: string } }).tree.sha;
+
+      // Liệt kê ảnh 360 đang có để xoá bộ cũ không còn dùng.
+      const treeRes = await fetch(`${api}/trees/${baseTree}?recursive=1`, { headers: gh });
+      if (!treeRes.ok) return json({ error: `GitHub ${treeRes.status} khi đọc cây thư mục` }, 502);
+      const existing = ((await treeRes.json()) as { tree: { path: string; type: string }[] }).tree
+        .filter((t) => t.type === "blob" && t.path.startsWith(`${FRAMES_DIR}/`))
+        .map((t) => t.path);
+      const keep = new Set([...inContent].map((f) => `public${f}`));
+      const remove = existing.filter((path) => !keep.has(path));
+
+      const tree = [
+        ...blobs.map((b) => ({ path: b.path as string, mode: "100644", type: "blob", sha: b.sha as string })),
+        ...remove.map((path) => ({ path, mode: "100644", type: "blob", sha: null })),
+        {
+          path: CONTENT_FILES.exterior,
+          mode: "100644",
+          type: "blob",
+          content: JSON.stringify(content, null, 2) + "\n",
+        },
+      ];
+      const newTreeRes = await fetch(`${api}/trees`, {
+        method: "POST",
+        headers: gh,
+        body: JSON.stringify({ base_tree: baseTree, tree }),
+      });
+      if (!newTreeRes.ok) {
+        console.error("GitHub tree failed", newTreeRes.status, await newTreeRes.text());
+        return json({ error: `GitHub ${newTreeRes.status} khi dựng cây thư mục` }, 502);
+      }
+      const newTree = ((await newTreeRes.json()) as { sha: string }).sha;
+
+      const message = blobs.length
+        ? `cms: update 360 view (${blobs.length} frames)`
+        : "cms: clear 360 view";
+      const newCommitRes = await fetch(`${api}/commits`, {
+        method: "POST",
+        headers: gh,
+        body: JSON.stringify({ message, tree: newTree, parents: [headSha] }),
+      });
+      if (!newCommitRes.ok) return json({ error: `GitHub ${newCommitRes.status} khi tạo commit` }, 502);
+      const newCommit = ((await newCommitRes.json()) as { sha: string }).sha;
+
+      // force:false → chỉ dời nhánh nếu nhánh vẫn đang ở headSha (không ghi đè ai).
+      const moveRes = await fetch(`${api}/refs/heads/${encodeURIComponent(branch)}`, {
+        method: "PATCH",
+        headers: gh,
+        body: JSON.stringify({ sha: newCommit, force: false }),
+      });
+      if (moveRes.ok) {
+        return json({ ok: true, commit: newCommit, frames: blobs.length, removed: remove.length });
+      }
+      if (moveRes.status !== 422 || attempt === 2) {
+        return json({ error: `GitHub ${moveRes.status} khi cập nhật nhánh` }, 502);
+      }
+    }
+    return json({ error: "Nhánh thay đổi liên tục, vui lòng thử lại" }, 409);
+  } catch (err) {
+    console.error("360 commit failed", err);
+    return json({ error: "Lưu bộ ảnh 360 thất bại" }, 502);
   }
 }
 

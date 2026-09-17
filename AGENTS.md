@@ -122,9 +122,11 @@ pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
 pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
-pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 6 phép đo (50 mục): toạ độ so với
-                       #    Figma · nội dung không lọt khung 1440 · tràn ngang 9 cỡ màn · hiệu ứng ·
+pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 6 phép đo: toạ độ so với Figma ·
+                       #    nội dung không lọt khung 1440 · tràn ngang 9 cỡ màn · hiệu ứng ·
                        #    bản điện thoại 320→1024 · thao tác trên điện thoại
+pnpm test:smoke        # chức năng chính ở máy (ảnh, form, 2 hộp thoại, 10 mục CMS) — tự dọn dữ liệu thử
+pnpm test:worker       # luồng lưu bộ ảnh 360° của Worker với GitHub GIẢ LẬP (không tạo commit thật)
 ```
 
 Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác truck/van (3000/8788)
@@ -139,6 +141,23 @@ Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác t
   → commit vào `public/images/uploads/`.
 - Khách đăng ký: form công khai POST `/api/leads` → D1; xem ở thẻ **Khách đăng ký**.
 - Email báo có khách mới (tuỳ chọn): cấu hình `MAIL_*` (Resend) — xem `worker/index.ts`.
+
+### Bộ ảnh xoay 360° (khối Ngoại thất)
+
+Khách tải **cả bộ ảnh** từ máy trong CMS (chọn nhiều ảnh / cả thư mục / kéo thả), không cần có
+sẵn đường dẫn. Tải từng ảnh qua `/api/admin/upload` thì N ảnh = N commit = N lần Cloudflare build,
+nên bộ 360 đi đường riêng để ra **đúng 1 commit**:
+
+1. Trình duyệt xếp ảnh theo tên tệp (so số: `2.png` trước `10.png`), nén WebP ≤1600px.
+2. `POST /api/admin/360/blobs` — **lô tối đa 20 ảnh** (mỗi ảnh = 1 lần Worker gọi GitHub; gói
+   Cloudflare miễn phí giới hạn 50 lần/lượt). Tạo blob, chưa đụng tới nhánh.
+3. `POST /api/admin/360/commit` — 1 lần: dựng cây gồm ảnh mới + `content/exterior.json` + **xoá
+   bộ ảnh cũ** trong `public/images/360/`, tạo commit, dời nhánh với `force:false` (nhánh vừa bị
+   người khác đổi thì thử lại 1 lần, vẫn đổi thì báo lỗi — không bao giờ ghi đè).
+
+Ảnh nằm ở `public/images/360/<mã-lô>/01.webp…`. Giới hạn 2–72 ảnh. Trang khách (`components/Car360.tsx`)
+tải trước cả bộ khi khối còn cách màn ~800px, và xoay bằng kéo ngang / phím mũi tên / thanh trượt.
+`scripts/cms-dev.mjs` mô phỏng đúng 2 đường này bằng cách ghi thẳng ra đĩa.
 
 ### Thêm 1 khối sửa được (công thức 5 bước)
 

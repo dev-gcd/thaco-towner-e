@@ -11,7 +11,9 @@
     "optimize:images": "tsx scripts/optimize-images.ts --delete-originals",
     "test:screens": "node scripts/screenshot-resolutions.mjs",
     "sync:assets": "tsx scripts/sync-figma-assets.ts",
-    "audit:layout": "node scripts/audit-layout.mjs"
+    "audit:layout": "node scripts/audit-layout.mjs",
+    "test:worker": "tsx scripts/test-worker-360.mts",
+    "test:smoke": "node scripts/smoke-test.mjs"
   },
   "dependencies": {
     "motion": "^12.38.0",

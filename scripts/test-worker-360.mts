@@ -12,12 +12,14 @@ const kiem = (t: string, ok: boolean, x = "") => { if (!ok) fail++; console.log(
 
 let calls: { method: string; url: string; body?: any }[] = [];
 let patchFails = 0, refReads = 0;
+let blobStatus = 0; // ≠0 → giả lập GitHub từ chối tạo blob
 const hex = (c: string) => c.repeat(40);
 (globalThis as any).fetch = async (url: string, init: any = {}) => {
   const method = init.method || "GET";
   const body = init.body ? JSON.parse(init.body) : undefined;
   calls.push({ method, url, body });
   const ok = (o: any, s = 200) => new Response(JSON.stringify(o), { status: s });
+  if (url.endsWith("/git/blobs") && blobStatus) return ok({ message: "Not Found" }, blobStatus);
   if (url.endsWith("/git/blobs")) return ok({ sha: (Math.random().toString(16).slice(2) + "0".repeat(40)).slice(0, 40) }, 201);
   if (url.includes("/git/ref/heads/")) { refReads++; return ok({ object: { sha: hex(refReads === 1 ? "a" : "e") } }); }
   if (url.includes("/git/commits/")) return ok({ tree: { sha: hex("b") } });
@@ -100,5 +102,14 @@ const r4 = await call("/api/admin/360/commit", { blobs: [], content: { view360: 
 const t4 = calls.find((c) => c.url.endsWith("/git/trees"))!.body;
 kiem("xoá bộ → xoá cả 2 ảnh cũ", r4.status === 200 && r4.body.removed === 2 && t4.tree.filter((e: any) => e.sha === null).length === 2,
   calls.find((c) => c.url.endsWith("/git/commits"))!.body.message);
+// mã truy cập hợp lệ nhưng không có quyền ghi → GitHub trả 404 (đã gặp trên bản thật)
+blobStatus = 404;
+const r5 = await call("/api/admin/360/blobs", { batch, files: lot.slice(0, 1) }, cookie);
+kiem("GitHub 404 → báo rõ là mã không có quyền ghi", r5.status === 502 && r5.body.error.includes("không có quyền ghi"), r5.body.error.slice(0, 70));
+blobStatus = 401;
+const r6 = await call("/api/admin/360/blobs", { batch, files: lot.slice(0, 1) }, cookie);
+kiem("GitHub 401 → báo mã không hợp lệ / hết hạn", r6.body.error.includes("hết hạn"), r6.body.error.slice(0, 60));
+blobStatus = 0;
+
 console.log(fail ? `⛔ ${fail} mục sai` : "✅ Worker đạt hết");
 process.exit(fail ? 1 : 0);

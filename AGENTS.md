@@ -182,6 +182,10 @@ tải trước cả bộ khi khối còn cách màn ~800px, và xoay bằng kéo
 - [ ] Khách cấp mã Google Tag Manager → dán vào `GTM_ID` trong `app/(public)/layout.tsx`
 - [ ] Khách cấp tên miền riêng → sửa `metadataBase` cùng tệp
 - [ ] Ghi lại ngày hết hạn của `GITHUB_TOKEN` — hết hạn là nút Lưu trong `/admin` báo lỗi
+- 🔴 `GITHUB_TOKEN` phải tạo **khi đăng nhập GitHub bằng `dev-gcd`** (chủ repo), fine-grained,
+  chỉ chọn repo `thaco-towner-e`, quyền **Contents: Read and write**. 17/09 bản thật báo
+  "GitHub 404" khi lưu: mã hợp lệ (mã sai thì là 401) nhưng không có quyền ghi — GitHub trả 404
+  thay cho 403 với thao tác ghi. Tài khoản `phatnadev` trên máy chỉ có quyền đọc repo này.
 
 ## Cạm bẫy (kế thừa từ van + truck, đã trả giá thật)
 

@@ -505,13 +505,14 @@ async function handlePutContent(
     if (!res.ok) {
       const text = await res.text();
       console.error("GitHub PUT failed", res.status, text);
-      return json({ error: `GitHub ${res.status}` }, 502);
+      return json({ error: ghLoi(res.status, `lưu ${filePath}`) }, 502);
     }
     const data = (await res.json()) as { commit?: { sha?: string } };
     return json({ ok: true, commit: data.commit?.sha });
   } catch (err) {
     console.error("Content commit failed", err);
-    return json({ error: "Commit thất bại" }, 502);
+    const st = (err as { status?: number }).status;
+    return json({ error: st ? ghLoi(st, `lưu ${filePath}`) : "Commit thất bại" }, 502);
   }
 }
 
@@ -576,12 +577,13 @@ async function handleUpload(req: Request, env: Env): Promise<Response> {
     if (!res.ok) {
       const text = await res.text();
       console.error("GitHub upload PUT failed", res.status, text);
-      return json({ error: `GitHub ${res.status}` }, 502);
+      return json({ error: ghLoi(res.status, "tải ảnh lên") }, 502);
     }
     return json({ ok: true, path: publicPath });
   } catch (err) {
     console.error("Upload commit failed", err);
-    return json({ error: "Tải lên thất bại" }, 502);
+    const st = (err as { status?: number }).status;
+    return json({ error: st ? ghLoi(st, "tải ảnh lên") : "Tải lên thất bại" }, 502);
   }
 }
 
@@ -648,7 +650,7 @@ async function handle360Blobs(req: Request, env: Env): Promise<Response> {
     });
     if (!res.ok) {
       console.error("GitHub blob failed", res.status, await res.text());
-      return json({ error: `GitHub ${res.status} khi tải ảnh số ${index}` }, 502);
+      return json({ error: ghLoi(res.status, `tải ảnh số ${index}`) }, 502);
     }
     const blob = (await res.json()) as { sha?: string };
     if (!blob.sha) return json({ error: "GitHub không trả mã ảnh" }, 502);
@@ -703,16 +705,16 @@ async function handle360Commit(req: Request, env: Env): Promise<Response> {
     // Thử lại 1 lần nếu nhánh vừa bị người khác đẩy commit mới giữa chừng.
     for (let attempt = 1; attempt <= 2; attempt++) {
       const refRes = await fetch(`${api}/ref/heads/${encodeURIComponent(branch)}`, { headers: gh });
-      if (!refRes.ok) return json({ error: `GitHub ${refRes.status} khi đọc nhánh` }, 502);
+      if (!refRes.ok) return json({ error: ghLoi(refRes.status, "đọc nhánh") }, 502);
       const headSha = ((await refRes.json()) as { object: { sha: string } }).object.sha;
 
       const commitRes = await fetch(`${api}/commits/${headSha}`, { headers: gh });
-      if (!commitRes.ok) return json({ error: `GitHub ${commitRes.status} khi đọc commit` }, 502);
+      if (!commitRes.ok) return json({ error: ghLoi(commitRes.status, "đọc commit") }, 502);
       const baseTree = ((await commitRes.json()) as { tree: { sha: string } }).tree.sha;
 
       // Liệt kê ảnh 360 đang có để xoá bộ cũ không còn dùng.
       const treeRes = await fetch(`${api}/trees/${baseTree}?recursive=1`, { headers: gh });
-      if (!treeRes.ok) return json({ error: `GitHub ${treeRes.status} khi đọc cây thư mục` }, 502);
+      if (!treeRes.ok) return json({ error: ghLoi(treeRes.status, "đọc cây thư mục") }, 502);
       const existing = ((await treeRes.json()) as { tree: { path: string; type: string }[] }).tree
         .filter((t) => t.type === "blob" && t.path.startsWith(`${FRAMES_DIR}/`))
         .map((t) => t.path);
@@ -736,7 +738,7 @@ async function handle360Commit(req: Request, env: Env): Promise<Response> {
       });
       if (!newTreeRes.ok) {
         console.error("GitHub tree failed", newTreeRes.status, await newTreeRes.text());
-        return json({ error: `GitHub ${newTreeRes.status} khi dựng cây thư mục` }, 502);
+        return json({ error: ghLoi(newTreeRes.status, "dựng cây thư mục") }, 502);
       }
       const newTree = ((await newTreeRes.json()) as { sha: string }).sha;
 
@@ -748,7 +750,7 @@ async function handle360Commit(req: Request, env: Env): Promise<Response> {
         headers: gh,
         body: JSON.stringify({ message, tree: newTree, parents: [headSha] }),
       });
-      if (!newCommitRes.ok) return json({ error: `GitHub ${newCommitRes.status} khi tạo commit` }, 502);
+      if (!newCommitRes.ok) return json({ error: ghLoi(newCommitRes.status, "tạo commit") }, 502);
       const newCommit = ((await newCommitRes.json()) as { sha: string }).sha;
 
       // force:false → chỉ dời nhánh nếu nhánh vẫn đang ở headSha (không ghi đè ai).
@@ -761,7 +763,7 @@ async function handle360Commit(req: Request, env: Env): Promise<Response> {
         return json({ ok: true, commit: newCommit, frames: blobs.length, removed: remove.length });
       }
       if (moveRes.status !== 422 || attempt === 2) {
-        return json({ error: `GitHub ${moveRes.status} khi cập nhật nhánh` }, 502);
+        return json({ error: ghLoi(moveRes.status, "cập nhật nhánh") }, 502);
       }
     }
     return json({ error: "Nhánh thay đổi liên tục, vui lòng thử lại" }, 409);
@@ -769,6 +771,24 @@ async function handle360Commit(req: Request, env: Env): Promise<Response> {
     console.error("360 commit failed", err);
     return json({ error: "Lưu bộ ảnh 360 thất bại" }, 502);
   }
+}
+
+/**
+ * Đổi mã lỗi GitHub thành câu người quản trị hiểu được. Lưu ý: với thao tác GHI,
+ * GitHub trả 404 (không phải 403) khi mã truy cập hợp lệ nhưng không có quyền
+ * vào repo — đã gặp thật lúc deploy lần đầu.
+ */
+function ghLoi(status: number, viec: string): string {
+  if (status === 401) {
+    return `GITHUB_TOKEN không hợp lệ hoặc đã hết hạn — không thể ${viec}.`;
+  }
+  if (status === 403 || status === 404) {
+    return `GITHUB_TOKEN không có quyền ghi vào repo ${REPO} — không thể ${viec}. Cần tạo lại mã truy cập bằng tài khoản sở hữu repo, quyền "Contents: Read and write".`;
+  }
+  if (status === 409 || status === 422) {
+    return `Kho mã vừa có thay đổi khác — không thể ${viec}. Vui lòng bấm lưu lại.`;
+  }
+  return `GitHub báo lỗi ${status} — không thể ${viec}.`;
 }
 
 function ghHeaders(env: Env): Record<string, string> {
@@ -792,7 +812,7 @@ async function ghFileSha(
     { headers: ghHeaders(env) }
   );
   if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub GET ${res.status}`);
+  if (!res.ok) throw Object.assign(new Error(`GitHub GET ${res.status}`), { status: res.status });
   const data = (await res.json()) as { sha?: string };
   return data.sha ?? null;
 }

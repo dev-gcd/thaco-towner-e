@@ -51,14 +51,12 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
   data,
   dirtyOther,
   onSaved,
-  onManualChange,
 }: {
   /** Toàn bộ nội dung khối Ngoại thất đang sửa — lưu kèm trong cùng commit. */
   data: T;
   /** Trang còn thay đổi khác chưa lưu (để nhắc người dùng). */
   dirtyOther: boolean;
   onSaved: (next: T, msg: string) => void;
-  onManualChange: (frames: string[]) => void;
 }) {
   const current = data.view360.frames;
   const [pending, setPending] = useState<Pending[]>([]);
@@ -68,8 +66,21 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
   const fileRef = useRef<HTMLInputElement>(null);
   const dirRef = useRef<HTMLInputElement>(null);
 
-  // Giải phóng ảnh xem trước khi bỏ chọn / rời trang.
-  useEffect(() => () => pending.forEach((p) => URL.revokeObjectURL(p.url)), [pending]);
+  // Giải phóng ảnh xem trước. CHỈ thu hồi ảnh đã bị bỏ khỏi danh sách: đảo chiều
+  // hay bỏ bớt 1 ảnh tạo mảng mới nhưng vẫn dùng lại đúng các đường dẫn cũ — thu
+  // hồi cả mảng cũ là khung xem thử hỏng ảnh ngay.
+  const urlsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    const now = new Set(pending.map((p) => p.url));
+    for (const url of urlsRef.current) if (!now.has(url)) URL.revokeObjectURL(url);
+    urlsRef.current = now;
+  }, [pending]);
+  useEffect(
+    () => () => {
+      for (const url of urlsRef.current) URL.revokeObjectURL(url);
+    },
+    []
+  );
 
   async function addFiles(list: FileList | File[]) {
     setError(null);
@@ -354,21 +365,6 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      {/* Nâng cao: sửa tay danh sách đường dẫn */}
-      <details className="text-sm">
-        <summary className="cursor-pointer text-gray-500">Nâng cao: sửa tay danh sách đường dẫn</summary>
-        <p className="mt-2 text-xs text-gray-500">
-          Mỗi dòng một đường dẫn ảnh. Sửa ở đây thì bấm “Lưu & xuất bản” ở cuối trang.
-        </p>
-        <textarea
-          rows={4}
-          value={current.join("\n")}
-          onChange={(e) =>
-            onManualChange(e.target.value.split("\n").map((s) => s.trim()).filter(Boolean))
-          }
-          className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 font-mono text-xs text-gray-900 outline-none focus:border-[#00529c]"
-        />
-      </details>
     </div>
   );
 }

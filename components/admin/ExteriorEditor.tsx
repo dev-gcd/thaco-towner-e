@@ -56,9 +56,6 @@ export function ExteriorEditor() {
           data={data}
           dirtyOther={dirty}
           onSaved={applySaved}
-          onManualChange={(frames) =>
-            setData({ ...data, view360: { ...data.view360, frames } })
-          }
         />
       </Card>
 

@@ -110,8 +110,8 @@ export function AdminApp({ defaultTab = "content" }: { defaultTab?: DefaultTab }
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 lg:flex-row">
-      <aside className="flex shrink-0 flex-col border-b border-gray-200 bg-white lg:h-screen lg:w-60 lg:border-r lg:border-b-0 lg:sticky lg:top-0">
+    <div className="flex min-h-screen flex-col bg-gray-50 xl:flex-row">
+      <aside className="flex shrink-0 flex-col border-b border-gray-200 bg-white xl:h-screen xl:w-60 xl:border-r xl:border-b-0 xl:sticky xl:top-0">
         <div className="flex items-center gap-2 px-5 py-5">
           <span className="grid size-7 place-items-center rounded-md bg-[#00529c] text-xs font-bold text-white">
             T
@@ -119,8 +119,8 @@ export function AdminApp({ defaultTab = "content" }: { defaultTab?: DefaultTab }
           <span className="font-bold text-gray-900">Thaco Towner E CMS</span>
         </div>
 
-        <nav className="flex-1 px-3 lg:py-2">
-          <span className="hidden px-2 text-[11px] font-semibold tracking-wider text-gray-400 lg:block">
+        <nav className="flex-1 px-3 xl:py-2">
+          <span className="hidden px-2 text-[11px] font-semibold tracking-wider text-gray-400 xl:block">
             NỘI DUNG
           </span>
           {CONTENT_ITEMS.length === 0 ? (
@@ -140,7 +140,7 @@ export function AdminApp({ defaultTab = "content" }: { defaultTab?: DefaultTab }
               ))}
             </div>
           )}
-          <span className="mt-3 hidden px-2 text-[11px] font-semibold tracking-wider text-gray-400 lg:block">
+          <span className="mt-3 hidden px-2 text-[11px] font-semibold tracking-wider text-gray-400 xl:block">
             KHÁC
           </span>
           <div className="flex flex-col gap-0.5">

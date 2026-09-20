@@ -339,7 +339,7 @@ export function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement
 
 /**
  * Edits a CMS image with an optional mobile override. Desktop is the asset used
- * at all breakpoints; Mobile, when set, replaces it below the `lg` breakpoint.
+ * at all breakpoints; Mobile, when set, replaces it below the `xl` breakpoint.
  */
 const MOBILE_FALLBACK_NOTE = "Bỏ trống = tự dùng ảnh Desktop cho điện thoại.";
 

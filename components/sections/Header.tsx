@@ -7,7 +7,9 @@ import { header } from "@/lib/content";
 /**
  * Đầu trang: thanh menu xanh 40px + ảnh lớn.
  *
- * Khung thiết kế 1440×1064. Từ `lg` (=1440px) trở lên:
+ * Khung thiết kế 1440×1064. Từ `lg` (800px) trở lên — ở 800–1439 nội dung co theo
+ * `--u` của `.canvas-1440`, menu giữ nguyên 117px mỗi mục (6 mục + lề = 782px vừa 800),
+ * chữ co theo nhưng có cỡ sàn (tiêu đề ≥20px, mô tả ≥12px) để không xuống dòng đè xe:
  *  · NỀN tràn hết bề ngang màn hình;
  *  · NỘI DUNG (menu, logo, chữ) neo trong khung 1440 căn giữa.
  * Ảnh lớn đặt bằng đơn vị `vw` theo đúng tỉ lệ Figma (1938×1551 tại -249,-244
@@ -98,21 +100,21 @@ export function Header() {
         />
 
         {/* Nội dung — neo trong khung 1440 căn giữa */}
-        <div className="relative mx-auto w-full max-w-[1440px] lg:h-full">
-          <div className="px-4 py-8 sm:px-6 sm:py-10 md:px-10 md:py-12 lg:absolute lg:left-[80px] lg:top-[95px] lg:w-[640px] lg:p-0">
+        <div className="canvas-1440 relative mx-auto w-full max-w-[1440px] lg:h-full">
+          <div className="px-4 py-8 sm:px-6 sm:py-10 md:px-10 md:py-12 lg:absolute lg:left-[calc(80*var(--u))] lg:top-[calc(95*var(--u))] lg:w-[calc(640*var(--u))] lg:p-0">
             <Image
               src={logo.src}
               alt={logo.alt}
               width={640}
               height={142}
               priority
-              className="h-auto w-[240px] sm:w-[320px] md:w-[420px] lg:w-[640px]"
+              className="h-auto w-[240px] sm:w-[320px] md:w-[420px] lg:w-[calc(640*var(--u))]"
             />
-            <div className="mt-5 flex flex-col gap-[10px] sm:mt-6 sm:gap-[12px] lg:mt-[39px] lg:pl-[13px]">
-              <h1 className="text-heading-lg font-normal uppercase text-text-heading sm:text-heading-lg md:text-display-sm">
+            <div className="mt-5 flex flex-col gap-[10px] sm:mt-6 sm:gap-[12px] lg:mt-[calc(39*var(--u))] lg:pl-[calc(13*var(--u))]">
+              <h1 className="text-heading-lg font-normal uppercase text-text-heading sm:text-heading-lg md:text-display-sm lg:text-[length:max(20px,calc(32*var(--u)))] lg:leading-[1.25]">
                 {title}
               </h1>
-              <p className="whitespace-pre-line text-body-md text-text-heading">
+              <p className="whitespace-pre-line text-body-md text-text-heading lg:text-[length:max(12px,calc(16*var(--u)))] lg:leading-[1.25]">
                 {description}
               </p>
             </div>

@@ -139,7 +139,7 @@ export function Car360({
       )}
 
       {has360 && !touched && (
-        <span className="pointer-events-none absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 text-body-sm font-medium text-text-heading shadow-sm backdrop-blur lg:bottom-[150px]">
+        <span className="pointer-events-none absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 text-body-sm font-medium text-text-heading shadow-sm backdrop-blur lg:bottom-[calc(150*var(--u))]">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden className="size-4 text-brand">
             <path
               d="M4 12h16m-16 0 3-3m-3 3 3 3m13-3-3-3m3 3-3 3"

@@ -31,10 +31,11 @@ export function LandingPage() {
         <Gtsp onCtaClick={openLead} />
         <Usp />
         <Versions />
-        {/* 2 khoảng trống có sẵn trong bản thiết kế (50px và 100px) */}
-        <div aria-hidden className="hidden bg-white lg:block lg:h-[50px]" />
+        {/* 2 khoảng trống có sẵn trong bản thiết kế (50px và 100px). Nằm ngoài mọi khối nên
+            không có `--u`: co theo bề ngang màn, chặn ở 1px (ở ≥1440 đúng 50/100px). */}
+        <div aria-hidden className="hidden bg-white lg:block lg:h-[calc(50*min(1px,100vw/1440))]" />
         <Exterior />
-        <div aria-hidden className="hidden bg-bg-soft lg:block lg:h-[100px]" />
+        <div aria-hidden className="hidden bg-bg-soft lg:block lg:h-[calc(100*min(1px,100vw/1440))]" />
         <Interior />
         <Cta onDriveTestClick={openLead} onMissingFile={openNotice} />
         <Charging onMissingLink={openNotice} />

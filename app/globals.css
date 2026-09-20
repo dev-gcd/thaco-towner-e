@@ -82,20 +82,21 @@
   --radius-2xs: 4px;
 
   /* ── Mốc màn hình ─────────────────────────────────────── */
-  /* Bố cục dựng theo toạ độ tuyệt đối của khung 1440 chỉ được bật từ 1440px.
+  /* `xl` (1440) = khung thiết kế Figma, toạ độ px đúng từng điểm ảnh.
+     `lg` (800) = laptop: cùng bố cục đó nhưng co theo bề ngang (xem `.canvas-1440`
+     bên dưới). Laptop 1366, 1920 phóng 150% (= 1280), 1280×800 phóng 150% (= 853) đều rơi vào
+     dải này — trước kia mốc máy tính là 1440 nên chúng nhận bản điện thoại.
      KHÔNG tạo mốc tên riêng (vd `dsk`): Tailwind xếp mốc tự đặt ĐỨNG TRƯỚC
      sm/md/lg trong tệp CSS, nên ở màn rộng `sm:` lại thắng `dsk:` (đã trả giá:
-     dải ảnh 360° co còn 420px, 4 thẻ trạm sạc xếp 2×2). Thay vào đó định nghĩa
-     lại chính `lg` — thứ tự sm < md < lg do Tailwind bảo đảm.
-     Hệ quả: KHÔNG dùng `xl:`/`2xl:` (1280/1536) vì chúng nhỏ hơn lg. */
-  /* Xoá sạch bộ mốc mặc định rồi khai lại theo đúng thứ tự tăng dần — nếu chỉ
+     dải ảnh 360° co còn 420px, 4 thẻ trạm sạc xếp 2×2).
+     Xoá sạch bộ mốc mặc định rồi khai lại ĐỦ BỘ theo thứ tự tăng dần — nếu chỉ
      khai đè 1 mốc, Tailwind đặt nó SAI CHỖ trong tệp CSS (đo thật: khối
-     `min-width:1440px` bị xuất trước `min-width:640px`, nên `sm:` thắng `lg:`
-     ở màn rộng). Không dùng `xl:`/`2xl:` nữa — đã xoá khỏi bộ. */
+     `min-width:1440px` bị xuất trước `min-width:640px`). Không có `2xl:`. */
   --breakpoint-*: initial;
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
-  --breakpoint-lg: 1440px;
+  --breakpoint-lg: 800px;
+  --breakpoint-xl: 1440px;
 
   /* ── Bề rộng nội dung (khung Figma = 1440) ────────────── */
   --container-content: 1184px;
@@ -118,6 +119,20 @@ body {
 
 * {
   font-feature-settings: "liga" 0, "lnum" 1, "pnum" 1;
+}
+
+/* ── Khung 1440 co giãn cho laptop ──────────────────────────
+   Gắn vào khung nội dung max-w 1440 của khối, hoặc vào khối tràn viền (w-full).
+   `--u` = 1px của Figma quy theo bề rộng THẬT của khung (cqw, không phải vw — vw
+   tính cả thanh cuộn nên lệch vài px), chặn trên ở 1px để khối tràn viền rộng hơn
+   1440 không phóng to: ở ≥1440 đúng 1px, ở 1280 = 0,889px, ở 853 = 0,592px.
+   Chỉ gắn vào phần tử khối có bề rộng tự nhiên (w-full) — `container-type` làm
+   phần tử co theo nội dung (absolute không đặt rộng, flex item tự co…) sụp về 0.
+   Chỉ con cháu của khung dùng được `--u`; chính khung thì không (cqw của nó
+   tính theo khung cha). */
+.canvas-1440 {
+  container-type: inline-size;
+  --u: min(1px, 100cqw / 1440);
 }
 
 /* ── Nhịp chuyển động, đọc từ bản dựng play của Figma ──────

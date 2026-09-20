@@ -3,11 +3,14 @@
 //   pnpm dev:cms          # bật trang ở :3002
 //   pnpm audit:layout     # hoặc BASE_URL=... node scripts/audit-layout.mjs
 //
-// Ba phép đo:
-//   1. Toạ độ thật của từng phần tử ở đúng 1440px, so với toạ độ trong Figma.
+// Các phép đo:
+//   1. Toạ độ thật của từng phần tử ở đúng 1440px, so với toạ độ trong Figma;
+//      1b. ở laptop 800–1439, khối có bản laptop phải co đúng tỉ lệ khung 1440.
 //   2. Ở màn rộng (1920): NỘI DUNG (chữ, nút, thẻ) phải nằm trong khung 1440
 //      căn giữa. Riêng ẢNH NỀN được phép tràn — đó là chủ ý ("trung sách").
-//   3. Không tràn ngang ở 9 độ phân giải, kể cả màn bật phóng to hệ điều hành.
+//   3. Không tràn ngang ở 12 độ phân giải (có 3 cỡ laptop), kể cả màn bật phóng to hệ điều hành.
+//   4–6. Hiệu ứng · bản điện thoại/máy tính bảng · thao tác trên điện thoại.
+//   7. Dải laptop 800–1439: chữ không bị cắt / đè nhau / ra ngoài khối / nhỏ hơn 12px.
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3002";
@@ -40,7 +43,7 @@ const POSITIONS = [
 
 const SIZES = [
   [1920, 1080, 1], [1536, 864, 1.25], [1440, 900, 1], [1280, 800, 1],
-  [1024, 768, 1], [853, 533, 1.5], [768, 1024, 1], [430, 932, 3], [390, 844, 3],
+  [1024, 768, 1], [1366, 768, 1], [1280, 720, 1.5], [1024, 640, 1.25], [853, 533, 1.5], [768, 1024, 1], [430, 932, 3], [390, 844, 3],
 ];
 
 const browser = await chromium.launch();
@@ -92,6 +95,43 @@ console.log("\n① Toạ độ ở đúng 1440px so với Figma (lệch ≤2px c
   await page.close();
 }
 
+/* ── 1b. Laptop 800–1439: khung 1440 co theo bề ngang ─────
+   Chỉ các khối đã có bản laptop (`lg:` + `--u`). Toạ độ mong đợi = Figma × (w/1440).
+   Điểm nóng giữ 40px để dễ bấm nên so TÂM nút, không so góc. */
+const LAPTOP = [
+  // [khối, tên, selector, x, y, đo theo tâm?]
+  ["header", "logo", ".canvas-1440 img", 80, 95, false],
+  ["#gioi-thieu", "thẻ trắng", "div.overflow-hidden.rounded-\\[16px\\]", 80, 120, false],
+  ["#dong-xe", "tâm nút trái", "button", 108, 577, true],
+  ["#dang-ky", "thẻ 1", "article", 80, 80, false],
+  ["#noi-that", "cụm tiêu đề", "div.flex-col", 386, 80, false],
+  ["#noi-that", "tâm điểm nóng 1", "button", 776, 551, true],
+  ["#noi-that", "tâm điểm nóng 5", "div.hidden > div:nth-child(5) > button", 740, 748, true],
+];
+console.log("\n①b Laptop: khối có bản laptop co đúng tỉ lệ khung 1440 (lệch ≤3px)\n");
+for (const [w, h, dpr] of [[853, 533, 1.5], [1024, 640, 1.25], [1280, 720, 1.5], [1366, 768, 1]]) {
+  const page = await mo(w, h, dpr);
+  for (const [sec, ten, sel, ex, ey, tam] of LAPTOP) {
+    await page.evaluate((q) => document.querySelector(q)?.scrollIntoView({ block: "center" }), sec);
+    await page.waitForTimeout(900);
+    const r = await page.evaluate(([sec, sel, tam]) => {
+      const s = document.querySelector(sec);
+      const el = s?.querySelector(sel);
+      if (!el) return null;
+      // khung đo = phần tử gắn `.canvas-1440` (có khi chính là khối)
+      const khung = (s.matches(".canvas-1440") ? s : s.querySelector(".canvas-1440")).getBoundingClientRect();
+      const a = el.getBoundingClientRect();
+      return { x: a.left - khung.left + (tam ? a.width / 2 : 0), y: a.top - khung.top + (tam ? a.height / 2 : 0), k: khung.width / 1440 };
+    }, [sec, sel, tam]);
+    if (!r) { console.log(`  ✗ ${w} ${sec} ${ten}: không thấy phần tử`); loi++; continue; }
+    const [mx, my] = [ex * r.k, ey * r.k];
+    const dat = Math.abs(mx - r.x) <= 3 && Math.abs(my - r.y) <= 3;
+    if (!dat) loi++;
+    console.log(`  ${dat ? "✓" : "✗"} ${String(w).padStart(4)} ${sec} ${ten}${dat ? "" : `: mong ${Math.round(mx)},${Math.round(my)} → ${Math.round(r.x)},${Math.round(r.y)}`}`);
+  }
+  await page.close();
+}
+
 /* ── 2. Nội dung không được ra ngoài khung 1440 ───────────── */
 console.log("\n② Ở 1920px: chữ/nút/thẻ phải nằm trong khung 1440 căn giữa (ảnh nền được phép tràn)\n");
 {
@@ -127,7 +167,7 @@ console.log("\n② Ở 1920px: chữ/nút/thẻ phải nằm trong khung 1440 c�
 }
 
 /* ── 3. Tràn ngang ở nhiều độ phân giải ───────────────────── */
-console.log("\n③ Tràn ngang ở 9 độ phân giải\n");
+console.log("\n③ Tràn ngang ở 12 độ phân giải\n");
 for (const [w, h, dpr] of SIZES) {
   const page = await mo(w, h, dpr);
   const tran = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -238,7 +278,7 @@ console.log("\n④ Hiệu ứng\n");
 }
 
 /* ── 5. Bản điện thoại / máy tính bảng ───────────────────── */
-console.log("\n⑤ Bản điện thoại & máy tính bảng (320 → 1024)\n");
+console.log("\n⑤ Bản điện thoại & máy tính bảng (320 → 768) + 1024 (laptop, kiểm vùng bấm cho iPad ngang)\n");
 for (const [w, h] of [[320, 568], [360, 780], [390, 844], [430, 932], [768, 1024], [1024, 768]]) {
   const page = await mo(w, h, 2);
   const kq = await page.evaluate((vw) => {
@@ -308,7 +348,8 @@ for (const [w, h] of [[320, 568], [360, 780], [390, 844], [430, 932], [768, 1024
     const out = [];
     for (const t of document.querySelectorAll(".snap-x")) {
       const con = [...t.children];
-      if (con.length < 2) continue;
+      // dải bị ẩn ở mốc này (vd dải thẻ Nội thất từ lg) thì không đo
+      if (con.length < 2 || !t.getClientRects().length) continue;
       const b = Math.round(con[1].getBoundingClientRect().left - con[0].getBoundingClientRect().left);
       const rong = Math.round(con[0].getBoundingClientRect().width);
       if (b <= rong) out.push(`bước trượt ${b} ≤ bề rộng thẻ ${rong}`);
@@ -391,6 +432,57 @@ console.log("\n⑥ Thao tác trên điện thoại (390px)\n");
     ext.muc.join(" | "));
   kiem("thiết kế mạnh mẽ: tắt kiểu bấm-để-đổi trên điện thoại", ext.anKhoiDoi);
 
+  await page.close();
+}
+
+/* ── 7. Dải laptop 800–1439 ───────────────────────────────────
+   Bố cục 1440 co theo `--u` nhưng chữ có cỡ sàn, nên chữ "to hơn tỉ lệ" — dễ bị
+   cắt bởi thẻ bo góc, đè nhau hoặc lòi ra ngoài khối. Đo ở đúng các máy khách hay
+   dùng: 1280×800 phóng 150% (= 853), 1920 phóng 150% (= 1280), 1366 không phóng. */
+console.log("\n⑦ Dải laptop 800–1439: chữ không bị cắt / đè nhau / ra ngoài khối\n");
+for (const [w, h, dpr] of [[800, 500, 1.5], [853, 533, 1.5], [1024, 640, 1.25], [1280, 720, 1.5], [1366, 768, 1]]) {
+  const page = await mo(w, h, dpr);
+  const ra = await page.evaluate(() => {
+    const out = [];
+    for (const s of document.querySelectorAll("main > section, header, footer")) {
+      const id = s.id || s.tagName.toLowerCase();
+      const sr = s.getBoundingClientRect();
+      const la = [...s.querySelectorAll("h1,h2,h3,p,span,dd,dt,li,a,button,figcaption")]
+        .filter((e) => e.textContent.trim() && ![...e.children].some((c) => c.textContent.trim()))
+        .filter((e) => e.getClientRects().length && getComputedStyle(e).visibility !== "hidden" && !e.closest("[aria-hidden=true]"))
+        .map((e) => ({ e, r: e.getBoundingClientRect() }))
+        .filter((o) => o.r.width > 4 && o.r.height > 4);
+      for (const { e, r } of la) {
+        const t = e.textContent.trim().slice(0, 20);
+        if (r.top < sr.top - 1 || r.bottom > sr.bottom + 1) out.push(`${id}: "${t}" ra ngoài khối`);
+        if (parseFloat(getComputedStyle(e).fontSize) < 12) out.push(`${id}: "${t}" chữ ${getComputedStyle(e).fontSize}`);
+        // tổ tiên gần nhất có cắt tràn: chữ phải nằm trọn trong nó (bỏ qua thẻ băng
+        // chuyền đang nằm hẳn ngoài khung nhìn — cố ý)
+        for (let a = e.parentElement; a && a !== s.parentElement; a = a.parentElement) {
+          const cs = getComputedStyle(a);
+          if (["auto", "scroll"].includes(cs.overflowX)) break;
+          if (["hidden", "clip"].includes(cs.overflowX) || ["hidden", "clip"].includes(cs.overflowY)) {
+            const ar = a.getBoundingClientRect();
+            const ngoaiHan = r.right < ar.left || r.left > ar.right;
+            if (!ngoaiHan && (r.left < ar.left - 1 || r.right > ar.right + 1 || r.top < ar.top - 1 || r.bottom > ar.bottom + 1))
+              out.push(`${id}: "${t}" bị cắt`);
+            break;
+          }
+        }
+      }
+      for (let i = 0; i < la.length; i++)
+        for (let j = i + 1; j < la.length; j++) {
+          const A = la[i], B = la[j];
+          if (A.e.contains(B.e) || B.e.contains(A.e)) continue;
+          const ox = Math.min(A.r.right, B.r.right) - Math.max(A.r.left, B.r.left);
+          const oy = Math.min(A.r.bottom, B.r.bottom) - Math.max(A.r.top, B.r.top);
+          if (ox > 4 && oy > 4) out.push(`${id}: đè chữ "${A.e.textContent.trim().slice(0, 14)}" ⨯ "${B.e.textContent.trim().slice(0, 14)}"`);
+        }
+    }
+    return [...new Set(out)];
+  });
+  if (ra.length) loi++;
+  console.log(`  ${ra.length ? "✗" : "✓"} ${String(w).padStart(4)}@${dpr}${ra.length ? "\n        • " + ra.join("\n        • ") : "  sạch"}`);
   await page.close();
 }
 

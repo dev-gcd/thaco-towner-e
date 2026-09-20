@@ -11,22 +11,23 @@ const WHEEL = { duration: 1.6, ease: [0.16, 1, 0.3, 1] } as const;
 
 /**
  * Khối giới thiệu sản phẩm — thẻ trắng bo góc 16px nằm trên quầng xanh 10%.
- * Khung thiết kế 1440×684; thẻ 1280×444 đặt ở 80,120.
+ * Khung thiết kế 1440×684; thẻ 1280×444 đặt ở 80,120. Từ `lg` (800) bố cục này co theo
+ * `--u` (khối gắn `.canvas-1440`); chữ co theo nhưng có cỡ sàn.
  */
 export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
   const { title, description, ctaLabel, background, car, wheelFront, wheelRear } = gtsp;
 
   return (
-    <section id="gioi-thieu" className="bg-bg-soft">
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-12 lg:h-[684px] lg:px-0 lg:py-0">
+    <section id="gioi-thieu" className="canvas-1440 bg-bg-soft">
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-12 lg:h-[calc(684*var(--u))] lg:px-0 lg:py-0">
         <div className="relative lg:h-full">
           {/* Quầng xanh nhạt phía sau thẻ */}
           <span
             aria-hidden
-            className="pointer-events-none absolute left-[60px] top-[100px] hidden h-[484px] w-[1320px] rounded-[26px] bg-brand/10 lg:block"
+            className="pointer-events-none absolute left-[calc(60*var(--u))] top-[calc(100*var(--u))] hidden h-[calc(484*var(--u))] w-[calc(1320*var(--u))] rounded-[calc(26*var(--u))] bg-brand/10 lg:block"
           />
 
-          <div className="relative overflow-hidden rounded-[16px] bg-white lg:absolute lg:left-[80px] lg:top-[120px] lg:h-[444px] lg:w-[1280px]">
+          <div className="relative overflow-hidden rounded-[16px] bg-white lg:absolute lg:left-[calc(80*var(--u))] lg:top-[calc(120*var(--u))] lg:h-[calc(444*var(--u))] lg:w-[calc(1280*var(--u))]">
             <Image
               src={background.srcMobile || background.src}
               alt={background.alt}
@@ -38,7 +39,7 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
             {/* Mảng trắng 30% làm sáng nửa trái để chữ đọc rõ */}
             <span
               aria-hidden
-              className="pointer-events-none absolute left-0 top-0 h-[317px] w-[753px] bg-white/30"
+              className="pointer-events-none absolute left-0 top-0 h-[317px] w-[753px] bg-white/30 lg:h-[calc(317*var(--u))] lg:w-[calc(753*var(--u))]"
             />
 
             {/* Xe chạy vào từ mép phải, hai bánh quay theo — bánh là ảnh rời nên
@@ -51,7 +52,10 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
             <motion.div
               aria-hidden
               className="pointer-events-none hidden lg:block"
-              initial={{ x: 900 }}
+              // Lệch theo % bề rộng thẻ (900/1280), không px cố định: ở laptop thẻ hẹp
+              // hơn 900px thì cả cụm nằm ngoài thẻ, không bao giờ "lọt vào tầm nhìn"
+              // nên xe không chạy vào (đo được ở 800px).
+              initial={{ x: "70.3125%" }}
               whileInView={{ x: 0 }}
               viewport={{ once: true, amount: 0.4 }}
               transition={DRIVE}
@@ -61,40 +65,40 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
                 alt={car.alt}
                 width={678}
                 height={306}
-                className="absolute left-[544px] top-[87px] h-[306px] w-[678px] max-w-none"
+                className="absolute left-[calc(544*var(--u))] top-[calc(87*var(--u))] h-[calc(306*var(--u))] w-[calc(678*var(--u))] max-w-none"
               />
               <motion.span
-                className="absolute left-[638px] top-[294px] block size-[81px]"
+                className="absolute left-[calc(638*var(--u))] top-[calc(294*var(--u))] block size-[calc(81*var(--u))]"
                 initial={{ rotate: 720 }}
                 whileInView={{ rotate: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={WHEEL}
               >
-                <Image src={wheelFront.src} alt="" width={81} height={81} className="size-[81px] max-w-none" />
+                <Image src={wheelFront.src} alt="" width={81} height={81} className="size-full max-w-none" />
               </motion.span>
               <motion.span
-                className="absolute left-[1023px] top-[294px] block size-[81px]"
+                className="absolute left-[calc(1023*var(--u))] top-[calc(294*var(--u))] block size-[calc(81*var(--u))]"
                 initial={{ rotate: 720 }}
                 whileInView={{ rotate: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={WHEEL}
               >
-                <Image src={wheelRear.src} alt="" width={81} height={81} className="size-[81px] max-w-none" />
+                <Image src={wheelRear.src} alt="" width={81} height={81} className="size-full max-w-none" />
               </motion.span>
             </motion.div>
 
             <motion.div
-              className="relative flex flex-col gap-[28px] p-6 lg:absolute lg:left-[64px] lg:top-[48px] lg:w-[505px] lg:p-0"
+              className="relative flex flex-col gap-[28px] p-6 lg:absolute lg:left-[calc(64*var(--u))] lg:top-[calc(48*var(--u))] lg:w-[calc(505*var(--u))] lg:gap-[calc(28*var(--u))] lg:p-0"
               initial={{ opacity: 0, x: -24 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.4 }}
               transition={{ duration: 0.7, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex flex-col gap-[11px]">
-                <h2 className="whitespace-pre-line text-heading-lg font-bold uppercase text-brand-deep sm:text-display-sm">
+              <div className="flex flex-col gap-[11px] lg:gap-[calc(11*var(--u))]">
+                <h2 className="whitespace-pre-line text-heading-lg font-bold uppercase text-brand-deep sm:text-display-sm lg:text-[length:max(20px,calc(32*var(--u)))] lg:leading-[1.25]">
                   {title}
                 </h2>
-                <p className="text-body-lg text-text-heading">{description}</p>
+                <p className="text-body-lg text-text-heading lg:text-[length:max(12px,calc(16*var(--u)))] lg:leading-[1.5]">{description}</p>
               </div>
               <button
                 type="button"
@@ -117,7 +121,7 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
           </div>
         </div>
       </div>
-      <div className="mx-auto hidden h-px max-w-[1280px] bg-stroke lg:block" />
+      <div className="mx-auto hidden h-px max-w-[1280px] bg-stroke lg:block lg:max-w-[calc(1280*var(--u))]" />
     </section>
   );
 }

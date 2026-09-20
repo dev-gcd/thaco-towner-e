@@ -7,7 +7,8 @@ import { SectionLabel } from "@/components/SectionLabel";
 import { ArrowLeft, ArrowRight } from "@/components/icons";
 
 /**
- * Băng chuyền ưu điểm. Khung thiết kế 1440×900.
+ * Băng chuyền ưu điểm. Khung thiết kế 1440×900. Từ `lg` (800) co theo `--u` (khối gắn
+ * `.canvas-1440`), chữ co theo nhưng có cỡ sàn; 2 nút mũi tên giữ 56px để dễ bấm.
  *
  * Khung nhìn TRÀN hết bề ngang màn: trong bản dựng play thấy rõ 3 thẻ đầy đủ +
  * 2 thẻ HÉ ở hai rìa. Thẻ đầu vẫn bắt đầu đúng x=80 của khung 1440. Danh sách
@@ -84,21 +85,21 @@ export function Usp() {
   };
 
   return (
-    <section id="uu-diem" className="bg-bg-soft">
+    <section id="uu-diem" className="canvas-1440 bg-bg-soft">
       <div className="mx-auto w-full max-w-[1440px] px-4 pt-12 lg:h-0 lg:px-0 lg:pt-0">
-        <div className="flex flex-col gap-[12px] lg:relative lg:left-[80px] lg:top-[80px] lg:w-[399px]">
+        <div className="flex flex-col gap-[12px] lg:relative lg:left-[calc(80*var(--u))] lg:top-[calc(80*var(--u))] lg:w-[calc(399*var(--u))] lg:gap-[calc(12*var(--u))]">
           <SectionLabel>{label}</SectionLabel>
-          <h2 className="text-heading-lg font-bold uppercase text-brand-deep sm:text-display-sm lg:whitespace-nowrap">
+          <h2 className="text-heading-lg font-bold uppercase text-brand-deep sm:text-display-sm lg:whitespace-nowrap lg:text-[length:max(20px,calc(32*var(--u)))] lg:leading-[1.25]">
             {heading}
           </h2>
         </div>
       </div>
 
-      <div className="lg:h-[900px]">
+      <div className="lg:h-[calc(900*var(--u))]">
         <div
           ref={trackRef}
           onScroll={onScroll}
-          className="flex snap-x snap-mandatory gap-[20px] overflow-x-auto scroll-smooth scroll-pl-4 px-4 pt-8 [scrollbar-width:none] md:gap-[24px] lg:gap-[40px] lg:scroll-pl-[max(1rem,calc((100vw-1440px)/2+80px))] lg:pt-[216px] lg:pl-[max(1rem,calc((100vw-1440px)/2+80px))] lg:pr-0 [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory gap-[20px] overflow-x-auto scroll-smooth scroll-pl-4 px-4 pt-8 [scrollbar-width:none] md:gap-[24px] lg:gap-[calc(40*var(--u))] lg:scroll-pl-[max(calc(80*var(--u)),calc((100vw-1440px)/2+80px))] lg:pt-[calc(216*var(--u))] lg:pl-[max(calc(80*var(--u)),calc((100vw-1440px)/2+80px))] lg:pr-0 [&::-webkit-scrollbar]:hidden"
         >
           {loop.map((item, i) => (
             <article
@@ -107,14 +108,14 @@ export function Usp() {
               /* Bấm vào thẻ cũng chuyển sang thẻ kế tiếp — trên điện thoại ít ai
                  tìm tới 2 nút mũi tên nhỏ bên dưới. */
               onClick={() => go(index + 1)}
-              className="group relative h-[380px] w-[280px] shrink-0 cursor-pointer snap-start rounded-[40px] md:h-[440px] md:w-[320px] lg:h-[500px] lg:w-[400px] lg:rounded-[50px]"
+              className="group relative h-[380px] w-[280px] shrink-0 cursor-pointer snap-start rounded-[40px] md:h-[440px] md:w-[320px] lg:h-[calc(500*var(--u))] lg:w-[calc(400*var(--u))] lg:rounded-[calc(50*var(--u))]"
             >
               {/* Figma: rê chuột thì hiện quầng xanh 10% loe ra 10px quanh thẻ */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute -inset-[10px] rounded-[40px] bg-brand/10 opacity-0 transition-opacity duration-[833ms] [transition-timing-function:var(--ease-slow)] group-hover:opacity-100 lg:rounded-[50px]"
+                className="pointer-events-none absolute -inset-[10px] rounded-[40px] bg-brand/10 opacity-0 transition-opacity duration-[833ms] [transition-timing-function:var(--ease-slow)] group-hover:opacity-100 lg:rounded-[calc(50*var(--u))]"
               />
-              <span className="absolute inset-0 overflow-hidden rounded-[40px] lg:rounded-[50px]">
+              <span className="absolute inset-0 overflow-hidden rounded-[40px] lg:rounded-[calc(50*var(--u))]">
                 <Image
                   src={item.image.src}
                   alt={item.image.alt}
@@ -140,17 +141,17 @@ export function Usp() {
                   className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-black"
                 />
               </span>
-              <div className="absolute inset-x-[24px] bottom-[28px] flex flex-col gap-[4px] text-white lg:inset-x-[32px] lg:bottom-[40px]">
-                <h3 className="whitespace-pre-line text-heading-md font-medium uppercase lg:text-heading-lg">
+              <div className="absolute inset-x-[24px] bottom-[28px] flex flex-col gap-[4px] text-white lg:inset-x-[calc(32*var(--u))] lg:bottom-[calc(40*var(--u))]">
+                <h3 className="whitespace-pre-line text-heading-md font-medium uppercase lg:text-[length:max(18px,calc(28*var(--u)))] lg:leading-[1.2143]">
                   {item.title}
                 </h3>
-                <p className="text-body-md">{item.subtitle}</p>
+                <p className="text-body-md lg:text-[length:max(12px,calc(16*var(--u)))] lg:leading-[1.25]">{item.subtitle}</p>
               </div>
             </article>
           ))}
         </div>
 
-        <div className="mx-auto mt-8 flex w-full max-w-[1440px] items-center justify-center gap-[8px] lg:mt-[48px] lg:gap-[40px]">
+        <div className="mx-auto mt-8 flex w-full max-w-[1440px] items-center justify-center gap-[8px] lg:mt-[calc(48*var(--u))] lg:gap-[calc(40*var(--u))]">
           <NavButton label="Ưu điểm trước" onClick={() => go(index - 1)}>
             <ArrowLeft className="size-[14px]" />
           </NavButton>

@@ -68,7 +68,7 @@ export function LeadDialog({ open, onClose }: { open: boolean; onClose: () => vo
         role="dialog"
         aria-modal="true"
         aria-label={form.title}
-        className="max-h-full w-full max-w-[520px] overflow-y-auto rounded-[16px] bg-white p-6 lg:p-8"
+        className="max-h-full w-full max-w-[520px] overflow-y-auto rounded-[16px] bg-white p-6 xl:p-8"
       >
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>

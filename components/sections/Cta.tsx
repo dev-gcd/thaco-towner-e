@@ -6,7 +6,8 @@ import { ArrowRight } from "@/components/icons";
 
 /**
  * Hai thẻ kêu gọi hành động, khung thiết kế 1440×718: thẻ 630×558 ở 80,80 và
- * 730,80, ảnh tràn ra ngoài mép thẻ rồi bị cắt bởi bo góc 16.
+ * 730,80, ảnh tràn ra ngoài mép thẻ rồi bị cắt bởi bo góc 16. Từ `lg` (800) co theo
+ * `--u` (khối gắn `.canvas-1440`), tiêu đề co theo nhưng không dưới 22px.
  */
 export function Cta({
   onDriveTestClick,
@@ -19,23 +20,23 @@ export function Cta({
   const { driveTest, brochure } = cta;
 
   return (
-    <section id="dang-ky" className="bg-white">
-      <div className="mx-auto grid w-full max-w-[1440px] gap-6 px-4 py-12 md:grid-cols-2 md:gap-5 lg:h-[718px] lg:gap-[20px] lg:px-[80px] lg:py-[80px]">
+    <section id="dang-ky" className="canvas-1440 bg-white">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-6 px-4 py-12 md:grid-cols-2 md:gap-5 lg:h-[calc(718*var(--u))] lg:gap-[calc(20*var(--u))] lg:px-[calc(80*var(--u))] lg:py-[calc(80*var(--u))]">
         {/* Thẻ 1 — đăng ký lái thử */}
         <Reveal className="h-full">
-        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft md:h-[480px] lg:h-[558px]">
+        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft md:h-[480px] lg:h-[calc(558*var(--u))]">
           <Image
             src={driveTest.image.src}
             alt={driveTest.image.alt}
             width={705}
             height={558}
             sizes="(max-width: 1023px) 100vw, 705px"
-            className="absolute inset-y-0 right-0 h-full w-full object-cover lg:left-[-13px] lg:w-[705px] lg:max-w-none"
+            className="absolute inset-y-0 right-0 h-full w-full object-cover lg:left-[calc(-13*var(--u))] lg:w-[calc(705*var(--u))] lg:max-w-none"
           />
-          <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 lg:p-[40px]">
+          <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 lg:gap-[calc(24*var(--u))] lg:p-[calc(40*var(--u))]">
             <div className="flex flex-col gap-[12px]">
               <SectionLabel>{driveTest.label}</SectionLabel>
-              <h2 className="whitespace-pre-line text-heading-lg font-bold uppercase text-brand-deep sm:text-[32px] sm:leading-[40px] lg:text-display-md">
+              <h2 className="whitespace-pre-line text-heading-lg font-bold uppercase text-brand-deep sm:text-[32px] sm:leading-[40px] lg:text-[length:max(22px,calc(40*var(--u)))] lg:leading-[1]">
                 {driveTest.heading}
               </h2>
             </div>
@@ -54,19 +55,19 @@ export function Cta({
 
         {/* Thẻ 2 — tải brochure */}
         <Reveal delay={0.12} className="h-full">
-        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft md:h-[480px] lg:h-[558px]">
+        <article className="relative h-[420px] overflow-hidden rounded-[16px] bg-bg-soft md:h-[480px] lg:h-[calc(558*var(--u))]">
           <Image
             src={brochure.image.src}
             alt={brochure.image.alt}
             width={732}
             height={676}
             sizes="(max-width: 1023px) 100vw, 732px"
-            className="absolute inset-y-0 right-0 h-full w-full object-cover lg:left-[-91px] lg:top-[-36px] lg:h-[676px] lg:w-[732px] lg:max-w-none"
+            className="absolute inset-y-0 right-0 h-full w-full object-cover lg:top-[calc(-36*var(--u))] lg:left-[calc(-91*var(--u))] lg:h-[calc(676*var(--u))] lg:w-[calc(732*var(--u))] lg:max-w-none"
           />
-          <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 lg:p-[40px]">
+          <div className="relative flex h-full flex-col justify-start gap-[24px] p-6 lg:gap-[calc(24*var(--u))] lg:p-[calc(40*var(--u))]">
             <div className="flex flex-col gap-[12px]">
               <SectionLabel>{brochure.label}</SectionLabel>
-              <h2 className="whitespace-pre-line text-heading-lg font-bold uppercase text-brand-deep sm:text-[32px] sm:leading-[40px] lg:text-display-md">
+              <h2 className="whitespace-pre-line text-heading-lg font-bold uppercase text-brand-deep sm:text-[32px] sm:leading-[40px] lg:text-[length:max(22px,calc(40*var(--u)))] lg:leading-[1]">
                 {brochure.heading}
               </h2>
             </div>

@@ -8,12 +8,13 @@ import { interior } from "@/lib/content";
 
 const CARD_W = 400;
 const CARD_H = 260;
-const CARD_GAP = 16;
 
 /**
  * Nội thất — ảnh cabin tràn viền, 5 điểm nóng. Rê chuột (hoặc chạm) vào một
  * điểm thì hiện thẻ 400×260 ngay phía trên nó, đúng vị trí trong bản thiết kế.
- * Khung thiết kế 1440×1200; dưới `lg` đổi thành danh sách thẻ xếp dọc.
+ * Khung thiết kế 1440×1200. Từ `xl` (1440) đúng toạ độ Figma; ở `lg` (800–1439,
+ * laptop) cả khung co theo bề ngang qua đơn vị `--u` của `.canvas-1440`, nên 5
+ * điểm nóng vẫn nằm đúng chỗ trên ảnh xe. Dưới `lg` đổi thành dải thẻ cuộn ngang.
  */
 export function Interior() {
   const { label, ghostTitle, background, car, shadow, hotspots } = interior;
@@ -37,7 +38,7 @@ export function Interior() {
         aria-hidden
         className="absolute inset-0 h-full w-full object-cover"
       />
-      <div className="relative mx-auto w-full max-w-[1440px] lg:h-[1200px]">
+      <div className="canvas-1440 relative mx-auto w-full max-w-[1440px] lg:aspect-[1440/1200]">
         <Image
           src={shadow.src}
           alt=""
@@ -45,11 +46,11 @@ export function Interior() {
           height={1920}
           sizes="100vw"
           aria-hidden
-          className="absolute inset-x-0 top-0 hidden h-[1920px] w-[1440px] max-w-none lg:block lg:top-[45px]"
+          className="absolute inset-x-0 top-0 hidden h-[1920px] w-[1440px] max-w-none lg:top-[calc(45*var(--u))] lg:block lg:h-[calc(1920*var(--u))] lg:w-full"
         />
         {/* Bản dựng play: xe trôi lên từ dưới khi cuộn tới khối này. */}
         <motion.div
-          className="absolute inset-x-0 top-0 lg:top-[45px]"
+          className="absolute inset-x-0 top-0 lg:top-[calc(45*var(--u))]"
           initial={{ y: 140, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}
@@ -61,7 +62,7 @@ export function Interior() {
             width={1440}
             height={1917}
             sizes="100vw"
-            className="h-[900px] w-full object-cover lg:h-[1917px] lg:w-[1440px] lg:max-w-none"
+            className="h-[900px] w-full object-cover lg:h-[calc(1917*var(--u))] lg:w-full"
           />
         </motion.div>
         <span
@@ -78,21 +79,27 @@ export function Interior() {
         />
 
         <div className="relative px-4 py-12 lg:h-full lg:px-0 lg:py-0">
-          <div className="flex flex-col items-center gap-[12px] text-white lg:absolute lg:left-[386px] lg:top-[80px] lg:w-[669px]">
+          <div className="flex flex-col items-center gap-[12px] text-white lg:absolute lg:left-[calc(386*var(--u))] lg:top-[calc(80*var(--u))] lg:w-[calc(669*var(--u))]">
             <span className="flex items-center gap-[8px] text-body-md font-medium">
               <span aria-hidden className="h-px w-[24px] bg-white" />
               {label}
               <span aria-hidden className="h-px w-[24px] bg-white" />
             </span>
-            <p className="text-[40px] font-medium uppercase leading-[46px] sm:text-[64px] sm:leading-[72px] lg:whitespace-nowrap lg:text-[136px] lg:leading-[144px]">
+            <p className="text-[40px] font-medium uppercase leading-[46px] sm:text-[64px] sm:leading-[72px] lg:whitespace-nowrap lg:text-[calc(136*var(--u))] lg:leading-[calc(144*var(--u))]">
               {ghostTitle}
             </p>
           </div>
 
-          {/* Điểm nóng — chỉ có ở màn rộng, vì toạ độ gắn với khung 1440 */}
+          {/* Điểm nóng — chỉ có ở màn rộng, vì toạ độ gắn với khung 1440.
+              Toạ độ CMS (px khung 1440) nhân `--u`. Nút giữ 40px để dễ bấm nên
+              neo theo TÂM: (x + 20)·u − 20px — ở 1440 đúng bằng x. Thẻ 400×260
+              co theo nhưng không nhỏ hơn 320×208 để chữ mô tả còn đọc được. */}
           <div className="hidden lg:block">
             {hotspots.map((spot, i) => (
-              <div key={spot.title}>
+              <div
+                key={spot.title}
+                style={{ "--x": spot.x, "--y": spot.y } as React.CSSProperties}
+              >
                 <button
                   type="button"
                   aria-label={spot.title}
@@ -101,8 +108,7 @@ export function Interior() {
                   onMouseLeave={() => setHover((v) => (v === i ? null : v))}
                   onFocus={() => setHover(i)}
                   onClick={() => setPinned((v) => (v === i ? null : i))}
-                  className="absolute grid size-[40px] place-items-center rounded-full bg-bg-soft/65 text-text-heading transition-colors duration-200 hover:bg-white"
-                  style={{ left: spot.x, top: spot.y }}
+                  className="absolute left-[calc((var(--x)_+_20)*var(--u)_-_20px)] top-[calc((var(--y)_+_20)*var(--u)_-_20px)] grid size-[40px] place-items-center rounded-full bg-bg-soft/65 text-text-heading transition-colors duration-200 hover:bg-white"
                 >
                   <PlusIcon open={open === i} />
                 </button>
@@ -110,13 +116,7 @@ export function Interior() {
                 {open === i && (
                   <figure
                     onMouseLeave={() => setHover(null)}
-                    className="absolute overflow-hidden rounded-[16px] bg-white motion-safe:animate-[version-in_300ms_ease-out]"
-                    style={{
-                      left: spot.x,
-                      top: spot.y - CARD_H - CARD_GAP,
-                      width: CARD_W,
-                      height: CARD_H,
-                    }}
+                    className="absolute left-[calc((var(--x)_+_20)*var(--u)_-_20px)] top-[calc((var(--y)_+_20)*var(--u)_-_20px_-_var(--card-h)_-_16*var(--u))] h-(--card-h) w-[max(320px,calc(400*var(--u)))] overflow-hidden rounded-[16px] bg-white [--card-h:max(208px,calc(260*var(--u)))] motion-safe:animate-[version-in_300ms_ease-out]"
                   >
                     <Image
                       src={spot.image.src}

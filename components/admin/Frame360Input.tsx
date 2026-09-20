@@ -306,7 +306,7 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
 
           <Player label="Xem thử" srcs={pending.map((p) => p.url)} />
 
-          <ol className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-9">
+          <ol className="grid grid-cols-4 gap-2 sm:grid-cols-6 xl:grid-cols-9">
             {pending.map((p, i) => (
               <li key={p.key} className="group relative overflow-hidden rounded-md border border-gray-200 bg-white">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

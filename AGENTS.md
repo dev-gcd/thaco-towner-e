@@ -62,7 +62,8 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
 | 9 | Footer | `222:2294` | 530 | 3 cột + hotline + thông tin pháp nhân |
 
   Menu đầu trang: Giới thiệu · Ưu điểm · Dòng xe · Ngoại thất · Nội thất · Trạm sạc.
-- **Không có bản điện thoại trong Figma.** Luật tự đặt, đã kiểm ở 6 cỡ màn 320 → 1024:
+- **Không có bản điện thoại trong Figma.** Luật tự đặt, đã kiểm ở 6 cỡ màn 320 → 1024 (từ 19/09
+  bản điện thoại/máy tính bảng chỉ còn áp dưới 800px — từ 800 là bản laptop):
   · 6 mục menu thu vào nút ba gạch (theo `thaco-truck-sale-page`);
   · **hai dải cuộn ngang** — Ưu điểm, Nội thất — dùng `overflow-x-auto` + `snap-x`
     để vuốt được bằng ngón tay; luôn khai `scroll-pl-*` **bằng đúng** `pl-*`, nếu không thẻ
@@ -85,7 +86,7 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
   · khối Dòng xe phủ tối nửa dưới cho chữ trắng đọc được, và **chừa dải ảnh ~230px** giữa tiêu
     đề với bảng thông số — không chừa thì bảng che gần hết chiếc xe.
 - 🔴 **`style` nội tuyến KHÔNG theo mốc màn hình.** Toạ độ chỉ dành cho khung 1440 phải đi qua
-  biến CSS rồi dùng ở `lg:` (`style={{"--bg-x": …}}` + `lg:left-[var(--bg-x)]`). Đã trả giá:
+  biến CSS rồi dùng ở `xl:`/`lg:` (`style={{"--bg-x": …}}` rồi đọc lại bằng var(--bg-x) trong class). Đã trả giá:
   `left: -23.61%` của ảnh nền khối Dòng xe áp cả trên điện thoại, cắt mất chiếc xe.
 - 🔴 **Đừng ghi cứng bước trượt băng chuyền.** Đo từ DOM (`thẻ[1].left - thẻ[0].left`) và đo lại
   khi đổi kích thước màn. Bản cũ ghi 440px (đúng cho khung 1440) nên ở màn hẹp — thẻ 280 + cách
@@ -100,11 +101,38 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
 - Host: **Cloudflare Workers Static Assets** + **D1** (khách đăng ký), wrangler **v3**
 - Quản lý gói: **pnpm** (Node 20 — `.nvmrc`)
 - **Chỉ tiếng Việt.** Mọi ô chữ là chuỗi thường, không có cặp `{vi, en}` như bản truck.
-- **Bộ mốc màn hình chỉ còn `sm` 640 · `md` 768 · `lg` 1440** — khai lại toàn bộ trong
-  `app/globals.css` bằng `--breakpoint-*: initial` rồi liệt kê tăng dần. **Không dùng
-  `xl:`/`2xl:`** (đã xoá khỏi bộ). 🔴 Đừng đặt mốc tên riêng (vd `dsk`) và cũng đừng chỉ khai
-  đè một mốc: Tailwind xuất khối `@media` đó SAI CHỖ, nên ở màn rộng `sm:` lại thắng `lg:`.
+- **Bộ mốc màn hình: `sm` 640 · `md` 768 · `lg` 800 (laptop) · `xl` 1440 (khung Figma)** —
+  khai lại ĐỦ BỘ trong `app/globals.css` bằng `--breakpoint-*: initial` rồi liệt kê tăng dần.
+  Không có `2xl:`. 🔴 Đừng đặt mốc tên riêng (vd `dsk`) và cũng đừng chỉ khai đè một mốc:
+  Tailwind xuất khối `@media` đó SAI CHỖ, nên ở màn rộng `sm:` lại thắng mốc lớn hơn.
   Đã trả giá: dải ảnh 360° co còn 420px thay vì 960, 4 thẻ trạm sạc xếp 2×2 thay vì 1 hàng.
+  Sau khi đổi mốc: `pnpm build` rồi kiểm thứ tự `min-width` trong CSS xuất ra (640→768→800→1440).
+- 🔴 **Laptop 800–1439 (chốt 18/09).** Trước đó mốc máy tính là 1440 nên **mọi laptop hẹp hơn
+  1440 nhận bản điện thoại**: 1366×768, 1920 bật phóng to 150% (trình duyệt chỉ còn 1280),
+  1280×800 phóng 150% (chỉ còn 853 — khách test lại vẫn lỗi khi mốc là 1024, nên hạ xuống 800).
+  Khách báo lỗi ở khối Nội thất chính là cái này, KHÔNG phải do chiều cao màn. Cách làm cho
+  từng khối: khung nội dung gắn class `canvas-1440` → có biến `--u` = 1px Figma quy theo bề
+  rộng thật của khung (1 ở 1440, 0,889 ở 1280, 0,592 ở 853). Toạ độ ở `lg:` viết dạng
+  calc(N * var(--u)), nên ở 1440 ra đúng N px. Không co: chữ nhỏ (nhãn, mô tả), vùng bấm
+  40px (neo theo TÂM), thẻ có cỡ tối thiểu. Chiều cao khung dùng tỉ lệ khung hình, không
+  dùng `--u` (chính khung không đọc được `--u` của mình).
+  **Tiến độ: cả 9 khối đã có bản laptop (19/09).** Khối nào chữ dài (Ngoại thất, Trạm sạc,
+  Chân trang) thì ở dải này xếp theo DÒNG CHẢY thay vì ghim toạ độ — ghim cứng thì chữ tràn
+  khỏi thẻ; từ `xl` mới ghim đúng toạ độ Figma. Chi tiết ghi ở đầu mỗi tệp khối.
+- 🔴 **5 bẫy đã trả giá khi dựng bản laptop (19/09)** — đọc trước khi sửa tiếp:
+  1. **Cỡ chữ phải có SÀN, nhưng chiều cao dòng thì theo bản gốc.** `sm:leading-…` thắng chiều
+     cao dòng của token cỡ chữ ở `xl`, nên tiêu đề CTA (40px) và Trạm sạc (48px) thật ra chỉ
+     cao dòng 40px. Lấy theo token là giãn dòng, lệch bản 1440. Luôn ĐO bản cũ, đừng suy từ token.
+  2. **Lề âm ở phần tử cuối bị gộp xuyên khung cha** (Trạm sạc: ảnh xe `-mb`). Khung cha phải
+     `flow-root`, không thì lề âm mất tác dụng và ô tốc độ sạc tụt 60·u.
+  3. **Độ lệch của hiệu ứng phải theo %, không theo px.** Khối Giới thiệu cho xe chạy vào từ
+     `x: 900px`; ở laptop thẻ hẹp hơn 900px nên cả cụm nằm ngoài vùng cắt, "hiện khi cuộn tới"
+     không bao giờ kích hoạt → mất hẳn xe. Đổi thành `70.3125%` (= 900/1280).
+  4. **Đừng dùng `h-auto` cho ảnh cần cao đúng số đo Figma.** Tệp ảnh nội thất thật là
+     1438×1914 (không đúng 1440×1917) nên `h-auto` cho 1916,66px, đủ làm ảnh lấy mẫu khác và
+     lệch điểm ảnh ở 1600. Khai `h-[calc(1917*var(--u))]`.
+  5. **Thẻ cùng hàng lệch nhau** khi tên dài ngắn khác nhau (Trạm sạc). Dùng `grid-rows-subgrid`
+     trong `lg:max-xl:` để 4 thẻ dùng chung chiều cao từng hàng; `xl` vẫn thẻ cao cố định 372.
 - **Luật bố cục màn rộng (chốt 16/09 — "trung sách"):** NỀN (ảnh, dải màu, thanh menu) tràn hết
   bề ngang; NỘI DUNG (chữ, thẻ, nút) neo trong khung 1440 căn giữa. Ảnh nền đặt bằng **phần trăm
   / vw theo đúng số đo Figma**, không bằng px cứng, để bố cục ảnh giữ nguyên ở mọi bề ngang.
@@ -122,9 +150,11 @@ pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
 pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
-pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 6 phép đo: toạ độ so với Figma ·
-                       #    nội dung không lọt khung 1440 · tràn ngang 9 cỡ màn · hiệu ứng ·
-                       #    bản điện thoại 320→1024 · thao tác trên điện thoại
+pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 8 phép đo: toạ độ so với Figma ·
+                       #    bản laptop co đúng tỉ lệ (853/1024/1280/1366) · nội dung không lọt
+                       #    khung 1440 · tràn ngang 12 cỡ màn · hiệu ứng · bản điện thoại ·
+                       #    thao tác trên điện thoại · dải laptop 800–1439 (chữ không bị cắt,
+                       #    không đè nhau, không nhỏ hơn 12px)
 pnpm test:smoke        # chức năng chính ở máy (ảnh, form, 2 hộp thoại, 10 mục CMS) — tự dọn dữ liệu thử
 pnpm test:worker       # luồng lưu bộ ảnh 360° của Worker với GitHub GIẢ LẬP (không tạo commit thật)
 ```

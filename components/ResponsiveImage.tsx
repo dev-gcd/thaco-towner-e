@@ -3,7 +3,7 @@ import type { CmsImage } from "@/lib/content";
 
 /**
  * Renders a CMS image that may carry a separate mobile asset. When `srcMobile`
- * is set, emits two <Image>s toggled at the `lg` breakpoint (mobile shown
+ * is set, emits two <Image>s toggled at the `xl` breakpoint (mobile shown
  * below lg, desktop at lg+); otherwise a single image used at all sizes.
  *
  * Use this only where the surrounding layout shares ONE image across
@@ -37,12 +37,12 @@ export function ResponsiveImage(props: FillProps | FixedProps) {
       <Image
         src={image.srcMobile}
         {...shared}
-        className={`${className} lg:hidden`.trim()}
+        className={`${className} xl:hidden`.trim()}
       />
       <Image
         src={image.src}
         {...shared}
-        className={`${className} hidden lg:block`.trim()}
+        className={`${className} hidden xl:block`.trim()}
       />
     </>
   );

@@ -3,83 +3,113 @@
 import Image from "next/image";
 import { useState } from "react";
 import { header } from "@/lib/content";
+import { PhoneIcon } from "@/components/icons";
+
+/** Số gọi được: bỏ mọi thứ không phải chữ số hoặc dấu +. */
+const telHref = (so: string) => `tel:${so.replace(/[^\d+]/g, "")}`;
 
 /**
- * Đầu trang: thanh menu xanh 40px + ảnh lớn.
+ * Thanh menu xanh — CỐ ĐỊNH đầu màn khi cuộn (yêu cầu khách 21/09). Đứng NGOÀI
+ * `<header>` và ngoài `<main>` (ngang hàng với chúng) vì `sticky` chỉ bám trong
+ * phạm vi khối cha: nằm trong `<header>` thì trôi đi khi hết ảnh đầu trang.
+ * Bấm menu nhảy tới khối không bị thanh che nhờ `scroll-padding-top` ở `html`.
  *
- * Khung thiết kế 1440×1064. Từ `lg` (800px) trở lên — ở 800–1439 nội dung co theo
- * `--u` của `.canvas-1440`, menu giữ nguyên 117px mỗi mục (6 mục + lề = 782px vừa 800),
- * chữ co theo nhưng có cỡ sàn (tiêu đề ≥20px, mô tả ≥12px) để không xuống dòng đè xe:
- *  · NỀN tràn hết bề ngang màn hình;
- *  · NỘI DUNG (menu, logo, chữ) neo trong khung 1440 căn giữa.
- * Ảnh lớn đặt bằng đơn vị `vw` theo đúng tỉ lệ Figma (1938×1551 tại -249,-244
- * trên khung 1440) nên bố cục ảnh giữ nguyên ở mọi bề ngang, không lộ thêm/mất
- * bớt phần nào. Chiều cao khối vì thế cũng co giãn theo: 1024/1440 = 71.11vw.
- *
- * Bản thiết kế KHÔNG có phiên bản điện thoại — dưới `lg` dùng lại cách của
- * `thaco-truck-sale-page`: thu 6 mục vào nút ba gạch, mở ra danh sách dọc.
+ * Figma: thanh 40px, chữ 12px. Khách chê nhỏ → thanh 48px, chữ 16px (ở 800px chữ
+ * co còn 15px). 6 mục chia đều bề ngang, mỗi mục tối đa 117px như Figma, nên ở
+ * laptop hẹp các mục tự khít lại thay vì tràn. Bên phải là hotline (sửa trong CMS).
+ * Dưới `lg`: nút ba gạch bên trái, hotline bên phải.
  */
-export function Header() {
-  const { menu, logo, background, title, description } = header;
+export function SiteNav() {
+  const { menu } = header;
+  // Nội dung cũ (trước 21/09) chưa có ô này — coi như trống thay vì lỗi.
+  const hotline = header.hotline ?? "";
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="relative">
-      {/* Thanh menu — nền tràn viền, các mục neo trong khung 1440 */}
-      <nav className="w-full bg-brand-deep">
-        <div className="mx-auto flex max-w-[1440px] items-center lg:px-[40px]">
-          {/* Máy tính: 6 mục nằm ngang, mỗi mục 117px như Figma */}
-          <ul className="hidden lg:flex">
-            {menu.map((item) => (
-              <li key={item.href} className="w-[117px]">
-                <a
-                  href={item.href}
-                  className="flex h-[40px] items-center justify-center text-body-xs text-white transition-colors duration-200 hover:bg-white/15"
-                >
-                  {/* Figma có chấm tròn 4px trước chữ nhưng đặt `visible: false`
-                      — thiết kế cố ý ẩn, nên không vẽ. */}
-                  <span className="whitespace-nowrap">{item.label}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
+    <nav className="sticky top-0 z-40 w-full bg-brand-deep">
+      <div className="mx-auto flex max-w-[1440px] items-center lg:h-[48px] lg:px-[max(16px,2.78vw)] xl:px-[40px]">
+        {/* Máy tính: 6 mục chia đều, mỗi mục tối đa 117px như Figma */}
+        <ul className="hidden min-w-0 flex-1 lg:flex">
+          {menu.map((item) => (
+            <li key={item.href} className="max-w-[117px] min-w-max flex-1">
+              <a
+                href={item.href}
+                className="flex h-[48px] items-center justify-center px-[6px] text-[length:clamp(15px,calc(15px_+_(100vw_-_800px)/224),16px)] font-medium text-white transition-colors duration-200 hover:bg-white/15"
+              >
+                {/* Figma có chấm tròn 4px trước chữ nhưng đặt `visible: false`
+                    — thiết kế cố ý ẩn, nên không vẽ. */}
+                <span className="whitespace-nowrap">{item.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
 
-          {/* Điện thoại: nút ba gạch */}
-          <button
-            type="button"
-            aria-label={open ? "Đóng danh mục" : "Mở danh mục"}
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-            className="flex h-[44px] items-center gap-2 px-4 text-body-sm font-medium text-white transition-colors hover:bg-white/15 lg:hidden"
+        {/* Điện thoại: nút ba gạch */}
+        <button
+          type="button"
+          aria-label={open ? "Đóng danh mục" : "Mở danh mục"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className="flex h-[44px] items-center gap-2 px-4 text-body-sm font-medium text-white transition-colors hover:bg-white/15 lg:hidden"
+        >
+          <svg viewBox="0 0 20 20" className="size-5" fill="none" aria-hidden>
+            {open ? (
+              <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            ) : (
+              <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            )}
+          </svg>
+          Danh mục
+        </button>
+
+        {hotline.trim() && (
+          <a
+            href={telHref(hotline)}
+            aria-label={`Gọi hotline ${hotline}`}
+            className="ml-auto flex h-[44px] shrink-0 items-center gap-2 px-4 text-body-sm font-semibold whitespace-nowrap text-white transition-colors hover:bg-white/15 lg:h-[48px] lg:pl-6 lg:pr-3 lg:text-[length:clamp(15px,calc(15px_+_(100vw_-_800px)/224),16px)]"
           >
-            <svg viewBox="0 0 20 20" className="size-5" fill="none" aria-hidden>
-              {open ? (
-                <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              ) : (
-                <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              )}
-            </svg>
-            Danh mục
-          </button>
-        </div>
-
-        {open && (
-          <ul className="border-t border-white/15 bg-brand-deep lg:hidden">
-            {menu.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center px-4 py-3 text-body-sm text-white transition-colors hover:bg-white/15"
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+            <PhoneIcon className="size-5 shrink-0" />
+            {hotline}
+          </a>
         )}
-      </nav>
+      </div>
 
+      {open && (
+        <ul className="border-t border-white/15 bg-brand-deep lg:hidden">
+          {menu.map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="flex items-center px-4 py-3 text-body-sm text-white transition-colors hover:bg-white/15"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </nav>
+  );
+}
+
+/**
+ * Đầu trang: ảnh lớn + logo + dòng giới thiệu (thanh menu tách riêng ở `SiteNav`).
+ *
+ * Khung thiết kế 1440×1064 (Figma tính cả thanh menu 40px; phần ảnh từ y=40).
+ * Từ `lg` (800px) trở lên — ở 800–1439 nội dung co theo `--u` của `.canvas-1440`,
+ * chữ co theo nhưng có cỡ sàn (tiêu đề ≥20px, mô tả ≥12px) để không xuống dòng đè xe:
+ *  · NỀN tràn hết bề ngang màn hình;
+ *  · NỘI DUNG (logo, chữ) neo trong khung 1440 căn giữa.
+ * Ảnh lớn đặt bằng đơn vị `vw` theo đúng tỉ lệ Figma (1938×1551 tại -249,-244
+ * trên khung 1440) nên bố cục ảnh giữ nguyên ở mọi bề ngang, không lộ thêm/mất
+ * bớt phần nào. Chiều cao khối vì thế cũng co giãn theo: 1024/1440 = 71.11vw.
+ */
+export function Header() {
+  const { logo, background, title, description } = header;
+
+  return (
+    <header className="relative">
       {/* Ảnh lớn — tràn viền */}
       <div className="relative overflow-hidden bg-white lg:h-[71.11vw]">
         <Image

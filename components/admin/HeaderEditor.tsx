@@ -66,6 +66,18 @@ export function HeaderEditor() {
       </Card>
 
       <p className="text-sm font-semibold text-gray-800">Thanh menu</p>
+      <Card className="flex flex-col gap-4">
+        <Field
+          label="Hotline"
+          hint="Hiện bên phải thanh menu, khách bấm vào là gọi. Để trống thì ẩn."
+        >
+          <TextInput
+            value={data.hotline ?? ""}
+            placeholder="0933 805 902"
+            onChange={(e) => setData({ ...data, hotline: e.target.value })}
+          />
+        </Field>
+      </Card>
       {data.menu.map((item, i) => (
         <ItemCard
           key={i}

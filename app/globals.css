@@ -106,11 +106,18 @@
 /* ── Lớp nền ──────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
+  /* Thanh menu cố định (SiteNav) cao 44px ở điện thoại, 48px từ `lg`: bấm menu nhảy tới
+     khối thì mép trên khối nằm ngay dưới thanh, không bị thanh che. */
+  scroll-padding-top: 44px;
   font-family: var(--font-sans);
   color: var(--color-text-heading);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+@media (min-width: 800px) {
+  html { scroll-padding-top: 48px; }
 }
 
 body {

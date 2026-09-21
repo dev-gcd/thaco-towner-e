@@ -6,15 +6,53 @@ import { FooterIcon, SocialIcon } from "@/components/FooterIcons";
  * Chân trang — khung thiết kế 1440×530 (430 phần nội dung + 100 dòng bản quyền).
  * Nền chuyển màu tràn hết bề ngang; nội dung neo trong khung 1440 căn giữa, các
  * cột đặt đúng toạ độ Figma: 565 / 746 / 975 (rộng 117 / 165 / 385, cách 64).
- * Laptop (lg–xl): phần công ty nằm trên, 3 cột liên kết nằm dưới trải đủ bề ngang (đặt
- * cạnh nhau như Figma thì ở 1280 cột Liên hệ chỉ còn ~300px, email bị cắt đôi). 2 cột
- * đầu rộng theo nội dung, cột cuối lấy phần còn lại. Liên kết giữ đệm dọc 10px (vùng
- * bấm ≥40px) vì iPad ngang 1024 cũng rơi vào dải này.
+ * Laptop (lg–xl): 2 phần LUÔN đứng cạnh nhau như Figma (khách yêu cầu 21/09, kể cả
+ * 800px). Phần phải rộng theo nội dung (`minmax(0, max-content)`), phần công ty lấy phần
+ * còn lại nhưng không dưới 190px. Chỗ không đủ thì chỉ cột cuối (Liên hệ) co lại và xuống
+ * dòng — số điện thoại không bị tách, email ngắt sau "." / "@" (xem `ngatDongLienHe`).
+ * Liên kết giữ cao ≥40px (vùng bấm) vì iPad ngang 1024 cũng rơi vào dải này.
  */
 // Figma cho cột rộng 117 / 165 / 385, nhưng Montserrat trên trình duyệt rộng hơn
 // trong Figma một chút nên ép cứng sẽ làm chữ xuống dòng. Dùng `w-max` để cột tự
 // vừa nội dung — điểm bắt đầu 565 vẫn giữ nguyên.
 const COL_W = ["xl:w-max xl:shrink-0", "xl:w-max xl:shrink-0", "xl:w-max xl:shrink-0"];
+
+/**
+ * Cột Liên hệ ở laptop hẹp (800px) chỉ rộng ~210px nên phải tự xuống dòng — cho nó
+ * xuống dòng ĐÚNG CHỖ: số điện thoại không bị tách ("0933 / 805 902") vì cụm số nằm
+ * trong 1 span không xuống dòng (KHÔNG dùng dấu cách không ngắt: trong Montserrat nó
+ * rộng khác dấu cách thường, làm số xê dịch cả ở bản 1440); email ngắt được sau mỗi
+ * "." của phần tên và sau "@", thay vì bị cắt giữa chữ ("…taib / us@…").
+ */
+function ngatDongLienHe(label: string) {
+  const at = label.indexOf("@");
+  if (at >= 0) {
+    const start = label.lastIndexOf(" ", at) + 1;
+    const parts = label.slice(start, at + 1).split(/(?<=\.)/);
+    return (
+      <>
+        {label.slice(0, start)}
+        {parts.map((part, i) => (
+          <span key={i}>
+            {part}
+            <wbr />
+          </span>
+        ))}
+        {label.slice(at + 1)}
+      </>
+    );
+  }
+  // Cụm số điện thoại: chữ số nối nhau bằng dấu cách / chấm / gạch.
+  return label.split(/(\+?\d[\d .-]*\d)/).map((part, i) =>
+    i % 2 ? (
+      <span key={i} className="whitespace-nowrap">
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
+}
 
 export function Footer() {
   const { logo, companyName, registration, subLogo, columns, copyright, socials } = footer;
@@ -25,7 +63,7 @@ export function Footer() {
   return (
     <footer className="canvas-1440 bg-linear-to-b from-white to-bg-soft">
       <div className="mx-auto w-full max-w-[1440px] px-4 lg:px-[calc(80*var(--u))]">
-        <div className="grid gap-10 py-10 lg:gap-x-0 lg:gap-y-[max(24px,calc(48*var(--u)))] lg:py-[calc(100*var(--u))] xl:h-[430px] xl:grid-cols-[485px_795px]">
+        <div className="grid gap-10 py-10 lg:gap-x-[max(24px,calc(48*var(--u)))] lg:py-[calc(100*var(--u))] lg:max-xl:grid-cols-[minmax(190px,1fr)_minmax(0,max-content)] xl:h-[430px] xl:grid-cols-[485px_795px] xl:gap-0">
           <div className="flex min-w-0 flex-col items-start gap-[16px]">
             <div className="flex flex-col items-start gap-[8px]">
               <span className="relative block h-[60px] w-[139px] shrink-0">
@@ -77,14 +115,14 @@ export function Footer() {
                           {/* Địa chỉ thư điện tử không có chỗ ngắt tự nhiên — ở màn
                               320px nó đẩy cả cột rộng 368px và làm tràn ngang. */}
                           <span className="min-w-0 whitespace-pre-line wrap-anywhere">
-                            {link.label}
+                            {ngatDongLienHe(link.label)}
                           </span>
                         </a>
                       ) : (
                         <span className="flex items-start gap-[10px] py-[10px] text-body-md text-text-heading lg:text-[length:max(12px,calc(16*var(--u)))] lg:leading-[1.25] lg:min-h-[40px] xl:min-h-0 xl:py-0">
                           <FooterIcon name={link.icon} />
                           <span className="min-w-0 whitespace-pre-line wrap-anywhere">
-                            {link.label}
+                            {ngatDongLienHe(link.label)}
                           </span>
                         </span>
                       )}

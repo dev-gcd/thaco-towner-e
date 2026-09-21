@@ -51,7 +51,7 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
 
 | # | Khối | id | Cao | Ghi chú |
 |---|---|---|---|---|
-| 1 | Header | `222:2152` | 1064 | nav 6 mục + ảnh lớn đầu trang |
+| 1 | Header | `222:2152` | 1064 | nav 6 mục + ảnh lớn đầu trang. ⚠️ Thanh menu đã tách thành `SiteNav` (xem dưới) — `<header>` giờ chỉ còn phần ảnh, cao 1024 |
 | 2 | GTSP | `222:2162` | 684 | giới thiệu + nút "Đăng ký lái thử ngay" |
 | 3 | USP | `222:2165` | 900 | **5 thẻ**, mỗi thẻ **2 ảnh** (thường + chi tiết khi rê chuột, mã ảnh khác hẳn nhau). Khung nhìn tràn viền: 3 thẻ đầy + 2 thẻ hé |
 | 4 | Dòng xe | `222:2166` | 951 | 2 phiên bản. **Đổi bản = nền trượt ngang 684px + bảng thông số đổi bên** (V2.6 x=735 phải, V2.7 x=176 trái). Hai góc dưới bo 80px |
@@ -62,6 +62,17 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
 | 9 | Footer | `222:2294` | 530 | 3 cột + hotline + thông tin pháp nhân |
 
   Menu đầu trang: Giới thiệu · Ưu điểm · Dòng xe · Ngoại thất · Nội thất · Trạm sạc.
+- 🔴 **Thanh menu CỐ ĐỊNH + Hotline (khách yêu cầu 21/09, lệch Figma có chủ ý).** `SiteNav` trong
+  `components/sections/Header.tsx`, đặt NGOÀI `<header>` và `<main>` (ngang hàng) trong
+  `LandingPage.tsx` — `sticky` chỉ bám trong khối cha, để trong `<header>` là trôi mất khi hết ảnh
+  đầu trang. Thanh cao 48px (điện thoại 44px), chữ 16px (co còn 15px ở 800), 6 mục chia đều, mỗi
+  mục tối đa 117px như Figma. Hotline bên phải = ô `hotline` trong `content/header.json` (sửa ở
+  `/admin` → Đầu trang; để trống thì ẩn). Bấm menu không bị thanh che nhờ `scroll-padding-top` ở
+  `html` (44 / 48px trong `globals.css`) — đổi chiều cao thanh thì phải đổi cả số này.
+- **Chân trang ở laptop (21/09):** 2 phần luôn đứng cạnh nhau từ 800px — cột công ty tối thiểu
+  190px, 3 cột liên kết rộng theo nội dung, chỉ cột Liên hệ được xuống dòng (số điện thoại không bị
+  tách, email ngắt sau "." / "@" — hàm `ngatDongLienHe`). Đừng dùng dấu cách không ngắt cho số: trong
+  Montserrat nó rộng khác dấu cách thường, làm chữ xê dịch cả ở bản 1440.
 - **Không có bản điện thoại trong Figma.** Luật tự đặt, đã kiểm ở 6 cỡ màn 320 → 1024 (từ 19/09
   bản điện thoại/máy tính bảng chỉ còn áp dưới 800px — từ 800 là bản laptop):
   · 6 mục menu thu vào nút ba gạch (theo `thaco-truck-sale-page`);
@@ -150,11 +161,11 @@ pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
 pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
-pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 8 phép đo: toạ độ so với Figma ·
+pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 9 phép đo: toạ độ so với Figma ·
                        #    bản laptop co đúng tỉ lệ (853/1024/1280/1366) · nội dung không lọt
                        #    khung 1440 · tràn ngang 12 cỡ màn · hiệu ứng · bản điện thoại ·
                        #    thao tác trên điện thoại · dải laptop 800–1439 (chữ không bị cắt,
-                       #    không đè nhau, không nhỏ hơn 12px)
+                       #    không đè nhau, không nhỏ hơn 12px) · thanh menu cố định + hotline
 pnpm test:smoke        # chức năng chính ở máy (ảnh, form, 2 hộp thoại, 10 mục CMS) — tự dọn dữ liệu thử
 pnpm test:worker       # luồng lưu bộ ảnh 360° của Worker với GitHub GIẢ LẬP (không tạo commit thật)
 ```
@@ -206,9 +217,9 @@ tải trước cả bộ khi khối còn cách màn ~800px, và xoay bằng kéo
 - [x] Khoá bí mật bản thật: `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `GITHUB_TOKEN`
       (chưa đặt `MAIL_*` — form vẫn lưu khách, chỉ không gửi thư)
 - [x] Deploy tay lần đầu bằng `pnpm run deploy`
-- [ ] **Nối Cloudflare Workers Build** với repo `dev-gcd/thaco-towner-e` (nhánh `main`, build
-      `pnpm build`, deploy `pnpm exec wrangler deploy`, `NODE_VERSION=20`). Chưa nối thì khách
-      bấm Lưu trong `/admin` → commit lên GitHub nhưng trang KHÔNG tự cập nhật.
+- [x] **Đã nối Cloudflare Workers Build** với repo `dev-gcd/thaco-towner-e` (nhánh `main`) —
+      xác nhận 21/09: commit `1c1795d` tự lên bản thật sau khi push. 🔴 **Push `main` = đưa lên
+      bản thật ngay** — không push khi chưa được duyệt; khách bấm Lưu trong `/admin` cũng tự lên.
 - [ ] Khách cấp mã Google Tag Manager → dán vào `GTM_ID` trong `app/(public)/layout.tsx`
 - [ ] Khách cấp tên miền riêng → sửa `metadataBase` cùng tệp
 - [ ] Ghi lại ngày hết hạn của `GITHUB_TOKEN` — hết hạn là nút Lưu trong `/admin` báo lỗi

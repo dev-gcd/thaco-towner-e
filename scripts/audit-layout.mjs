@@ -11,6 +11,8 @@
 //   3. Không tràn ngang ở 12 độ phân giải (có 3 cỡ laptop), kể cả màn bật phóng to hệ điều hành.
 //   4–6. Hiệu ứng · bản điện thoại/máy tính bảng · thao tác trên điện thoại.
 //   7. Dải laptop 800–1439: chữ không bị cắt / đè nhau / ra ngoài khối / nhỏ hơn 12px.
+//   8. Thanh menu cố định: bám đầu màn suốt trang, 6 mục + hotline không tràn, bấm menu
+//      thì khối nằm ngay dưới thanh.
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3002";
@@ -18,8 +20,8 @@ const CANVAS = 1440;
 
 /** [khối, tên, selector, x, y, rộng, cao] — toạ độ lấy từ Figma, tính từ mép khối. */
 const POSITIONS = [
-  ["header", "logo", "div.relative > div > img", 80, 135, 640, 142],
-  ["header", "tiêu đề", "h1", 93, 316, null, null],
+  ["header", "logo", "div.relative > div > img", 80, 95, 640, 142], // Figma y=135 tính cả thanh menu 40px — thanh đã tách ra ngoài <header>
+  ["header", "tiêu đề", "h1", 93, 276, null, null],
   ["#gioi-thieu", "thẻ trắng", "div.overflow-hidden.rounded-\\[16px\\]", 80, 120, 1280, 444],
   ["#gioi-thieu", "tiêu đề", "h2", 144, 168, null, null],
   ["#gioi-thieu", "nút", "button", 144, 359, 242, 40],
@@ -483,6 +485,57 @@ for (const [w, h, dpr] of [[800, 500, 1.5], [853, 533, 1.5], [1024, 640, 1.25], 
   });
   if (ra.length) loi++;
   console.log(`  ${ra.length ? "✗" : "✓"} ${String(w).padStart(4)}@${dpr}${ra.length ? "\n        • " + ra.join("\n        • ") : "  sạch"}`);
+  await page.close();
+}
+
+/* ── 8. Thanh menu cố định + hotline (yêu cầu khách 21/09) ─────
+   Bám đầu màn suốt trang (kể cả khi đã xuống chân trang), 6 mục + hotline vừa một
+   hàng không tràn, bấm menu thì khối nằm ngay dưới thanh (không bị che). */
+console.log("\n⑧ Thanh menu cố định + hotline\n");
+for (const [w, h, dpr] of [[320, 568, 2], [390, 844, 3], [800, 500, 1.5], [853, 533, 1.5], [1024, 640, 1.25], [1280, 720, 1.5], [1440, 900, 1], [1920, 1080, 1]]) {
+  const page = await mo(w, h, dpr);
+  const sai = [];
+  const dau = await page.evaluate(() => {
+    const n = document.querySelector("nav");
+    const tel = n.querySelector("a[href^='tel:']");
+    const muc = [...n.querySelectorAll("ul a")].filter((a) => a.getClientRects().length);
+    const chu = muc.map((a) => a.querySelector("span").getBoundingClientRect());
+    let khe = 999;
+    for (let i = 1; i < chu.length; i++) khe = Math.min(khe, chu[i].left - chu[i - 1].right);
+    const tr = tel?.getBoundingClientRect();
+    // so với BIỂU TƯỢNG điện thoại, không so với mép khung hotline (khung có đệm trái 24px)
+    const icon = tel?.querySelector("svg")?.getBoundingClientRect();
+    return {
+      tel: tel ? { href: tel.getAttribute("href"), right: tr.right, left: icon.left, h: tr.height } : null,
+      muc: muc.length, khe, cuoi: chu.at(-1)?.right ?? 0, cao: n.getBoundingClientRect().height,
+      tran: document.documentElement.scrollWidth > innerWidth,
+    };
+  });
+  if (!dau.tel) sai.push("không thấy hotline");
+  else {
+    if (!/^tel:\+?\d{8,}$/.test(dau.tel.href)) sai.push(`hotline sai liên kết ${dau.tel.href}`);
+    if (dau.tel.right > w + 1) sai.push("hotline tràn khỏi màn");
+    if (dau.tel.h < 40) sai.push(`hotline cao ${dau.tel.h}px < 40`);
+  }
+  if (w >= 800 && dau.muc !== 6) sai.push(`chỉ hiện ${dau.muc}/6 mục menu`);
+  if (w >= 800 && dau.khe < 16) sai.push(`chữ menu sát nhau ${Math.round(dau.khe)}px`);
+  if (w >= 800 && dau.tel && dau.cuoi > dau.tel.left - 16) sai.push("mục menu cuối chạm hotline");
+  if (dau.tran) sai.push("tràn ngang");
+  for (const y of [1500, 5000, 1e6]) {
+    await page.evaluate((y) => scrollTo(0, y), y);
+    await page.waitForTimeout(300);
+    const top = await page.evaluate(() => Math.round(document.querySelector("nav").getBoundingClientRect().top));
+    if (top !== 0) sai.push(`cuộn tới ${y === 1e6 ? "cuối trang" : y} thì thanh lệch khỏi đầu màn (${top}px)`);
+  }
+  if (w >= 800) {
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.click("nav ul a[href='#noi-that']");
+    await page.waitForTimeout(1500);
+    const cach = await page.evaluate(() => Math.round(document.querySelector("#noi-that").getBoundingClientRect().top - document.querySelector("nav").getBoundingClientRect().bottom));
+    if (Math.abs(cach) > 1) sai.push(`bấm "Nội thất": khối cách đáy thanh ${cach}px (mong 0)`);
+  }
+  if (sai.length) loi++;
+  console.log(`  ${sai.length ? "✗" : "✓"} ${String(w).padStart(4)}@${dpr}  thanh ${Math.round(dau.cao)}px${sai.length ? "\n        • " + sai.join("\n        • ") : ""}`);
   await page.close();
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Header } from "@/components/sections/Header";
+import { Header, SiteNav } from "@/components/sections/Header";
 import { Gtsp } from "@/components/sections/Gtsp";
 import { Usp } from "@/components/sections/Usp";
 import { Versions } from "@/components/sections/Versions";
@@ -26,6 +26,8 @@ export function LandingPage() {
 
   return (
     <>
+      {/* Thanh menu đứng NGOÀI <main> để `sticky` bám suốt trang, kể cả chân trang. */}
+      <SiteNav />
       <main>
         <Header />
         <Gtsp onCtaClick={openLead} />

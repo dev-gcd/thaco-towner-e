@@ -30,6 +30,8 @@ import headerData from "@/content/header.json";
 export type MenuLink = { label: string; href: string };
 export type HeaderContent = {
   menu: MenuLink[];
+  /** Số hotline hiện bên phải thanh menu, bấm để gọi. Để trống thì ẩn. */
+  hotline: string;
   logo: CmsImage;
   background: CmsImage;
   title: string;

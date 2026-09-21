@@ -14,6 +14,9 @@ export function VersionsEditor() {
     defaults as VersionsContent
   );
 
+  // Phiên bản mặc định: ảnh hiện có ở Ngoại thất / Nội thất là ảnh của nó, nên không cho xoá.
+  const macDinhId = data.defaultVersionId ?? data.items[0]?.id;
+
   return (
     <EditorShell
       title="Dòng xe"
@@ -66,8 +69,22 @@ export function VersionsEditor() {
               ? () => setData({ ...data, items: move(data.items, i, 1) })
               : undefined
           }
-          onRemove={() => setData({ ...data, items: removeAt(data.items, i) })}
+          onRemove={
+            item.id === macDinhId ? undefined : () => setData({ ...data, items: removeAt(data.items, i) })
+          }
         >
+          {item.id === macDinhId ? (
+            <p className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs leading-relaxed text-blue-900">
+              <b>Phiên bản mặc định</b> — trang mở ra ở phiên bản này, và ảnh ở mục Ngoại thất / Nội thất
+              là ảnh của nó (phiên bản khác chưa có ảnh riêng sẽ dùng lại). Vì vậy{" "}
+              <b>không xoá được</b>; muốn đổi phiên bản mặc định xin liên hệ đội kỹ thuật.
+            </p>
+          ) : (
+            <p className="text-xs text-gray-500">
+              Mã cố định: <code>{item.id}</code> — ảnh riêng của phiên bản này ở mục Ngoại thất / Nội thất
+              gắn với mã này, nên đổi tên hay đổi thứ tự vẫn giữ đúng ảnh.
+            </p>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Tên dòng xe">
               <TextInput
@@ -172,7 +189,8 @@ export function VersionsEditor() {
             ...data,
             items: [
               ...data.items,
-              { name: "Towner e", code: "", displayName: "", price: "", specs: [] },
+              // Mã cố định, không đổi về sau — ảnh riêng ở Ngoại thất / Nội thất gắn vào đây.
+              { id: `v${Date.now().toString(36)}`, name: "Towner e", code: "", displayName: "", price: "", specs: [] },
             ],
           })
         }

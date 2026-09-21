@@ -1,4 +1,5 @@
 {
+  "defaultVersionId": "v26",
   "label": "Các phiên bản",
   "heading": "Đa dạng lựa chọn",
   "background": {
@@ -9,6 +10,7 @@
   "priceLabel": "Giá bán đề xuất:",
   "items": [
     {
+      "id": "v26",
       "name": "Towner e",
       "code": "v2.6-2s",
       "displayName": "Towner E V2.6-2S",
@@ -33,6 +35,7 @@
       ]
     },
     {
+      "id": "v27",
       "name": "Towner e",
       "code": "v2.7-2s",
       "displayName": "Towner E V2.7-2S",

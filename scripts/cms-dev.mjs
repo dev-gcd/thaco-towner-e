@@ -266,7 +266,15 @@ async function handle360Commit(req, res) {
   const content = body.content;
   const frames = content?.view360?.frames;
   if (!Array.isArray(frames)) return sendJson(res, 400, { error: "Danh sách ảnh 360 không hợp lệ" });
-  const inContent = new Set(frames);
+  // Gộp ảnh của mọi phiên bản — giống Worker (xem worker/index.ts): không gộp thì lưu bộ
+  // V2.7 xoá mất bộ V2.6.
+  const allFrames = [...frames];
+  for (const v of Object.values(content.view360.byVersion ?? {})) {
+    if (v?.frames !== undefined && !Array.isArray(v.frames))
+      return sendJson(res, 400, { error: "Ảnh theo phiên bản không hợp lệ" });
+    allFrames.push(...(v?.frames ?? []));
+  }
+  const inContent = new Set(allFrames);
   for (const b of blobs)
     if (!inContent.has(b.path.replace(/^public/, "")))
       return sendJson(res, 400, { error: "Danh sách ảnh không khớp với ảnh đã tải" });

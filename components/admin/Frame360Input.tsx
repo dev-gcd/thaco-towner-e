@@ -49,18 +49,26 @@ async function readSize(file: File): Promise<{ w: number; h: number }> {
   }
 }
 
-export function Frame360Input<T extends { view360: { frames: string[] } }>({
+export function Frame360Input<T>({
   data,
+  frames: current,
+  withFrames,
+  emptyText = "Chưa có bộ ảnh — trang đang hiện 1 ảnh xe, ẩn mũi tên và thanh vị trí.",
   dirtyOther,
   onSaved,
 }: {
+  /** Dòng trạng thái khi chưa có bộ ảnh (phiên bản riêng: "đang dùng ảnh mặc định"). */
+  emptyText?: string;
   /** Toàn bộ nội dung khối Ngoại thất đang sửa — lưu kèm trong cùng commit. */
   data: T;
+  /** Bộ ảnh đang dùng của ĐÚNG phiên bản đang sửa (mặc định hoặc theo phiên bản). */
+  frames: string[];
+  /** Ghi bộ ảnh mới vào đúng chỗ (`view360.frames` hay `view360.byVersion[id].frames`). */
+  withFrames: (data: T, frames: string[]) => T;
   /** Trang còn thay đổi khác chưa lưu (để nhắc người dùng). */
   dirtyOther: boolean;
   onSaved: (next: T, msg: string) => void;
 }) {
-  const current = data.view360.frames;
   const [pending, setPending] = useState<Pending[]>([]);
   const [step, setStep] = useState<Step>(null);
   const [error, setError] = useState<string | null>(null);
@@ -122,7 +130,7 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
     pending.length >= MIN_FRAMES && pending.length <= MAX_FRAMES && !step;
 
   async function commit(blobs: { path: string; sha: string }[], frames: string[]) {
-    const next = { ...data, view360: { ...data.view360, frames } };
+    const next = withFrames(data, frames);
     const res = await fetch("/api/admin/360/commit", {
       method: "POST",
       credentials: "same-origin",
@@ -192,7 +200,7 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
   }
 
   async function clearAll() {
-    if (!window.confirm("Xoá toàn bộ ảnh các góc xe đang dùng? Trang sẽ quay về hiển thị 1 ảnh xe.")) return;
+    if (!window.confirm(`Xoá bộ ảnh các góc xe này? Sau khi xoá: ${emptyText.replace(/^Chưa có bộ ảnh[^—]*— /, "")}`)) return;
     setError(null);
     setStep({ label: "Đang xoá bộ ảnh", done: 0, total: 1 });
     try {
@@ -213,7 +221,7 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
           <p className="text-xs text-gray-500">
             {current.length >= MIN_FRAMES
               ? `Đang dùng ${current.length} ảnh.`
-              : "Chưa có bộ ảnh — trang đang hiện 1 ảnh xe, ẩn mũi tên và thanh vị trí."}
+              : emptyText}
           </p>
         </div>
         {current.length > 0 && (

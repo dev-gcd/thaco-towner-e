@@ -167,12 +167,12 @@ pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
 pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
-pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 10 phép đo: toạ độ so với Figma ·
+pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 11 phép đo: toạ độ so với Figma ·
                        #    bản laptop co đúng tỉ lệ (853/1024/1280/1366) · nội dung không lọt
                        #    khung 1440 · tràn ngang 12 cỡ màn · hiệu ứng · bản điện thoại ·
                        #    thao tác trên điện thoại · dải laptop 800–1439 (chữ không bị cắt,
                        #    không đè nhau, không nhỏ hơn 12px) · thanh menu cố định + hotline ·
-                       #    băng ảnh các góc xe
+                       #    băng ảnh các góc xe · phiên bản dùng chung 3 khối
 pnpm test:smoke        # chức năng chính ở máy (ảnh, form, 2 hộp thoại, 10 mục CMS) — tự dọn dữ liệu thử
 pnpm test:worker       # luồng lưu bộ ảnh 360° của Worker với GitHub GIẢ LẬP (không tạo commit thật)
 ```
@@ -189,6 +189,37 @@ Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác t
   → commit vào `public/images/uploads/`.
 - Khách đăng ký: form công khai POST `/api/leads` → D1; xem ở thẻ **Khách đăng ký**.
 - Email báo có khách mới (tuỳ chọn): cấu hình `MAIL_*` (Resend) — xem `worker/index.ts`.
+
+### Ảnh theo phiên bản xe (chốt 21/09 — "trung sách")
+
+🔴 **Chọn phiên bản ở khối Dòng xe thì ảnh xe ở Ngoại thất + Nội thất đổi theo** (khách yêu cầu).
+Phiên bản đang xem giữ ở `LandingPage` (`versionId`), truyền xuống `Versions` / `Exterior` /
+`Interior`; 2 khối dưới có thêm nút chuyển nhanh `VersionSwitch` (thêm ngoài Figma) — đổi ở đâu
+cũng là CÙNG một lựa chọn. Mở trang = phiên bản MẶC ĐỊNH (`versions.json` → `defaultVersionId`,
+hiện là `v26`; ghi bằng mã nên đổi thứ tự không ảnh hưởng).
+
+- **Mã nhận diện:** `VersionItem.id` cố định, ẩn (`v26`, `v27`; phiên bản thêm mới tự sinh). KHÔNG
+  dùng `code` — khách sửa được. Ảnh riêng gắn với `id`, nên đổi tên / đổi thứ tự không lệch ảnh.
+- **Ảnh hiện có của khối = ảnh của phiên bản mặc định (V2.6)**, dùng lại cho MỌI phiên bản chưa có
+  ảnh riêng. Gắn bằng `defaultVersionId`, không theo "phiên bản đầu danh sách" — đổi thứ tự không làm
+  ảnh V2.6 sang nhầm V2.7 (đã kiểm). `defaultVersionId` KHÔNG sửa được trong CMS; CMS cũng khoá nút xoá
+  phiên bản mặc định. Muốn đổi phiên bản mặc định: dev sửa 1 dòng, và nhớ ảnh hiện có của khối sẽ
+  thành ảnh của phiên bản mới đó.
+- **Ảnh riêng:** Ngoại thất `view360.byVersion[id] = { car, frames }`; Nội thất `carByVersion[id]`
+  (ảnh xe nhìn từ trên) + `hotspots[i].imageByVersion[id]` (ảnh thẻ điểm nóng — gắn theo điểm nóng
+  nên đổi thứ tự điểm nóng vẫn đúng). Chữ, toạ độ, ảnh nền, ảnh bóng đổ dùng chung. Thẻ chi tiết
+  ngoại thất (Mặt ga-lăng, Đèn Halogen…) HIỆN DÙNG CHUNG — đang chờ khách xác nhận có cần đổi theo
+  phiên bản không (21/09); nếu cần thì làm như điểm nóng Nội thất (chỉ ảnh theo phiên bản). Chọn ảnh ở `exteriorSlides` / `interiorCar` / `hotspotImage` trong `lib/content.ts`.
+- **CMS:** Ngoại thất / Nội thất có hàng tab theo phiên bản — "V2.6-2S (mặc định) · V2.7-2S"
+  (`VersionTabs`), KHÔNG có tab "Ảnh mặc định" riêng (khách dễ nhầm, bỏ 21/09). Chấm xanh = phiên bản
+  đã có ảnh riêng. Thông báo: tab mặc định (xanh) ghi rõ ảnh dùng chung; tab chưa có ảnh riêng (vàng)
+  ghi "trang đang hiện ảnh của V2.6-2S"; ô ảnh để trống có dòng `DungAnhMacDinh` kèm ảnh thu nhỏ. Tab lấy danh sách phiên bản từ bản ĐÃ XUẤT BẢN: thêm phiên bản mới
+  thì sau ~1–2 phút tab mới hiện.
+- 🔴 **Worker gộp ảnh của mọi phiên bản trước khi xoá ảnh cũ** trong `public/images/360/`
+  (`/api/admin/360/commit`, `scripts/cms-dev.mjs` làm y hệt). Chỉ tính `view360.frames` thì lưu bộ
+  V2.7 sẽ XOÁ MẤT bộ V2.6. `pnpm test:worker` có kiểm đúng tình huống này.
+- Đã so từng byte `_docs/V2.6-2S` và `_docs/V2.7-2S`: **nội thất (19 ảnh) và khung gầm giống hệt**;
+  chỉ ảnh ngoại thất khác (V2.7 thân dài hơn) — nên thực tế thường chỉ cần tải bộ góc xe V2.7.
 
 ### Bộ ảnh các góc xe — băng ảnh khối Ngoại thất (trước 21/09 gọi là "bộ ảnh 360°")
 

@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { bamDeChuyen } from "@/lib/slider";
-import { interior } from "@/lib/content";
+import { interior, interiorCar, hotspotImage } from "@/lib/content";
+import { VersionSwitch } from "@/components/VersionSwitch";
 
 const CARD_W = 400;
 const CARD_H = 260;
@@ -16,8 +17,17 @@ const CARD_H = 260;
  * laptop) cả khung co theo bề ngang qua đơn vị `--u` của `.canvas-1440`, nên 5
  * điểm nóng vẫn nằm đúng chỗ trên ảnh xe. Dưới `lg` đổi thành dải thẻ cuộn ngang.
  */
-export function Interior() {
-  const { label, ghostTitle, background, car, shadow, hotspots } = interior;
+export function Interior({
+  versionId,
+  onVersion,
+}: {
+  /** Phiên bản đang xem (dùng chung cả trang) — quyết định ảnh xe và ảnh 5 điểm nóng. */
+  versionId: string;
+  onVersion: (id: string) => void;
+}) {
+  const { label, ghostTitle, background, shadow, hotspots } = interior;
+  // Phiên bản chưa có ảnh riêng thì dùng ảnh mặc định (xem `interiorCar`, `hotspotImage`).
+  const car = interiorCar(interior, versionId);
   // Rê chuột = xem lướt; bấm = ghim lại (Figma có riêng trạng thái Click, dấu
   // cộng thu thành dấu trừ). Thẻ hiện khi được ghim, hoặc khi đang rê.
   const daiNgang = useRef<HTMLDivElement>(null);
@@ -56,13 +66,15 @@ export function Interior() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         >
+          {/* key theo ảnh: đổi phiên bản có ảnh khác thì ảnh mới mờ dần hiện ra. */}
           <Image
+            key={car.src}
             src={car.src}
             alt={car.alt}
             width={1440}
             height={1917}
             sizes="100vw"
-            className="h-[900px] w-full object-cover lg:h-[calc(1917*var(--u))] lg:w-full"
+            className="h-[900px] w-full object-cover motion-safe:animate-[fade-in_600ms_ease-out] lg:h-[calc(1917*var(--u))] lg:w-full"
           />
         </motion.div>
         <span
@@ -89,6 +101,14 @@ export function Interior() {
               {ghostTitle}
             </p>
           </div>
+
+          {/* Chuyển nhanh phiên bản — máy tính: góc trên-phải khung 1440; điện thoại: dưới tiêu đề. */}
+          <VersionSwitch
+            versionId={versionId}
+            onVersion={onVersion}
+            tone="dark"
+            className="mt-6 justify-center lg:absolute lg:right-[calc(80*var(--u))] lg:top-[calc(80*var(--u))] lg:mt-0"
+          />
 
           {/* Điểm nóng — chỉ có ở màn rộng, vì toạ độ gắn với khung 1440.
               Toạ độ CMS (px khung 1440) nhân `--u`. Nút giữ 40px để dễ bấm nên
@@ -119,8 +139,8 @@ export function Interior() {
                     className="absolute left-[calc((var(--x)_+_20)*var(--u)_-_20px)] top-[calc((var(--y)_+_20)*var(--u)_-_20px_-_var(--card-h)_-_16*var(--u))] h-(--card-h) w-[max(320px,calc(400*var(--u)))] overflow-hidden rounded-[16px] bg-white [--card-h:max(208px,calc(260*var(--u)))] motion-safe:animate-[version-in_300ms_ease-out]"
                   >
                     <Image
-                      src={spot.image.src}
-                      alt={spot.image.alt}
+                      src={hotspotImage(spot, versionId).src}
+                      alt={hotspotImage(spot, versionId).alt}
                       width={CARD_W}
                       height={CARD_H}
                       sizes="400px"
@@ -154,8 +174,8 @@ export function Interior() {
                 className="relative h-[240px] w-[280px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] bg-white sm:h-[260px] sm:w-[320px]"
               >
                 <Image
-                  src={spot.image.src}
-                  alt={spot.image.alt}
+                  src={hotspotImage(spot, versionId).src}
+                  alt={hotspotImage(spot, versionId).alt}
                   width={CARD_W}
                   height={CARD_H}
                   sizes="320px"

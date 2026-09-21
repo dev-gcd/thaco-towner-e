@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 import { versions } from "@/lib/content";
 import { SectionLabel } from "@/components/SectionLabel";
 import { ArrowLeft, ArrowRight } from "@/components/icons";
@@ -36,11 +35,18 @@ const PANEL_X = [735 / 1440, 176 / 1440]; // vị trí bảng thông số đang 
  */
 const BG_POS = ["16% 56%", "84% 56%"];
 
-export function Versions() {
+export function Versions({
+  versionId,
+  onVersion,
+}: {
+  /** Phiên bản đang xem — giữ ở `LandingPage`, dùng chung với Ngoại thất / Nội thất. */
+  versionId: string;
+  onVersion: (id: string) => void;
+}) {
   const { label, heading, headingAccent, background, priceLabel, items } = versions;
-  const [index, setIndex] = useState(0);
+  const index = Math.max(0, items.findIndex((v) => v.id === versionId));
   const item = items[index];
-  const step = (n: number) => setIndex(((n % items.length) + items.length) % items.length);
+  const step = (n: number) => onVersion(items[((n % items.length) + items.length) % items.length].id);
   // Chỉ có 2 khung hình nền trong thiết kế; phiên bản thứ 3 trở đi dùng lại khung 2.
   const frame = Math.min(index, BG_X.length - 1);
 

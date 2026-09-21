@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { interior } from "@/lib/content";
 import defaults from "@/content/defaults/interior.json";
 import type { InteriorContent } from "@/lib/content";
 import { useContentEditor, replaceAt, removeAt, move } from "./useContent";
 import { Card, Field, TextInput, TextArea, ImageInput, ResponsiveImageInput } from "./ui";
 import { AddButton, EditorShell, ItemCard } from "./EditorShell";
+import { VersionTabs, DungAnhMacDinh, type VersionTab } from "./VersionTabs";
+import { defaultVersionId } from "@/lib/content";
+import { versions } from "@/lib/content";
 
 export function InteriorEditor() {
   const { data, setData, dirty, saving, status, save, reset } = useContentEditor<InteriorContent>(
@@ -13,6 +17,16 @@ export function InteriorEditor() {
     interior,
     defaults as InteriorContent
   );
+  // Tab phiên bản đang sửa ảnh: "" = ảnh mặc định. Áp cho ẢNH XE và ẢNH 5 ĐIỂM NÓNG;
+  // chữ, toạ độ, ảnh nền, ảnh bóng đổ dùng chung mọi phiên bản.
+  // Tab đang chọn (mở ra ở phiên bản mặc định). `tab` rỗng = đang sửa phiên bản mặc định
+  // (ảnh hiện có của khối); khác rỗng = mã phiên bản đang sửa ảnh riêng.
+  const [ver, setVer] = useState<VersionTab>(defaultVersionId);
+  const tab = ver === defaultVersionId ? "" : ver;
+  const tabV = versions.items.find((v) => v.id === tab);
+  const tabName = tabV?.displayName || tabV?.code || "";
+  const hasOwn = (id: string) =>
+    !!(data.carByVersion?.[id]?.src || data.hotspots.some((h) => h.imageByVersion?.[id]?.src));
 
   return (
     <EditorShell
@@ -41,17 +55,38 @@ export function InteriorEditor() {
           onChange={(background) => setData({ ...data, background })}
         />
         <ImageInput
-          label="Ảnh xe"
-          hint="Khuyến nghị: 1440×1917px, nền trong suốt."
-          value={data.car.src}
-          onChange={(src) => setData({ ...data, car: { ...data.car, src } })}
-        />
-        <ImageInput
           label="Ảnh bóng đổ"
           hint="Khuyến nghị: 1440×1920px, nền trong suốt."
           value={data.shadow.src}
           onChange={(src) => setData({ ...data, shadow: { ...data.shadow, src } })}
         />
+      </Card>
+
+      {/* Ảnh THEO PHIÊN BẢN: chọn V2.7 ở khối Dòng xe thì khối này hiện ảnh V2.7. */}
+      <Card className="flex flex-col gap-4">
+        <p className="text-sm font-semibold text-gray-800">Ảnh theo phiên bản</p>
+        <VersionTabs value={ver} onChange={setVer} hasOwn={hasOwn} />
+        <p className="text-xs text-gray-500">
+          Tab này áp cho <b>ảnh xe</b> ngay dưới và <b>ảnh trang bị của 5 điểm nóng</b> bên dưới.
+        </p>
+        <ImageInput
+          key={`car-${tab}`}
+          label={tab ? `Ảnh xe — ${tabName}` : "Ảnh xe"}
+          hint={
+            tab
+              ? "Ảnh xe nhìn từ trên riêng của phiên bản này, 1440×1917px, nền trong suốt. Để trống = dùng ảnh của phiên bản mặc định."
+              : "Khuyến nghị: 1440×1917px, nền trong suốt."
+          }
+          value={tab ? data.carByVersion?.[tab]?.src ?? "" : data.car.src}
+          onChange={(src) =>
+            setData(
+              tab
+                ? { ...data, carByVersion: { ...data.carByVersion, [tab]: { src, alt: data.car.alt } } }
+                : { ...data, car: { ...data.car, src } }
+            )
+          }
+        />
+        {tab && !data.carByVersion?.[tab]?.src && <DungAnhMacDinh src={data.car.src} />}
       </Card>
 
       {data.hotspots.map((spot, i) => (
@@ -69,16 +104,28 @@ export function InteriorEditor() {
           onRemove={() => setData({ ...data, hotspots: removeAt(data.hotspots, i) })}
         >
           <ImageInput
-            label="Ảnh trang bị"
-            hint="Khuyến nghị: 400×260px, .webp."
-            value={spot.image.src}
+            key={`spot-${i}-${tab}`}
+            label={tab ? `Ảnh trang bị — ${tabName}` : "Ảnh trang bị"}
+            hint={
+              tab
+                ? "Ảnh riêng của phiên bản này, 400×260px. Để trống = dùng ảnh của phiên bản mặc định."
+                : "Khuyến nghị: 400×260px, .webp."
+            }
+            value={tab ? spot.imageByVersion?.[tab]?.src ?? "" : spot.image.src}
             onChange={(src) =>
               setData({
                 ...data,
-                hotspots: replaceAt(data.hotspots, i, { ...spot, image: { ...spot.image, src } }),
+                hotspots: replaceAt(
+                  data.hotspots,
+                  i,
+                  tab
+                    ? { ...spot, imageByVersion: { ...spot.imageByVersion, [tab]: { src, alt: spot.image.alt } } }
+                    : { ...spot, image: { ...spot.image, src } }
+                ),
               })
             }
           />
+          {tab && !spot.imageByVersion?.[tab]?.src && <DungAnhMacDinh src={spot.image.src} />}
           <Field label="Tên trang bị">
             <TextInput
               value={spot.title}

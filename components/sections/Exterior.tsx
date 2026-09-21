@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import { motion } from "motion/react";
-import { exterior } from "@/lib/content";
+import { exterior, exteriorSlides } from "@/lib/content";
+import { VersionSwitch } from "@/components/VersionSwitch";
 import { SectionLabel } from "@/components/SectionLabel";
 import { ArrowLeft, ArrowRight } from "@/components/icons";
 import { ExteriorSlider, SliderTrack } from "@/components/ExteriorSlider";
@@ -20,14 +21,28 @@ import { ExteriorSlider, SliderTrack } from "@/components/ExteriorSlider";
 /** Figma: đổi thẻ 833ms, nhịp lò xo SLOW. */
 const SWAP = { duration: 0.833, ease: [0.22, 1, 0.36, 1] } as const;
 
-export function Exterior() {
+export function Exterior({
+  versionId,
+  onVersion,
+}: {
+  /** Phiên bản đang xem (dùng chung cả trang) — quyết định bộ ảnh các góc xe. */
+  versionId: string;
+  onVersion: (id: string) => void;
+}) {
   const { label, ghostTitle, view360, heading, headingAccent, description, items } = exterior;
   const [index, setIndex] = useState(0);
-  // Băng ảnh các góc xe. Dữ liệu vẫn ở `view360.frames` (tải lên bằng ô "Ảnh các góc
-  // xe" trong CMS — cùng luồng 1 commit như trước); chưa có bộ ảnh thì hiện 1 ảnh xe.
-  const slides = view360.frames.length ? view360.frames : [view360.car.src];
-  const [slide, setSlide] = useState<{ i: number; dir: 1 | -1 }>({ i: 0, dir: 1 });
+  // Băng ảnh các góc xe CỦA PHIÊN BẢN đang xem; phiên bản chưa có ảnh riêng thì dùng
+  // ảnh mặc định (xem `exteriorSlides`). Luôn có ít nhất 1 ảnh.
+  const slides = exteriorSlides(view360, versionId);
+  const [slide, setSlide] = useState<{ i: number; dir: 1 | -1 | 0 }>({ i: 0, dir: 1 });
   const many = slides.length > 1;
+  // Đổi phiên bản: giữ góc đang xem (bộ mới ít ảnh hơn thì về ảnh cuối), mờ dần tại chỗ.
+  const [lastVersion, setLastVersion] = useState(versionId);
+  if (lastVersion !== versionId) {
+    setLastVersion(versionId);
+    setSlide(({ i }) => ({ i: Math.min(i, slides.length - 1), dir: 0 }));
+  }
+  const cur = Math.min(slide.i, slides.length - 1);
   // Hướng trượt theo chiều SỐ THỨ TỰ, không theo nút bấm: bấm "sau" ở ảnh cuối quay về
   // ảnh đầu thì xe mới vào từ TRÁI (đúng như video dựng play).
   const step = (delta: 1 | -1) =>
@@ -66,7 +81,10 @@ export function Exterior() {
           <ExteriorSlider
             slides={slides}
             alt={view360.car.alt}
-            index={Math.min(slide.i, slides.length - 1)}
+            index={cur}
+            // Khoá theo ĐƯỜNG DẪN ảnh: đổi phiên bản mà ảnh không đổi (phiên bản chưa có
+            // ảnh riêng) thì không chớp.
+            slideKey={slides[cur]}
             direction={slide.dir}
             onStep={step}
             className="absolute inset-0 outline-none"
@@ -80,13 +98,21 @@ export function Exterior() {
           </p>
         </div>
 
+        {/* Chuyển nhanh phiên bản — máy tính: góc trên-phải, neo mép khung 1440;
+            điện thoại: ngay dưới ảnh xe. */}
+        <VersionSwitch
+          versionId={versionId}
+          onVersion={onVersion}
+          className="order-1 mx-auto mt-6 lg:absolute lg:right-[max(calc(80*var(--u)),calc((100%_-_1440px)/2_+_80px))] lg:top-[calc(80*var(--u))] lg:mx-0 lg:mt-0"
+        />
+
         {many && (
           <div className="order-1 mx-auto mt-6 flex w-fit items-center gap-4 sm:gap-[32px] lg:absolute lg:inset-x-0 lg:top-[calc(917*var(--u)_-_28px)] lg:mx-auto lg:mt-0 lg:gap-[calc(32*var(--u))]">
             <RoundButton label="Ảnh ngoại thất trước" onClick={() => step(-1)}>
               <ArrowLeft className="size-[14px]" />
             </RoundButton>
             <SliderTrack
-              index={Math.min(slide.i, slides.length - 1)}
+              index={cur}
               count={slides.length}
               className="w-[160px] sm:w-[260px] lg:w-[max(160px,calc(260*var(--u)))]"
             />

@@ -16,6 +16,9 @@ const SLIDE = "40%";
  * theo chiều số thứ tự: sang ảnh sau thì xe mới vào từ phải; lùi lại — kể cả quay
  * vòng từ ảnh cuối về ảnh đầu — thì vào từ trái (đúng như video).
  *
+ * Đổi PHIÊN BẢN xe (V2.6 ↔ V2.7) thì không trượt mà chỉ mờ dần tại chỗ (`direction` = 0),
+ * giữ nguyên góc đang xem.
+ *
  * Mọi ảnh cùng khổ 1536×1024, xe cùng chiều cao và cùng đường chân bánh, nên chỉ cần
  * `object-contain object-bottom` là xe đứng đúng chỗ ở mọi góc.
  */
@@ -23,6 +26,7 @@ export function ExteriorSlider({
   slides,
   alt,
   index,
+  slideKey,
   direction,
   onStep,
   className = "",
@@ -30,8 +34,10 @@ export function ExteriorSlider({
   slides: string[];
   alt: string;
   index: number;
-  /** 1 = xe mới vào từ phải, -1 = vào từ trái. */
-  direction: 1 | -1;
+  /** Khoá của ảnh đang hiện — đổi khoá là chạy hiệu ứng chuyển (vd `v27-3`). */
+  slideKey: string;
+  /** 1 = xe mới vào từ phải, -1 = vào từ trái, 0 = mờ dần tại chỗ (đổi phiên bản). */
+  direction: 1 | -1 | 0;
   onStep: (delta: 1 | -1) => void;
   className?: string;
 }) {
@@ -106,15 +112,15 @@ export function ExteriorSlider({
             (xuất tĩnh đã tắt tối ưu ảnh, lại sinh thêm lazy-load cho từng ảnh). */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <motion.img
-          key={index}
+          key={slideKey}
           src={slides[index]}
           alt={alt}
           draggable={false}
           custom={direction}
           variants={{
-            enter: (d: number) => ({ x: d > 0 ? SLIDE : `-${SLIDE}`, opacity: 0 }),
+            enter: (d: number) => ({ x: d > 0 ? SLIDE : d < 0 ? `-${SLIDE}` : 0, opacity: 0 }),
             center: { x: 0, opacity: 1 },
-            exit: (d: number) => ({ x: d > 0 ? `-${SLIDE}` : SLIDE, opacity: 0 }),
+            exit: (d: number) => ({ x: d > 0 ? `-${SLIDE}` : d < 0 ? SLIDE : 0, opacity: 0 }),
           }}
           initial="enter"
           animate="center"

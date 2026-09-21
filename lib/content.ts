@@ -71,6 +71,12 @@ import versionsData from "@/content/versions.json";
 // ── Dòng xe (các phiên bản) ──────────────────────────────────
 export type VersionSpec = { value: string; label: string };
 export type VersionItem = {
+  /**
+   * Mã nhận diện CỐ ĐỊNH, ẩn, không sửa được trong CMS (khác `code` — chữ hiển thị,
+   * khách sửa được). Ảnh riêng theo phiên bản ở khối Ngoại thất / Nội thất gắn với
+   * mã này, nên đổi tên hay đổi thứ tự phiên bản không làm lệch ảnh.
+   */
+  id: string;
   name: string;
   code: string;
   displayName: string;
@@ -78,6 +84,13 @@ export type VersionItem = {
   specs: VersionSpec[];
 };
 export type VersionsContent = {
+  /**
+   * `id` của phiên bản MẶC ĐỊNH (hiện là "v26" = V2.6-2S): trang mở ra ở phiên bản này, và
+   * ảnh hiện có của khối Ngoại thất / Nội thất CHÍNH LÀ ảnh của nó — phiên bản khác chưa
+   * có ảnh riêng thì dùng lại. Ghi bằng mã, không theo thứ tự, nên đổi thứ tự không lệch.
+   * Không sửa được trong CMS (đổi thì nhờ dev), và CMS khoá nút xoá phiên bản này.
+   */
+  defaultVersionId?: string;
   label: string;
   heading: string;
   /** Nửa sau của tiêu đề, hiển thị bằng màu xanh sáng. */
@@ -97,9 +110,15 @@ export type ExteriorContent = {
   ghostTitle: string;
   view360: {
     background: CmsImage;
+    /** Ảnh xe MẶC ĐỊNH (hiện là V2.6) — dùng khi chưa có bộ ảnh các góc. */
     car: CmsImage;
-    /** Bộ ảnh xoay 360°. Để trống thì chỉ hiện 1 ảnh và thanh trượt bị khoá. */
+    /** Bộ ảnh các góc xe MẶC ĐỊNH (băng ảnh). Để trống thì chỉ hiện 1 ảnh `car`. */
     frames: string[];
+    /**
+     * Ảnh riêng theo phiên bản (khoá = `VersionItem.id`). Phiên bản không có mục ở đây,
+     * hoặc có mà để trống cả 2 ô, thì dùng ảnh mặc định ở trên.
+     */
+    byVersion?: Record<string, { car: CmsImage; frames: string[] }>;
   };
   heading: string;
   headingAccent: string;
@@ -115,6 +134,8 @@ export type Hotspot = {
   title: string;
   description: string;
   image: CmsImage;
+  /** Ảnh riêng theo phiên bản (khoá = `VersionItem.id`); thiếu thì dùng `image`. */
+  imageByVersion?: Record<string, CmsImage>;
   /** Toạ độ điểm nóng trên khung 1440×1200 của bản thiết kế. */
   x: number;
   y: number;
@@ -124,6 +145,8 @@ export type InteriorContent = {
   ghostTitle: string;
   background: CmsImage;
   car: CmsImage;
+  /** Ảnh xe nhìn từ trên riêng theo phiên bản (khoá = `VersionItem.id`); thiếu thì dùng `car`. */
+  carByVersion?: Record<string, CmsImage>;
   shadow: CmsImage;
   hotspots: Hotspot[];
 };
@@ -200,3 +223,31 @@ export type FooterContent = {
   socials: { icon: string; href: string }[];
 };
 export const footer = footerData as FooterContent;
+
+// ── Ảnh theo phiên bản (khối Ngoại thất / Nội thất) ─────────
+// Luật chung: ảnh hiện có của khối = ảnh của PHIÊN BẢN MẶC ĐỊNH (V2.6). Phiên bản khác có
+// ảnh riêng thì dùng ảnh riêng, không thì dùng ảnh của phiên bản mặc định. Không bao giờ trống.
+
+/** Phiên bản mặc định (xem `VersionsContent.defaultVersionId`); thiếu / sai mã thì lấy phiên bản đầu. */
+export const defaultVersionId =
+  versions.items.find((v) => v.id === versions.defaultVersionId)?.id ?? versions.items[0]?.id ?? "";
+
+/** Danh sách ảnh cho băng ảnh Ngoại thất của 1 phiên bản (luôn có ít nhất 1 ảnh). */
+export function exteriorSlides(v: ExteriorContent["view360"], versionId: string): string[] {
+  const own = versionId === defaultVersionId ? undefined : v.byVersion?.[versionId];
+  if (own?.frames?.length) return own.frames;
+  if (own?.car?.src) return [own.car.src];
+  return v.frames.length ? v.frames : [v.car.src];
+}
+
+/** Ảnh xe nhìn từ trên ở khối Nội thất của 1 phiên bản. */
+export function interiorCar(i: InteriorContent, versionId: string): CmsImage {
+  const own = versionId === defaultVersionId ? undefined : i.carByVersion?.[versionId];
+  return own?.src ? own : i.car;
+}
+
+/** Ảnh thẻ của 1 điểm nóng Nội thất theo phiên bản. */
+export function hotspotImage(h: Hotspot, versionId: string): CmsImage {
+  const own = versionId === defaultVersionId ? undefined : h.imageByVersion?.[versionId];
+  return own?.src ? own : h.image;
+}

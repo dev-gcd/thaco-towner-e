@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { exterior } from "@/lib/content";
 import defaults from "@/content/defaults/exterior.json";
 import type { ExteriorContent } from "@/lib/content";
@@ -7,6 +8,8 @@ import { useContentEditor, replaceAt, removeAt, move } from "./useContent";
 import { Card, Field, TextInput, TextArea, ImageInput, ResponsiveImageInput } from "./ui";
 import { AddButton, EditorShell, ItemCard } from "./EditorShell";
 import { Frame360Input } from "./Frame360Input";
+import { VersionTabs, DungAnhMacDinh, tenMacDinh, type VersionTab } from "./VersionTabs";
+import { defaultVersionId } from "@/lib/content";
 
 export function ExteriorEditor() {
   const { data, setData, dirty, saving, status, save, reset, applySaved } = useContentEditor<ExteriorContent>(
@@ -14,6 +17,33 @@ export function ExteriorEditor() {
     exterior,
     defaults as ExteriorContent
   );
+  // Tab phiên bản đang sửa ảnh: "" = ảnh mặc định (dùng cho phiên bản chưa có ảnh riêng).
+  // Tab đang chọn (mở ra ở phiên bản mặc định). `tab` rỗng = đang sửa phiên bản mặc định
+  // (ảnh hiện có của khối); khác rỗng = mã phiên bản đang sửa ảnh riêng.
+  const [ver, setVer] = useState<VersionTab>(defaultVersionId);
+  const tab = ver === defaultVersionId ? "" : ver;
+  const own = (id: string) => data.view360.byVersion?.[id];
+  const hasOwn = (id: string) => !!(own(id)?.frames?.length || own(id)?.car?.src);
+  /** Ghi đè 1 phần ảnh riêng của phiên bản `id`, giữ nguyên phần còn lại. */
+  const withOwn = (
+    d: ExteriorContent,
+    id: string,
+    patch: Partial<{ car: { src: string; alt: string }; frames: string[] }>
+  ): ExteriorContent => ({
+    ...d,
+    view360: {
+      ...d.view360,
+      byVersion: {
+        ...d.view360.byVersion,
+        [id]: {
+          car: { src: "", alt: d.view360.car.alt },
+          frames: [],
+          ...d.view360.byVersion?.[id],
+          ...patch,
+        },
+      },
+    },
+  });
 
   return (
     <EditorShell
@@ -41,19 +71,43 @@ export function ExteriorEditor() {
           value={data.view360.background}
           onChange={(background) => setData({ ...data, view360: { ...data.view360, background } })}
         />
-        <ImageInput
-          label="Ảnh xe"
-          hint="Khuyến nghị: 1536×1024px, nền trong suốt. Chỉ hiện khi chưa có ảnh các góc xe bên dưới."
-          value={data.view360.car.src}
-          onChange={(src) =>
-            setData({ ...data, view360: { ...data.view360, car: { ...data.view360.car, src } } })
-          }
-        />
       </Card>
 
+      {/* Ảnh xe THEO PHIÊN BẢN: chọn V2.7 ở khối Dòng xe thì khối này hiện ảnh V2.7. */}
       <Card className="flex flex-col gap-4">
+        <p className="text-sm font-semibold text-gray-800">Ảnh xe theo phiên bản</p>
+        <VersionTabs value={ver} onChange={setVer} hasOwn={hasOwn} />
+        {/* key theo tab: đổi tab thì 2 ô dưới làm lại từ đầu, không mang ảnh đang chọn dở sang. */}
+        <ImageInput
+          key={`car-${tab}`}
+          label="Ảnh xe"
+          hint={
+            tab
+              ? "Ảnh xe riêng của phiên bản này, 1536×1024px, nền trong suốt. Để trống = dùng ảnh của phiên bản mặc định. Chỉ hiện khi phiên bản này chưa có bộ ảnh các góc bên dưới."
+              : "Khuyến nghị: 1536×1024px, nền trong suốt. Chỉ hiện khi chưa có ảnh các góc xe bên dưới."
+          }
+          value={tab ? own(tab)?.car?.src ?? "" : data.view360.car.src}
+          onChange={(src) =>
+            setData(
+              tab
+                ? withOwn(data, tab, { car: { src, alt: data.view360.car.alt } })
+                : { ...data, view360: { ...data.view360, car: { ...data.view360.car, src } } }
+            )
+          }
+        />
+        {tab && !own(tab)?.car?.src && <DungAnhMacDinh src={data.view360.car.src} />}
         <Frame360Input
+          key={`frames-${tab}`}
           data={data}
+          frames={tab ? own(tab)?.frames ?? [] : data.view360.frames}
+          withFrames={(d, frames) =>
+            tab ? withOwn(d, tab, { frames }) : { ...d, view360: { ...d.view360, frames } }
+          }
+          emptyText={
+            tab
+              ? `Chưa có bộ ảnh riêng — khi khách chọn phiên bản này, trang dùng ảnh của ${tenMacDinh}.`
+              : undefined
+          }
           dirtyOther={dirty}
           onSaved={applySaved}
         />

@@ -681,7 +681,7 @@ async function handle360Commit(req: Request, env: Env): Promise<Response> {
     }
   }
 
-  const content = body.content as { view360?: { frames?: unknown } } | null;
+  const content = body.content as { view360?: { frames?: unknown; byVersion?: unknown } } | null;
   if (!content || typeof content !== "object" || !content.view360) {
     return json({ error: "Thiếu nội dung khối Ngoại thất" }, 400);
   }
@@ -689,8 +689,26 @@ async function handle360Commit(req: Request, env: Env): Promise<Response> {
   if (!Array.isArray(frames) || frames.some((f) => typeof f !== "string")) {
     return json({ error: "Danh sách ảnh 360 không hợp lệ" }, 400);
   }
+  // GỘP ảnh của mọi phiên bản (ảnh mặc định + `byVersion[id].frames`). Bước dưới xoá mọi
+  // ảnh trong thư mục 360 không có trong danh sách này — chỉ tính ảnh mặc định thì lưu bộ
+  // V2.7 sẽ xoá mất bộ V2.6 (và ngược lại).
+  const allFrames = [...(frames as string[])];
+  const byVersion = content.view360.byVersion;
+  if (byVersion !== undefined) {
+    if (!byVersion || typeof byVersion !== "object" || Array.isArray(byVersion)) {
+      return json({ error: "Ảnh theo phiên bản không hợp lệ" }, 400);
+    }
+    for (const v of Object.values(byVersion as Record<string, { frames?: unknown }>)) {
+      const f = v?.frames;
+      if (f === undefined) continue;
+      if (!Array.isArray(f) || f.some((x) => typeof x !== "string")) {
+        return json({ error: "Ảnh theo phiên bản không hợp lệ" }, 400);
+      }
+      allFrames.push(...(f as string[]));
+    }
+  }
   // Mọi ảnh vừa tải lên phải có mặt trong danh sách lưu — chặn lưu lệch nhau.
-  const inContent = new Set(frames as string[]);
+  const inContent = new Set(allFrames);
   for (const b of blobs) {
     if (!inContent.has((b.path as string).replace(/^public/, ""))) {
       return json({ error: "Danh sách ảnh không khớp với ảnh đã tải" }, 400);

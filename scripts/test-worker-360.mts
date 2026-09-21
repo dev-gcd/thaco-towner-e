@@ -102,6 +102,28 @@ const r4 = await call("/api/admin/360/commit", { blobs: [], content: { view360: 
 const t4 = calls.find((c) => c.url.endsWith("/git/trees"))!.body;
 kiem("xoá bộ → xoá cả 2 ảnh cũ", r4.status === 200 && r4.body.removed === 2 && t4.tree.filter((e: any) => e.sha === null).length === 2,
   calls.find((c) => c.url.endsWith("/git/commits"))!.body.message);
+// ── Ảnh theo phiên bản (21/09): bộ V2.7 nằm ở view360.byVersion.v27.frames ─────
+// Cây giả lập có sẵn 2 ảnh bộ "old1" — coi là bộ MẶC ĐỊNH đang dùng.
+const macDinh = ["/images/360/20260101-000000-old1/01.webp", "/images/360/20260101-000000-old1/02.webp"];
+calls = [];
+const r7 = await call("/api/admin/360/commit", {
+  blobs,
+  content: { view360: { frames: macDinh, byVersion: { v27: { car: { src: "", alt: "" }, frames } } } },
+}, cookie);
+const t7 = calls.find((c) => c.url.endsWith("/git/trees"))!.body;
+kiem("lưu bộ V2.7 (ảnh chỉ có trong byVersion) → nhận", r7.status === 200 && r7.body.ok, JSON.stringify(r7.body).slice(0, 80));
+kiem("lưu bộ V2.7 KHÔNG xoá bộ ảnh mặc định", t7.tree.filter((e: any) => e.sha === null).length === 0,
+  `xoá ${t7.tree.filter((e: any) => e.sha === null).length} ảnh`);
+calls = [];
+const r8 = await call("/api/admin/360/commit", { blobs: [], content: { view360: { frames: [], byVersion: { v27: { frames: macDinh } } } } }, cookie);
+const t8 = calls.find((c) => c.url.endsWith("/git/trees"))!.body;
+kiem("xoá bộ mặc định vẫn giữ ảnh V2.7 đang dùng", r8.status === 200 && t8.tree.filter((e: any) => e.sha === null).length === 0,
+  `xoá ${t8.tree.filter((e: any) => e.sha === null).length} ảnh`);
+kiem("byVersion sai kiểu → 400",
+  (await call("/api/admin/360/commit", { blobs: [], content: { view360: { frames: [], byVersion: [] } } }, cookie)).status === 400);
+kiem("frames của 1 phiên bản sai kiểu → 400",
+  (await call("/api/admin/360/commit", { blobs: [], content: { view360: { frames: [], byVersion: { v27: { frames: "x" } } } } }, cookie)).status === 400);
+
 // mã truy cập hợp lệ nhưng không có quyền ghi → GitHub trả 404 (đã gặp trên bản thật)
 blobStatus = 404;
 const r5 = await call("/api/admin/360/blobs", { batch, files: lot.slice(0, 1) }, cookie);

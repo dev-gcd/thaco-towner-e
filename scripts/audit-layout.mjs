@@ -15,6 +15,7 @@
 //      thì khối nằm ngay dưới thanh.
 //   9. Băng ảnh các góc xe (Ngoại thất): bấm tới hết, quay vòng về ảnh đầu (xe vào từ trái),
 //      thanh vị trí đúng chỗ, nút không tràn — bỏ qua khi nội dung chưa có ≥2 ảnh.
+//  10. Phiên bản dùng chung: đổi ở Dòng xe thì Ngoại thất + Nội thất đổi theo, và ngược lại.
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3002";
@@ -37,7 +38,7 @@ const POSITIONS = [
   ["#ngoai-that", "tiêu đề", "h2", 80, 1025, null, null],
   ["#ngoai-that", "chú thích ảnh", "figcaption", 80, 1855, null, null],
   ["#noi-that", "chữ mờ", "p", 386, 112, null, null],
-  ["#noi-that", "điểm nóng 1", "button", 756, 531, 40, 40],
+  ["#noi-that", "điểm nóng 1", "button[aria-expanded]", 756, 531, 40, 40],
   ["#tram-sac", "tiêu đề", "h2", 80, 76, null, null],
   ["#tram-sac", "thẻ trạm đầu", "ul li", 80, 238, 302, 372],
   ["#tram-sac", "ảnh xe", "img[alt*='sạc']", 110, 527, 1220, 809],
@@ -109,7 +110,7 @@ const LAPTOP = [
   ["#dong-xe", "tâm nút trái", "button", 108, 577, true],
   ["#dang-ky", "thẻ 1", "article", 80, 80, false],
   ["#noi-that", "cụm tiêu đề", "div.flex-col", 386, 80, false],
-  ["#noi-that", "tâm điểm nóng 1", "button", 776, 551, true],
+  ["#noi-that", "tâm điểm nóng 1", "button[aria-expanded]", 776, 551, true],
   ["#noi-that", "tâm điểm nóng 5", "div.hidden > div:nth-child(5) > button", 740, 748, true],
 ];
 console.log("\n①b Laptop: khối có bản laptop co đúng tỉ lệ khung 1440 (lệch ≤3px)\n");
@@ -266,7 +267,7 @@ console.log("\n④ Hiệu ứng\n");
       return el ? getComputedStyle(el).opacity : "?";
     });
   const p1 = await phu();
-  await page.click("#noi-that button");
+  await page.click("#noi-that button[aria-expanded]");
   await page.waitForTimeout(500);
   const p2 = await phu();
   kiem("nội thất: bấm điểm nóng thì nền tối 70%", p1 === "0" && Math.abs(Number(p2) - 0.7) < 0.05,
@@ -305,7 +306,14 @@ for (const [w, h] of [[320, 568], [360, 780], [390, 844], [430, 932], [768, 1024
       // chữ đè chữ
       const chu = [...s.querySelectorAll("h1,h2,h3,p,span,dd,dt,li,a,button")]
         .filter((e) => e.textContent.trim() && !e.children.length)
-        .map((e) => ({ e, r: e.getBoundingClientRect() }))
+        .map((e) => {
+          // Ngang: VÙNG CHỮ thật (Range) — thẻ <p> rộng hết hàng, lấy khung thẻ thì nút đứng
+          // cùng hàng bị báo "đè chữ" nhầm. Dọc: khung dòng của thẻ — vùng nét chữ khổng lồ
+          // (136px) cao hơn chiều cao dòng, lấy theo nét thì dòng trên bị báo đè nhầm.
+          const g = document.createRange(); g.selectNodeContents(e);
+          const t = g.getBoundingClientRect(), k = e.getBoundingClientRect();
+          return { e, r: { left: t.left, right: t.right, top: k.top, bottom: k.bottom, width: t.width, height: k.height } };
+        })
         .filter((o) => o.r.width > 8 && o.r.height > 8);
       outer: for (let i = 0; i < chu.length; i++)
         for (let j = i + 1; j < chu.length; j++) {
@@ -454,7 +462,14 @@ for (const [w, h, dpr] of [[800, 500, 1.5], [853, 533, 1.5], [1024, 640, 1.25], 
       const la = [...s.querySelectorAll("h1,h2,h3,p,span,dd,dt,li,a,button,figcaption")]
         .filter((e) => e.textContent.trim() && ![...e.children].some((c) => c.textContent.trim()))
         .filter((e) => e.getClientRects().length && getComputedStyle(e).visibility !== "hidden" && !e.closest("[aria-hidden=true]"))
-        .map((e) => ({ e, r: e.getBoundingClientRect() }))
+        .map((e) => {
+          // Ngang: VÙNG CHỮ thật (Range) — thẻ <p> rộng hết hàng, lấy khung thẻ thì nút đứng
+          // cùng hàng bị báo "đè chữ" nhầm. Dọc: khung dòng của thẻ — vùng nét chữ khổng lồ
+          // (136px) cao hơn chiều cao dòng, lấy theo nét thì dòng trên bị báo đè nhầm.
+          const g = document.createRange(); g.selectNodeContents(e);
+          const t = g.getBoundingClientRect(), k = e.getBoundingClientRect();
+          return { e, r: { left: t.left, right: t.right, top: k.top, bottom: k.bottom, width: t.width, height: k.height } };
+        })
         .filter((o) => o.r.width > 4 && o.r.height > 4);
       for (const { e, r } of la) {
         const t = e.textContent.trim().slice(0, 20);
@@ -582,6 +597,37 @@ for (const [w, h, dpr] of [[320, 568, 2], [390, 844, 3], [853, 533, 1.5], [1440,
   if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) sai.push("tràn ngang");
   if (sai.length) loi++;
   console.log(`  ${sai.length ? "✗" : "✓"} ${String(w).padStart(4)}@${dpr}  ${soAnh} ảnh${sai.length ? "\n        • " + sai.join("\n        • ") : ""}`);
+  await page.close();
+}
+
+/* ── 10. Phiên bản dùng chung cả trang (21/09) ────────────────
+   Chọn phiên bản ở khối Dòng xe thì Ngoại thất + Nội thất đổi theo, và ngược lại —
+   đo trên nút chuyển nhanh (aria-pressed), nên chạy được cả khi chưa có ảnh riêng. */
+console.log("\n⑩ Phiên bản xe dùng chung cho Dòng xe / Ngoại thất / Nội thất\n");
+for (const [w, h, dpr] of [[390, 844, 3], [853, 533, 1.5], [1440, 900, 1]]) {
+  const page = await mo(w, h, dpr);
+  const doc = () => page.evaluate(() => {
+    const on = (sel) => [...document.querySelectorAll(`${sel} [role=group][aria-label='Chọn phiên bản xe'] button`)]
+      .find((b) => b.getAttribute("aria-pressed") === "true")?.textContent.trim().toLowerCase();
+    return { dongXe: document.querySelector("#dong-xe span.text-\\[44px\\]")?.textContent.trim().toLowerCase(), ngoai: on("#ngoai-that"), noi: on("#noi-that") };
+  });
+  const soPB = await page.evaluate(() => document.querySelectorAll("#ngoai-that [role=group][aria-label='Chọn phiên bản xe'] button").length);
+  if (soPB < 2) { console.log(`  – ${String(w).padStart(4)}  bỏ qua: chỉ có 1 phiên bản`); await page.close(); continue; }
+  const sai = [];
+  const dau = await doc();
+  if (!(dau.dongXe && dau.dongXe === dau.ngoai && dau.ngoai === dau.noi)) sai.push(`mở trang: 3 khối lệch nhau ${JSON.stringify(dau)}`);
+  await page.evaluate(() => document.querySelector("#dong-xe").scrollIntoView());
+  await page.click("#dong-xe button[aria-label^='Phiên bản kế tiếp']");
+  await page.waitForTimeout(1200);
+  const sau = await doc();
+  if (sau.dongXe === dau.dongXe || !(sau.dongXe === sau.ngoai && sau.ngoai === sau.noi)) sai.push(`đổi ở Dòng xe: ${JSON.stringify(sau)}`);
+  await page.evaluate(() => document.querySelector("#noi-that").scrollIntoView());
+  await page.click("#noi-that [role=group][aria-label='Chọn phiên bản xe'] button:first-child");
+  await page.waitForTimeout(1200);
+  const lai = await doc();
+  if (!(lai.dongXe === dau.dongXe && lai.ngoai === dau.ngoai)) sai.push(`đổi ở Nội thất: ${JSON.stringify(lai)}`);
+  if (sai.length) loi++;
+  console.log(`  ${sai.length ? "✗" : "✓"} ${String(w).padStart(4)}@${dpr}  ${soPB} phiên bản${sai.length ? "\n        • " + sai.join("\n        • ") : ""}`);
   await page.close();
 }
 

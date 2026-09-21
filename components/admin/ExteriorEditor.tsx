@@ -43,7 +43,7 @@ export function ExteriorEditor() {
         />
         <ImageInput
           label="Ảnh xe"
-          hint="Khuyến nghị: 1440×960px, nền trong suốt."
+          hint="Khuyến nghị: 1536×1024px, nền trong suốt. Chỉ hiện khi chưa có ảnh các góc xe bên dưới."
           value={data.view360.car.src}
           onChange={(src) =>
             setData({ ...data, view360: { ...data.view360, car: { ...data.view360.car, src } } })

@@ -6,11 +6,11 @@ import { motion } from "motion/react";
 import { exterior } from "@/lib/content";
 import { SectionLabel } from "@/components/SectionLabel";
 import { ArrowLeft, ArrowRight } from "@/components/icons";
-import { Car360 } from "@/components/Car360";
+import { ExteriorSlider, SliderTrack } from "@/components/ExteriorSlider";
 
 /**
  * Ngoại thất = 2 khối chồng nhau (khung thiết kế 1440×2000):
- *  · 0–1025  : ảnh xe toàn cảnh + thanh trượt xoay 360°
+ *  · 0–1025  : ảnh xe toàn cảnh + băng ảnh các góc xe (mũi tên + thanh vị trí)
  *  · 1025–2000: tiêu đề lớn + băng chuyền chi tiết (thẻ lớn 900 + thẻ hé 340)
  *
  * Từ `lg` (800) co theo `--u` (khối gắn `.canvas-1440`). Khối 2 ở dải laptop xếp theo
@@ -22,10 +22,19 @@ const SWAP = { duration: 0.833, ease: [0.22, 1, 0.36, 1] } as const;
 
 export function Exterior() {
   const { label, ghostTitle, view360, heading, headingAccent, description, items } = exterior;
-  const [frame, setFrame] = useState(0);
   const [index, setIndex] = useState(0);
-
-  const hasFrames = view360.frames.length > 1;
+  // Băng ảnh các góc xe. Dữ liệu vẫn ở `view360.frames` (tải lên bằng ô "Ảnh các góc
+  // xe" trong CMS — cùng luồng 1 commit như trước); chưa có bộ ảnh thì hiện 1 ảnh xe.
+  const slides = view360.frames.length ? view360.frames : [view360.car.src];
+  const [slide, setSlide] = useState<{ i: number; dir: 1 | -1 }>({ i: 0, dir: 1 });
+  const many = slides.length > 1;
+  // Hướng trượt theo chiều SỐ THỨ TỰ, không theo nút bấm: bấm "sau" ở ảnh cuối quay về
+  // ảnh đầu thì xe mới vào từ TRÁI (đúng như video dựng play).
+  const step = (delta: 1 | -1) =>
+    setSlide(({ i }) => {
+      const next = (i + delta + slides.length) % slides.length;
+      return { i: next, dir: next > i ? 1 : -1 };
+    });
   const go = (n: number) => setIndex(((n % items.length) + items.length) % items.length);
   // Thẻ đang xem luôn đứng đầu; các thẻ còn lại xếp sau dưới dạng thẻ hé.
   const ordered = [...items.slice(index), ...items.slice(0, index)];
@@ -34,7 +43,9 @@ export function Exterior() {
     <section id="ngoai-that" className="canvas-1440 bg-white">
       {/* ── Khối 1: ảnh toàn cảnh + thanh trượt 360° ───────────── */}
       {/* Ảnh tràn hết bề ngang; chữ và thanh trượt neo trong khung 1440. */}
-      <div className="relative w-full lg:h-[calc(1025*var(--u))]">
+      {/* Điện thoại: xếp dọc ảnh xe → mũi tên + thanh vị trí → tiêu đề (mũi tên nằm sát
+          ảnh để biết là bấm đổi ảnh). Từ `lg` các phần tử ghim toạ độ, thứ tự không còn tác dụng. */}
+      <div className="relative flex w-full flex-col lg:block lg:h-[calc(1025*var(--u))]">
         <div className="relative h-[380px] sm:h-[520px] md:h-[620px] lg:absolute lg:inset-x-0 lg:top-[calc(65*var(--u))] lg:h-[calc(960*var(--u))]">
           <Image
             src={view360.background.srcMobile || view360.background.src}
@@ -52,38 +63,34 @@ export function Exterior() {
             aria-hidden
             className="pointer-events-none absolute inset-x-0 bottom-0 h-[352px] bg-linear-to-t from-white to-transparent lg:h-[calc(352*var(--u))]"
           />
-          <Car360
-            frames={view360.frames}
-            fallbackSrc={view360.car.src}
+          <ExteriorSlider
+            slides={slides}
             alt={view360.car.alt}
-            frame={frame}
-            onFrame={setFrame}
+            index={Math.min(slide.i, slides.length - 1)}
+            direction={slide.dir}
+            onStep={step}
             className="absolute inset-0 outline-none"
           />
         </div>
 
-        <div className="relative mx-auto flex w-full max-w-[1440px] flex-col gap-[12px] px-4 pt-10 lg:absolute lg:inset-x-0 lg:top-[calc(80*var(--u))] lg:gap-[calc(12*var(--u))] lg:px-[calc(80*var(--u))] lg:pt-0">
+        <div className="relative order-2 mx-auto flex w-full max-w-[1440px] flex-col gap-[12px] px-4 pt-10 lg:absolute lg:inset-x-0 lg:top-[calc(80*var(--u))] lg:gap-[calc(12*var(--u))] lg:px-[calc(80*var(--u))] lg:pt-0">
           <SectionLabel>{label}</SectionLabel>
           <p className="text-[40px] font-medium uppercase leading-[46px] text-brand-deep sm:text-[64px] sm:leading-[72px] lg:text-[calc(136*var(--u))] lg:leading-[calc(144*var(--u))]">
             {ghostTitle}
           </p>
         </div>
 
-        {hasFrames && (
-          <div className="mx-auto mt-6 flex w-fit items-center gap-[32px] lg:absolute lg:inset-x-0 lg:top-[calc(917*var(--u)_-_28px)] lg:mx-auto lg:mt-0 lg:gap-[calc(32*var(--u))]">
-            <RoundButton label="Xoay trái" onClick={() => setFrame((f) => (f - 1 + view360.frames.length) % view360.frames.length)}>
+        {many && (
+          <div className="order-1 mx-auto mt-6 flex w-fit items-center gap-4 sm:gap-[32px] lg:absolute lg:inset-x-0 lg:top-[calc(917*var(--u)_-_28px)] lg:mx-auto lg:mt-0 lg:gap-[calc(32*var(--u))]">
+            <RoundButton label="Ảnh ngoại thất trước" onClick={() => step(-1)}>
               <ArrowLeft className="size-[14px]" />
             </RoundButton>
-            <input
-              type="range"
-              min={0}
-              max={view360.frames.length - 1}
-              value={frame}
-              onChange={(e) => setFrame(Number(e.target.value))}
-              aria-label="Xoay xe 360 độ"
-              className="h-[4px] w-[260px] lg:w-[max(160px,calc(260*var(--u)))] cursor-pointer appearance-none rounded-full bg-stroke-mute accent-brand"
+            <SliderTrack
+              index={Math.min(slide.i, slides.length - 1)}
+              count={slides.length}
+              className="w-[160px] sm:w-[260px] lg:w-[max(160px,calc(260*var(--u)))]"
             />
-            <RoundButton label="Xoay phải" onClick={() => setFrame((f) => (f + 1) % view360.frames.length)}>
+            <RoundButton label="Ảnh ngoại thất sau" onClick={() => step(1)}>
               <ArrowRight className="size-[14px]" />
             </RoundButton>
           </div>

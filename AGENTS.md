@@ -61,7 +61,7 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
 | 2 | GTSP | `222:2162` | 684 | giới thiệu + nút "Đăng ký lái thử ngay" |
 | 3 | USP | `222:2165` | 900 | **5 thẻ**, mỗi thẻ **2 ảnh** (thường + chi tiết khi rê chuột, mã ảnh khác hẳn nhau). Khung nhìn tràn viền: 3 thẻ đầy + 2 thẻ hé |
 | 4 | Dòng xe | `222:2166` | 951 | 2 phiên bản. **Đổi bản = nền trượt ngang 684px + bảng thông số đổi bên** (V2.6 x=735 phải, V2.7 x=176 trái). Hai góc dưới bo 80px |
-| 5 | Ngoại thất | `222:2168` | 2000 | 2 khối con: ảnh lớn + danh sách 4 điểm đánh số |
+| 5 | Ngoại thất | `222:2168` | 2000 | 2 khối con: băng ảnh các góc xe (xem mục "Bộ ảnh các góc xe") + danh sách 4 điểm đánh số |
 | 6 | Nội thất | `222:2172` | 1200 | 5 điểm nóng trên ảnh xe (AVN, điều hoà, kính, ghế, cần số) |
 | 7 | CTA 1 | `222:2173` | 718 | 2 nút: "Đăng ký lái thử" + "Tải Brochure" — **không có form nhập** |
 | 8 | Trạm sạc | `222:2174` | 1276 | danh sách trạm + nút "Mở bản đồ". ⚠️ **Đứng SAU CTA**, không phải trước |
@@ -167,11 +167,12 @@ pnpm build             # xuất tĩnh → out/
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
 pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
-pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 9 phép đo: toạ độ so với Figma ·
+pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 10 phép đo: toạ độ so với Figma ·
                        #    bản laptop co đúng tỉ lệ (853/1024/1280/1366) · nội dung không lọt
                        #    khung 1440 · tràn ngang 12 cỡ màn · hiệu ứng · bản điện thoại ·
                        #    thao tác trên điện thoại · dải laptop 800–1439 (chữ không bị cắt,
-                       #    không đè nhau, không nhỏ hơn 12px) · thanh menu cố định + hotline
+                       #    không đè nhau, không nhỏ hơn 12px) · thanh menu cố định + hotline ·
+                       #    băng ảnh các góc xe
 pnpm test:smoke        # chức năng chính ở máy (ảnh, form, 2 hộp thoại, 10 mục CMS) — tự dọn dữ liệu thử
 pnpm test:worker       # luồng lưu bộ ảnh 360° của Worker với GitHub GIẢ LẬP (không tạo commit thật)
 ```
@@ -189,11 +190,23 @@ Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác t
 - Khách đăng ký: form công khai POST `/api/leads` → D1; xem ở thẻ **Khách đăng ký**.
 - Email báo có khách mới (tuỳ chọn): cấu hình `MAIL_*` (Resend) — xem `worker/index.ts`.
 
-### Bộ ảnh xoay 360° (khối Ngoại thất)
+### Bộ ảnh các góc xe — băng ảnh khối Ngoại thất (trước 21/09 gọi là "bộ ảnh 360°")
+
+🔴 **Khối 1 của Ngoại thất là BĂNG ẢNH, không phải trình xem xoay 360°.** Figma chỉ có 1 ảnh xe +
+2 mũi tên + thanh vị trí 260×4 (đoạn xanh 54px); video dựng play `_docs/slider_ngoai_that.mp4` cho
+thấy 8 góc chụp rời, đổi bằng mũi tên. Bản 360° kéo xoay trước đây là hiểu sai — đã xoá (`Car360.tsx`).
+Trang khách: `components/ExteriorSlider.tsx` — xe cũ trượt ra + nhạt dần, xe mới trượt vào CÙNG LÚC
+(0,7s); hướng theo chiều SỐ THỨ TỰ (sang ảnh sau vào từ phải; lùi hoặc quay vòng về ảnh đầu vào từ
+trái — đúng video); vuốt ngang trên điện thoại, phím ←/→; chưa có bộ ảnh thì hiện 1 ảnh xe, ẩn mũi
+tên. **Ảnh phải cùng khổ 1536×1024, xe cùng chiều cao và cùng đường chân bánh** (đo từ video: xe
+chính diện cao ~464px, đáy xe y≈821 tính từ đầu khối ở khung 1440) — không thì xe nhảy khi đổi ảnh.
+Ảnh gốc 8 góc (chụp ngoài trời, CÒN NỀN): `_docs/V2.6-2S/NGOẠI THẤT/` — cần bản tách nền.
+Dữ liệu, API và thư mục ảnh vẫn mang tên `360` (`view360.frames`, `/api/admin/360/*`,
+`public/images/360/`) — giữ nguyên cho khỏi đổi Worker và dữ liệu đã lưu.
 
 Khách tải **cả bộ ảnh** từ máy trong CMS (chọn nhiều ảnh / cả thư mục / kéo thả), không cần có
 sẵn đường dẫn. Tải từng ảnh qua `/api/admin/upload` thì N ảnh = N commit = N lần Cloudflare build,
-nên bộ 360 đi đường riêng để ra **đúng 1 commit**:
+nên bộ ảnh đi đường riêng để ra **đúng 1 commit**:
 
 1. Trình duyệt xếp ảnh theo tên tệp (so số: `2.png` trước `10.png`), nén WebP ≤1600px.
 2. `POST /api/admin/360/blobs` — **lô tối đa 20 ảnh** (mỗi ảnh = 1 lần Worker gọi GitHub; gói
@@ -202,8 +215,8 @@ nên bộ 360 đi đường riêng để ra **đúng 1 commit**:
    bộ ảnh cũ** trong `public/images/360/`, tạo commit, dời nhánh với `force:false` (nhánh vừa bị
    người khác đổi thì thử lại 1 lần, vẫn đổi thì báo lỗi — không bao giờ ghi đè).
 
-Ảnh nằm ở `public/images/360/<mã-lô>/01.webp…`. Giới hạn 2–72 ảnh. Trang khách (`components/Car360.tsx`)
-tải trước cả bộ khi khối còn cách màn ~800px, và xoay bằng kéo ngang / phím mũi tên / thanh trượt.
+Ảnh nằm ở `public/images/360/<mã-lô>/01.webp…`. Giới hạn 2–72 ảnh (nên 6–12). Trang khách tải trước
+cả bộ khi khối còn cách màn ~800px.
 `scripts/cms-dev.mjs` mô phỏng đúng 2 đường này bằng cách ghi thẳng ra đĩa.
 
 ### Thêm 1 khối sửa được (công thức 5 bước)

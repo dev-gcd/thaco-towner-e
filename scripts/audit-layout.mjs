@@ -13,6 +13,8 @@
 //   7. Dải laptop 800–1439: chữ không bị cắt / đè nhau / ra ngoài khối / nhỏ hơn 12px.
 //   8. Thanh menu cố định: bám đầu màn suốt trang, 6 mục + hotline không tràn, bấm menu
 //      thì khối nằm ngay dưới thanh.
+//   9. Băng ảnh các góc xe (Ngoại thất): bấm tới hết, quay vòng về ảnh đầu (xe vào từ trái),
+//      thanh vị trí đúng chỗ, nút không tràn — bỏ qua khi nội dung chưa có ≥2 ảnh.
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3002";
@@ -536,6 +538,50 @@ for (const [w, h, dpr] of [[320, 568, 2], [390, 844, 3], [800, 500, 1.5], [853, 
   }
   if (sai.length) loi++;
   console.log(`  ${sai.length ? "✗" : "✓"} ${String(w).padStart(4)}@${dpr}  thanh ${Math.round(dau.cao)}px${sai.length ? "\n        • " + sai.join("\n        • ") : ""}`);
+  await page.close();
+}
+
+/* ── 9. Băng ảnh các góc xe (khối Ngoại thất) ─────────────────
+   Chỉ đo khi nội dung có ≥2 ảnh (chưa có bộ ảnh thì khối hiện 1 ảnh, ẩn mũi tên). */
+console.log("\n⑨ Băng ảnh các góc xe ở khối Ngoại thất\n");
+for (const [w, h, dpr] of [[320, 568, 2], [390, 844, 3], [853, 533, 1.5], [1440, 900, 1]]) {
+  const page = await mo(w, h, dpr);
+  const soAnh = await page.evaluate(() => {
+    const box = document.querySelector("#ngoai-that [aria-roledescription]");
+    return box ? +box.getAttribute("aria-label").split("/")[1] : 0;
+  });
+  if (soAnh < 2) {
+    console.log(`  – ${String(w).padStart(4)}  bỏ qua: nội dung chưa có bộ ảnh các góc xe`);
+    await page.close();
+    continue;
+  }
+  const doc = () => page.evaluate(() => {
+    const box = document.querySelector("#ngoai-that [aria-roledescription]");
+    const tr = box.closest("section").querySelector("div[aria-hidden].rounded-full").getBoundingClientRect();
+    const th = box.closest("section").querySelector("div[aria-hidden].rounded-full > span").getBoundingClientRect();
+    return { so: +box.getAttribute("aria-label").match(/(\d+)\//)[1], vt: (th.left - tr.left) / (tr.width - th.width) };
+  });
+  const sai = [];
+  await page.evaluate(() => document.querySelector("#ngoai-that").scrollIntoView());
+  await page.waitForTimeout(500);
+  const nut = await page.evaluate(() => [...document.querySelectorAll("#ngoai-that button[aria-label^='Ảnh ngoại thất']")].map((b) => { const r = b.getBoundingClientRect(); return [r.left, r.right, r.height]; }));
+  if (nut.some(([l, r]) => l < 0 || r > w)) sai.push("nút mũi tên tràn khỏi màn");
+  if (nut.some(([, , hh]) => hh < 40)) sai.push("nút mũi tên nhỏ hơn 40px");
+  const sau = page.locator("button[aria-label='Ảnh ngoại thất sau']");
+  for (let i = 1; i < soAnh; i++) { await sau.click(); await page.waitForTimeout(800); }
+  const cuoi = await doc();
+  if (cuoi.so !== soAnh || Math.abs(cuoi.vt - 1) > 0.03) sai.push(`bấm sau ${soAnh - 1} lần: ảnh ${cuoi.so}, thanh ${cuoi.vt.toFixed(2)} (mong ảnh ${soAnh}, thanh 1)`);
+  await sau.click();
+  await page.waitForTimeout(250);
+  // quay vòng về ảnh đầu: xe mới phải vào từ TRÁI (đang ở toạ độ âm)
+  const vao = await page.evaluate(() => { const imgs = [...document.querySelectorAll("#ngoai-that [aria-roledescription] img")]; return new DOMMatrix(getComputedStyle(imgs.at(-1)).transform).m41; });
+  if (!(vao < 0)) sai.push(`quay vòng về ảnh đầu: xe mới không vào từ trái (x=${Math.round(vao)})`);
+  await page.waitForTimeout(800);
+  const dau = await doc();
+  if (dau.so !== 1 || Math.abs(dau.vt) > 0.03) sai.push(`quay vòng: đang ở ảnh ${dau.so}, thanh ${dau.vt.toFixed(2)} (mong ảnh 1, thanh 0)`);
+  if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) sai.push("tràn ngang");
+  if (sai.length) loi++;
+  console.log(`  ${sai.length ? "✗" : "✓"} ${String(w).padStart(4)}@${dpr}  ${soAnh} ảnh${sai.length ? "\n        • " + sai.join("\n        • ") : ""}`);
   await page.close();
 }
 

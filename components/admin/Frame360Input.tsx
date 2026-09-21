@@ -4,9 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Button, prepareUpload } from "./ui";
 
 /**
- * Tải cả bộ ảnh xoay 360° từ máy lên trong MỘT lần lưu.
+ * Tải cả bộ ảnh CÁC GÓC XE (băng ảnh khối Ngoại thất) từ máy lên trong MỘT lần lưu.
+ * Tên cũ "360°" còn ở đường dẫn API / tên hàm / thư mục ảnh — giữ nguyên để không
+ * phải đổi Worker và dữ liệu đã lưu; trang khách nay hiển thị dạng băng ảnh (21/09).
  *
- * Luồng: chọn/kéo thả nhiều ảnh → xếp theo tên tệp → xem thử xoay → bấm lưu:
+ * Luồng: chọn/kéo thả nhiều ảnh → xếp theo tên tệp → xem thử → bấm lưu:
  *   1. trình duyệt nén từng ảnh sang WebP (tối đa 1600px ngang);
  *   2. gửi theo lô 20 ảnh tới /api/admin/360/blobs (Worker chỉ được gọi ra ngoài
  *      giới hạn số lần mỗi lượt);
@@ -179,7 +181,7 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
       const { next, removed } = await commit(blobs, frames);
       onSaved(
         next,
-        `Đã lưu bộ ${frames.length} ảnh 360°${removed ? `, xoá ${removed} ảnh cũ` : ""}. Trang sẽ cập nhật sau ~1–2 phút.`
+        `Đã lưu ${frames.length} ảnh các góc xe${removed ? `, xoá ${removed} ảnh cũ` : ""}. Trang sẽ cập nhật sau ~1–2 phút.`
       );
       setPending([]);
     } catch (e) {
@@ -190,12 +192,12 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
   }
 
   async function clearAll() {
-    if (!window.confirm("Xoá toàn bộ bộ ảnh 360° đang dùng? Trang sẽ quay về hiển thị 1 ảnh xe.")) return;
+    if (!window.confirm("Xoá toàn bộ ảnh các góc xe đang dùng? Trang sẽ quay về hiển thị 1 ảnh xe.")) return;
     setError(null);
     setStep({ label: "Đang xoá bộ ảnh", done: 0, total: 1 });
     try {
       const { next, removed } = await commit([], []);
-      onSaved(next, `Đã xoá bộ ảnh 360° (${removed} ảnh).`);
+      onSaved(next, `Đã xoá ảnh các góc xe (${removed} ảnh).`);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -207,11 +209,11 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold text-gray-800">Bộ ảnh xoay 360°</p>
+          <p className="text-sm font-semibold text-gray-800">Ảnh các góc xe (băng ảnh)</p>
           <p className="text-xs text-gray-500">
             {current.length >= MIN_FRAMES
               ? `Đang dùng ${current.length} ảnh.`
-              : "Chưa có bộ ảnh — trang đang hiện 1 ảnh xe và ẩn thanh xoay."}
+              : "Chưa có bộ ảnh — trang đang hiện 1 ảnh xe, ẩn mũi tên và thanh vị trí."}
           </p>
         </div>
         {current.length > 0 && (
@@ -253,9 +255,10 @@ export function Frame360Input<T extends { view360: { frames: string[] } }>({
           </Button>
         </div>
         <p className="max-w-[34rem] text-xs leading-relaxed text-gray-500">
-          {MIN_FRAMES}–{MAX_FRAMES} ảnh (nên 36), PNG nền trong suốt, cùng khổ, tối thiểu 1440×960.
-          Đặt tên theo thứ tự xoay: <code>01.png</code>, <code>02.png</code>… — hệ thống xếp theo tên
-          tệp và tự chuyển sang WebP. Không cần có sẵn đường dẫn ảnh.
+          Nên 6–12 ảnh (tối đa {MAX_FRAMES}), PNG nền trong suốt, <b>cùng khổ 1536×1024</b>, xe <b>cùng
+          chiều cao và cùng đường chân bánh</b> ở mọi ảnh (không thì xe nhảy khi đổi ảnh). Đặt tên
+          theo thứ tự hiện: <code>01.png</code>, <code>02.png</code>… — hệ thống xếp theo tên tệp và
+          tự chuyển sang WebP. Không cần có sẵn đường dẫn ảnh.
         </p>
         <input
           ref={fileRef}

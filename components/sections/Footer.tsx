@@ -66,13 +66,17 @@ export function Footer() {
         <div className="grid gap-10 py-10 lg:gap-x-[max(24px,calc(48*var(--u)))] lg:py-[calc(100*var(--u))] lg:max-xl:grid-cols-[minmax(190px,1fr)_minmax(0,max-content)] xl:h-[430px] xl:grid-cols-[485px_795px] xl:gap-0">
           <div className="flex min-w-0 flex-col items-start gap-[16px]">
             <div className="flex flex-col items-start gap-[8px]">
+              {/* Figma đặt ảnh này kiểu STRETCH + imageTransform (chỉ lấy dải 18,8%–70%
+                  chiều cao), KHÔNG cắt chính giữa — `object-cover` từng cắt mất đỉnh vòng
+                  elip. Tệp `logo-main.webp` đã cắt sẵn đúng dải đó, gấp 3 cỡ hiển thị cho
+                  nét; `object-contain` để logo khách tự tải lên cũng không bị cắt. */}
               <span className="relative block h-[60px] w-[139px] shrink-0">
                 <Image
                   src={logo.src}
                   alt={logo.alt}
                   width={139}
                   height={60}
-                  className="absolute inset-0 h-full w-full object-cover object-center"
+                  className="absolute inset-0 h-full w-full object-contain object-left"
                 />
               </span>
               <p className="text-body-lg font-bold uppercase text-brand-deep lg:text-[length:max(12px,calc(16*var(--u)))] lg:leading-[1.5]">

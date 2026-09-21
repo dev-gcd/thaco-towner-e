@@ -46,6 +46,12 @@ về trong JSON nhưng KHÔNG vẽ. Đã dựng nhầm 2 lần: chấm tròn 4px
 (tệp 2040px, Figma vẽ 2812px) và cơ chế trượt nền của chính khối đó — ảnh gốc có SẴN 2 chiếc xe,
 chiếc thứ hai là xe của bản V2.7, lộ ra sau khi nền trượt 684px. Đừng "sửa" cho mất nó.
 
+🔴 **Đọc `scaleMode` + `imageTransform` của mỗi ảnh trong Figma, đừng mặc định cắt chính giữa.**
+Đã dính 2 lần: bánh xe khối Giới thiệu (ảnh nằm trong khung 1869×842) và logo chân trang (21/09 —
+STRETCH, chỉ lấy dải 18,8%–70% chiều cao; `object-cover` cắt giữa làm mất đỉnh vòng elip, còn ảnh
+1460px thu về 139px thì mờ). Cách chữa: cắt sẵn tệp đúng dải Figma, thu về gấp 3 cỡ hiển thị
+(`logo-main.webp` 417×183), hiển thị bằng `object-contain`.
+
 ⚠️ **Tailwind v4 đặt phóng to vào thuộc tính `scale`, không phải `transform`** → muốn chạy mượt
 phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác dụng.
 

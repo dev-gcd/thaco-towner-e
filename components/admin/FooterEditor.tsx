@@ -45,7 +45,7 @@ export function FooterEditor() {
       <Card className="flex flex-col gap-4">
         <ImageInput
           label="Logo chính"
-          hint="Khuyến nghị: 139×60px, nền trong suốt."
+          hint="Khuyến nghị: 417×180px (gấp 3 ô 139×60 cho nét), nền trong suốt, cắt sát logo — ảnh lớn hơn nhiều sẽ bị mờ khi thu nhỏ."
           value={data.logo.src}
           onChange={(src) => setData({ ...data, logo: { ...data.logo, src } })}
         />

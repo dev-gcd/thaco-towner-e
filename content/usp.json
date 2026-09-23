@@ -4,61 +4,61 @@
   "items": [
     {
       "image": {
-        "src": "/images/usp/300km.webp",
+        "src": "/images/uploads/mudxg6yp-300km.webp",
         "alt": "Quãng đường 300km"
       },
       "title": "Quãng đường\n300km",
       "subtitle": "Sẵn sàng mọi hành trình",
       "imageHover": {
-        "src": "/images/usp/300km-hover.webp",
+        "src": "/images/uploads/mudxgdrq-300km-1.webp",
         "alt": "Quãng đường 300km — ảnh chi tiết"
       }
     },
     {
       "image": {
-        "src": "/images/usp/pin.webp",
+        "src": "/images/uploads/mudxgono-pin-catl.webp",
         "alt": "Công nghệ pin CATL 2C"
       },
       "title": "công nghệ\npin catl 2c",
       "subtitle": "Sẵn sàng mọi hành trình",
       "imageHover": {
-        "src": "/images/usp/pin-hover.webp",
+        "src": "/images/uploads/mudxgtjb-pin-catl-1.webp",
         "alt": "Công nghệ pin CATL 2C — ảnh chi tiết"
       }
     },
     {
       "image": {
-        "src": "/images/usp/khoang-hang.webp",
+        "src": "/images/uploads/mudxh600-khoang-ha-ng-1.webp",
         "alt": "Khoang hàng rộng rãi"
       },
       "title": "khoang hàng\nrộng rãi",
       "subtitle": "Tối ưu mỗi chuyến",
       "imageHover": {
-        "src": "/images/usp/khoang-hang-hover.webp",
+        "src": "/images/uploads/mudxhcp9-khoang-ha-ng.webp",
         "alt": "Khoang hàng rộng rãi — ảnh chi tiết"
       }
     },
     {
       "image": {
-        "src": "/images/usp/dong-co.webp",
+        "src": "/images/uploads/mudxhkyl--o-ng-co-.webp",
         "alt": "Động cơ điện Inovance"
       },
       "title": "động cơ điện\ninovance",
       "subtitle": "Sức mạnh vượt trội",
       "imageHover": {
-        "src": "/images/usp/dong-co-hover.webp",
+        "src": "/images/uploads/mudxhpif--o-ng-co-1.webp",
         "alt": "Động cơ điện Inovance — ảnh chi tiết"
       }
     },
     {
       "image": {
-        "src": "/images/usp/cabin.webp",
+        "src": "/images/uploads/mudxhxoz-cabin.webp",
         "alt": "Cabin tiện nghi"
       },
       "title": "cabin\ntiện nghi",
       "subtitle": "Giảm mệt mỏi",
       "imageHover": {
-        "src": "/images/usp/cabin-hover.webp",
+        "src": "/images/uploads/mudxi2wv-cabin-1.webp",
         "alt": "Cabin tiện nghi — ảnh chi tiết"
       }
     }

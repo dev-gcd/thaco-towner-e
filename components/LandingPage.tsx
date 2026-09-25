@@ -12,6 +12,7 @@ import { Charging } from "@/components/sections/Charging";
 import { Footer } from "@/components/sections/Footer";
 import { LeadDialog } from "@/components/LeadDialog";
 import { NoticeDialog } from "@/components/NoticeDialog";
+import { FloatingContact } from "@/components/FloatingContact";
 import { cta, defaultVersionId } from "@/lib/content";
 
 /**
@@ -46,6 +47,7 @@ export function LandingPage() {
         <Charging onMissingLink={openNotice} />
       </main>
       <Footer />
+      <FloatingContact />
       <LeadDialog open={leadOpen} onClose={() => setLeadOpen(false)} />
       <NoticeDialog
         open={noticeOpen}

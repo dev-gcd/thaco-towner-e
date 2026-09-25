@@ -3,7 +3,7 @@
   "ghostTitle": "nội thất",
   "background": { "src": "/images/interior/bg.webp", "srcMobile": "", "alt": "" },
   "car": { "src": "/images/interior/xe.webp", "alt": "Nội thất Thaco Towner E" },
-  "shadow": { "src": "/images/interior/shadow.webp", "alt": "" },
+  "shadow": { "src": "", "alt": "" },
   "hotspots": [
     {
       "title": "màn hình avn",

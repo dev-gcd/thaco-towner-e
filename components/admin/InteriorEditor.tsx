@@ -50,13 +50,13 @@ export function InteriorEditor() {
         </Field>
         <ResponsiveImageInput
           label="Ảnh nền"
-          recommended="1440×1917px, .webp"
+          recommended="1440×1200px (đúng khung khối), .webp"
           value={data.background}
           onChange={(background) => setData({ ...data, background })}
         />
         <ImageInput
           label="Ảnh bóng đổ"
-          hint="Khuyến nghị: 1440×1920px, nền trong suốt."
+          hint="Để trống nếu ảnh xe đã có sẵn bóng đổ (ảnh hiện tại đã có). Nếu dùng: 1440×1920px, nền trong suốt."
           value={data.shadow.src}
           onChange={(src) => setData({ ...data, shadow: { ...data.shadow, src } })}
         />
@@ -74,8 +74,8 @@ export function InteriorEditor() {
           label={tab ? `Ảnh xe — ${tabName}` : "Ảnh xe"}
           hint={
             tab
-              ? "Ảnh xe nhìn từ trên riêng của phiên bản này, 1440×1917px, nền trong suốt. Để trống = dùng ảnh của phiên bản mặc định."
-              : "Khuyến nghị: 1440×1917px, nền trong suốt."
+              ? "Ảnh xe nhìn từ trên riêng của phiên bản này, 1440×1200px, nền trong suốt. Để trống = dùng ảnh của phiên bản mặc định."
+              : "Khuyến nghị: 1440×1200px (đúng khung khối, xe đặt sẵn đúng chỗ), nền trong suốt."
           }
           value={tab ? data.carByVersion?.[tab]?.src ?? "" : data.car.src}
           onChange={(src) =>

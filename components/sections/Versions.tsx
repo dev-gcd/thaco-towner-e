@@ -19,21 +19,27 @@ import { ArrowLeft, ArrowRight } from "@/components/icons";
  * Ảnh gốc vốn có SẴN HAI chiếc xe — chiếc thứ hai chính là xe của bản V2.7, lộ ra
  * sau khi nền trượt. Đừng "sửa" cho mất chiếc xe đó.
  *
+ * Ảnh nền bộ 25/09 (4000×1791) làm sẵn cho cơ chế này: cao đúng bằng khối (951) thì
+ * rộng 2124 = 1440 + 684. Nên ảnh cao 100% khối, rộng 147.5%, và trượt từ 0 về -684.
+ *
  * Từ `lg` (800) bố cục co theo `--u` (khối gắn `.canvas-1440`), chữ co theo nhưng có
  * cỡ sàn. Bảng thông số 590·u không đủ chỗ cho 4 chỉ số 1 hàng ở laptop hẹp nên
  * dưới `xl` được xuống hàng; từ `xl` giữ đúng 1 hàng 590×97 như Figma.
  */
 
 // Quy về phần trăm bề rộng khung 1440 để giữ đúng bố cục ở mọi bề ngang màn.
-const BG_X = [-340 / 1440, -1024 / 1440]; // vị trí ảnh nền theo từng phiên bản
+const BG_X = [0, -684 / 1440]; // vị trí ảnh nền theo từng phiên bản
 const PANEL_X = [735 / 1440, 176 / 1440]; // vị trí bảng thông số đang hiển thị
 
 /**
- * Điện thoại không trượt ảnh nền được (ảnh bị `object-cover` cắt vừa khung), nên
- * đổi phiên bản bằng cách NGẮM điểm cắt sang chiếc xe kia. Ảnh gốc 2040×1532:
- * xe của bản 1 nằm quanh x=580, xe của bản 2 quanh x=1460 → quy ra 16% và 84%.
+ * Điện thoại: ảnh 4000×1791 rất ngang, phủ kín khối cao thì xe phóng quá to và đè
+ * chữ. Nên ảnh là 1 DẢI ở đầu khối, rộng 210% màn (xe ~160px như bản cũ), và đổi
+ * phiên bản bằng cách trượt dải: xe bản 1 ở 20.6% bề ngang ảnh → 43% màn khi lề 0;
+ * xe bản 2 ở 78.9% → 56% màn khi lề -110%. Máy tính bảng (640–799) chữ nằm cao hơn
+ * nên dải chỉ rộng 150% (không thì xe đè chữ "V2.6-2S"): xe bản 2 ở 118% → lề -68%.
  */
-const BG_POS = ["16% 56%", "84% 56%"];
+const BG_M = ["0%", "-110%"];
+const BG_M_SM = ["0%", "-68%"];
 
 export function Versions({
   versionId,
@@ -60,14 +66,15 @@ export function Versions({
         <Image
           src={background.srcMobile || background.src}
           alt=""
-          width={2812}
-          height={2112}
-          sizes="200vw"
-          className="absolute inset-0 h-full w-full object-cover [object-position:var(--bg-pos)] transition-[left,object-position] duration-[1022ms] [transition-timing-function:var(--ease-gentle)] lg:left-[var(--bg-x)] lg:top-1/2 lg:mt-[3.13vw] lg:h-auto lg:w-[195.28%] lg:max-w-none lg:-translate-y-1/2 lg:[object-position:50%_50%]"
+          width={4000}
+          height={1791}
+          sizes="150vw"
+          className="absolute left-[var(--bg-m)] top-0 h-auto w-[210%] max-w-none sm:left-[var(--bg-m-sm)] sm:w-[150%] [mask-image:linear-gradient(to_bottom,black_65%,transparent)] transition-[left] duration-[1022ms] [transition-timing-function:var(--ease-gentle)] lg:left-[var(--bg-x)] lg:h-full lg:w-[147.5%] lg:object-cover lg:[mask-image:none]"
           style={
             {
               "--bg-x": `${BG_X[frame] * 100}%`,
-              "--bg-pos": BG_POS[frame] ?? BG_POS[BG_POS.length - 1],
+              "--bg-m": BG_M[frame] ?? BG_M[BG_M.length - 1],
+              "--bg-m-sm": BG_M_SM[frame] ?? BG_M_SM[BG_M_SM.length - 1],
             } as React.CSSProperties
           }
         />

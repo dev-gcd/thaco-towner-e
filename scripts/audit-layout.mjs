@@ -41,7 +41,7 @@ const POSITIONS = [
   ["#noi-that", "điểm nóng 1", "button[aria-expanded]", 756, 531, 40, 40],
   ["#tram-sac", "tiêu đề", "h2", 80, 76, null, null],
   ["#tram-sac", "thẻ trạm đầu", "ul li", 80, 238, 302, 372],
-  ["#tram-sac", "ảnh xe", "img[alt*='sạc']", 110, 527, 1220, 809],
+  ["#tram-sac", "ảnh xe", "img[alt*='sạc']", 0, 666, 1440, 610], // dải đáy khối (ảnh 25/09)
   ["#dang-ky", "thẻ 1", "article", 80, 80, 630, 558],
   ["footer", "logo", "img", 80, 100, 139, 60],
 ];
@@ -234,7 +234,7 @@ console.log("\n④ Hiệu ứng\n");
   await page.click("#dong-xe button[aria-label^='Phiên bản kế tiếp']");
   await page.waitForTimeout(1300);
   const v2 = await doDongXe();
-  kiem("đổi phiên bản: nền trượt -340 → -1024", Math.abs(v1.nen + 340) <= 2 && Math.abs(v2.nen + 1024) <= 2,
+  kiem("đổi phiên bản: nền trượt 0 → -684", Math.abs(v1.nen) <= 2 && Math.abs(v2.nen + 684) <= 2,
     `${v1.nen} → ${v2.nen}`);
   kiem("đổi phiên bản: bảng đổi bên 735 → 176", Math.abs(v1.bang - 735) <= 2 && Math.abs(v2.bang - 176) <= 2,
     `${v1.bang} → ${v2.bang}`);
@@ -385,11 +385,11 @@ console.log("\n⑥ Thao tác trên điện thoại (390px)\n");
     if (!dat) loi++;
   };
 
-  // đổi phiên bản phải đổi luôn chiếc xe trong ảnh nền
+  // đổi phiên bản phải đổi luôn chiếc xe trong ảnh nền (điện thoại: dải ảnh trượt ngang)
   await page.evaluate(() => document.querySelector("#dong-xe").scrollIntoView());
   await page.waitForTimeout(700);
   const viTri = () =>
-    page.evaluate(() => getComputedStyle(document.querySelector("#dong-xe img")).objectPosition);
+    page.evaluate(() => Math.round(document.querySelector("#dong-xe img").getBoundingClientRect().left));
   const p1 = await viTri();
   await page.click("#dong-xe button[aria-label^='Phiên bản kế tiếp']");
   await page.waitForTimeout(1400);

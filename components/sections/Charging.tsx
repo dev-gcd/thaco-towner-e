@@ -11,10 +11,11 @@ import { SectionLabel } from "@/components/SectionLabel";
  *
  * Từ `lg` (800) co theo `--u` (khối gắn `.canvas-1440`) nhưng xếp theo DÒNG CHẢY:
  * thẻ trạm ở 853px chỉ rộng ~179px, ghim cứng cao 372·u thì nội dung tràn khỏi thẻ.
- * Nên thẻ cao theo nội dung (tối thiểu 372·u), ảnh xe nối sau thẻ (vẫn đè lên thẻ
- * 83·u và bị cắt đáy 60·u như Figma), ô tốc độ sạc neo theo đáy khối. Khung cha phải
- * `flow-root`: không thì lề âm ở đáy ảnh bị gộp xuyên ra ngoài, mất tác dụng, ô tốc độ
- * sạc tụt xuống đè lên xe 60·u. Từ `xl` ghim đúng toạ độ Figma.
+ * Nên thẻ cao theo nội dung (tối thiểu 372·u), ảnh xe nối sau thẻ, ô tốc độ sạc neo
+ * theo đáy khối. Từ `xl` ghim đúng toạ độ Figma.
+ * Ảnh xe bộ 25/09 là DẢI ĐÁY KHỐI 1440×610 cắt sẵn (xe đúng vị trí cũ, đáy ảnh = đáy
+ * khối): đặt ở y=666, tức cách đáy thẻ trạm 56. Trên điện thoại phóng 135% và lùi
+ * 17.5% để chỉ lấy phần có xe (xe chiếm 16.5%–86.3% bề ngang ảnh).
  */
 export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
   const { label, heading, description, background, car, mapLabel, stations, highlight } =
@@ -109,10 +110,10 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
           <Image
             src={car.src}
             alt={car.alt}
-            width={1220}
-            height={809}
-            sizes="(max-width: 1023px) 100vw, 1220px"
-            className="pointer-events-none relative mt-10 h-auto w-full px-4 lg:-mb-[calc(60*var(--u))] lg:-mt-[calc(83*var(--u))] lg:ml-[calc(110*var(--u))] lg:w-[calc(1220*var(--u))] lg:max-w-none lg:px-0 xl:absolute xl:left-[110px] xl:top-[527px] xl:m-0 xl:h-[809px] xl:w-[1220px]"
+            width={1440}
+            height={610}
+            sizes="(max-width: 1023px) 135vw, 1440px"
+            className="pointer-events-none relative -ml-[17.5%] mt-10 h-auto w-[135%] max-w-none lg:ml-0 lg:mt-[calc(56*var(--u))] lg:w-[calc(1440*var(--u))] xl:absolute xl:left-0 xl:top-[666px] xl:m-0 xl:h-[610px] xl:w-[1440px]"
           />
 
           <div className="relative mt-8 flex items-center gap-[16px] px-4 lg:absolute lg:bottom-[calc(522*var(--u))] lg:left-[calc(80*var(--u))] lg:mt-0 lg:w-[calc(494*var(--u))] lg:gap-[calc(16*var(--u))] lg:px-0 xl:top-[666px] xl:bottom-auto">

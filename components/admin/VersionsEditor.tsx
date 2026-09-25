@@ -53,7 +53,7 @@ export function VersionsEditor() {
         </Field>
         <ResponsiveImageInput
           label="Ảnh nền"
-          recommended="2812×2112px, .webp"
+          recommended="4000×1791px (tỉ lệ 2,23:1 — cao bằng khối thì dư đúng 684px để trượt), .webp"
           value={data.background}
           onChange={(background) => setData({ ...data, background })}
         />

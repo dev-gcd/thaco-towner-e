@@ -61,7 +61,7 @@ export function ChargingEditor() {
         />
         <ImageInput
           label="Ảnh xe đang sạc"
-          hint="Khuyến nghị: 1220×809px, nền trong suốt."
+          hint="Khuyến nghị: 1440×610px (dải đáy khối, xe đặt sẵn đúng chỗ), nền trong suốt."
           value={data.car.src}
           onChange={(src) => setData({ ...data, car: { ...data.car, src } })}
         />

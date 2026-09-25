@@ -45,10 +45,11 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
             {/* Xe chạy vào từ mép phải, hai bánh quay theo — bánh là ảnh rời nên
                 quay được thật. Cả cụm trượt cùng nhau để xe và bánh không lệch.
                 Xe đi sang TRÁI nên bánh quay ngược chiều kim đồng hồ (720° → 0°),
-                dừng ở 0° = đúng tư thế Figma (tệp bánh đã được xoay sẵn 180°).
-                Ảnh bánh phải là ảnh VUÔNG, bánh nằm giữa — Figma gốc để bánh trong cả
-                khung 1869×842 rồi cắt bằng imageTransform; nhét nguyên khung vào ô
-                81px thì bánh teo thành 1 đốm (khách đã hỏi 17/09). */}
+                dừng ở 0° = đúng tư thế trong ảnh xe.
+                Ảnh xe (bộ ảnh 25/09) là 1 lớp PHỦ CẢ THẺ 2280×791 (cùng khổ ảnh nền), bánh
+                đã vẽ sẵn trong ảnh. Hai lớp bánh là hình tròn cắt từ CHÍNH ảnh xe đó, đặt
+                đè đúng chỗ (đo tâm vành: trước 1197,600 · sau 1897.5,608 trên tệp 2280;
+                quy về thẻ 1280 bằng ×0.5614). Đổi ảnh xe thì phải cắt + đo lại 2 bánh. */}
             <motion.div
               aria-hidden
               className="pointer-events-none hidden lg:block"
@@ -63,27 +64,27 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
               <Image
                 src={car.src}
                 alt={car.alt}
-                width={678}
-                height={306}
-                className="absolute left-[calc(544*var(--u))] top-[calc(87*var(--u))] h-[calc(306*var(--u))] w-[calc(678*var(--u))] max-w-none"
+                width={2280}
+                height={791}
+                className="absolute left-0 top-0 h-[calc(444*var(--u))] w-[calc(1280*var(--u))] max-w-none"
               />
               <motion.span
-                className="absolute left-[calc(638*var(--u))] top-[calc(294*var(--u))] block size-[calc(81*var(--u))]"
+                className="absolute left-[calc(631*var(--u))] top-[calc(295.9*var(--u))] block size-[calc(82*var(--u))]"
                 initial={{ rotate: 720 }}
                 whileInView={{ rotate: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={WHEEL}
               >
-                <Image src={wheelFront.src} alt="" width={81} height={81} className="size-full max-w-none" />
+                <Image src={wheelFront.src} alt="" width={146} height={146} className="size-full max-w-none" />
               </motion.span>
               <motion.span
-                className="absolute left-[calc(1023*var(--u))] top-[calc(294*var(--u))] block size-[calc(81*var(--u))]"
+                className="absolute left-[calc(1025.7*var(--u))] top-[calc(301.5*var(--u))] block size-[calc(79.7*var(--u))]"
                 initial={{ rotate: 720 }}
                 whileInView={{ rotate: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={WHEEL}
               >
-                <Image src={wheelRear.src} alt="" width={81} height={81} className="size-full max-w-none" />
+                <Image src={wheelRear.src} alt="" width={142} height={142} className="size-full max-w-none" />
               </motion.span>
             </motion.div>
 
@@ -110,14 +111,19 @@ export function Gtsp({ onCtaClick }: { onCtaClick?: () => void }) {
               </button>
             </motion.div>
 
-            {/* Ảnh xe bản điện thoại: nằm dưới chữ cho khỏi che */}
-            <Image
-              src={car.src}
-              alt={car.alt}
-              width={678}
-              height={306}
-              className="relative mx-auto h-auto w-full max-w-[420px] px-4 pb-6 lg:hidden"
-            />
+            {/* Ảnh xe bản điện thoại: nằm dưới chữ cho khỏi che. Ảnh xe phủ cả thẻ nên
+                cắt bằng khung: chỉ lấy vùng có xe (1079,234 → 1037×445 trên tệp 2280×791). */}
+            <div className="relative mx-auto mb-6 w-[calc(100%-32px)] max-w-[420px] lg:hidden">
+              <div className="relative aspect-[1037/445] overflow-hidden">
+                <Image
+                  src={car.src}
+                  alt={car.alt}
+                  width={2280}
+                  height={791}
+                  className="absolute left-[-104.05%] top-[-52.58%] h-auto w-[219.86%] max-w-none"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

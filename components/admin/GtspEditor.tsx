@@ -56,7 +56,7 @@ export function GtspEditor() {
         />
         <ImageInput
           label="Ảnh xe"
-          hint="Khuyến nghị: 678×306px, nền trong suốt."
+          hint="Khuyến nghị: 2280×791px (cùng khổ ảnh nền), xe đặt đúng chỗ trong khung, nền trong suốt. Đổi ảnh xe thì 2 ảnh bánh xe cũng phải cắt lại cho khớp."
           value={data.car.src}
           onChange={(src) => setData({ ...data, car: { ...data.car, src } })}
         />

@@ -43,24 +43,28 @@ export function Interior({
         src={background.srcMobile || background.src}
         alt=""
         width={1440}
-        height={1917}
+        height={1200}
         sizes="100vw"
         aria-hidden
         className="absolute inset-0 h-full w-full object-cover"
       />
       <div className="canvas-1440 relative mx-auto w-full max-w-[1440px] lg:aspect-[1440/1200]">
-        <Image
-          src={shadow.src}
-          alt=""
-          width={1440}
-          height={1920}
-          sizes="100vw"
-          aria-hidden
-          className="absolute inset-x-0 top-0 hidden h-[1920px] w-[1440px] max-w-none lg:top-[calc(45*var(--u))] lg:block lg:h-[calc(1920*var(--u))] lg:w-full"
-        />
-        {/* Bản dựng play: xe trôi lên từ dưới khi cuộn tới khối này. */}
+        {/* Ảnh xe bộ 25/09 đã có sẵn bóng đổ → lớp bóng riêng để trống thì không vẽ. */}
+        {shadow.src && (
+          <Image
+            src={shadow.src}
+            alt=""
+            width={1440}
+            height={1920}
+            sizes="100vw"
+            aria-hidden
+            className="absolute inset-x-0 top-0 hidden h-[1920px] w-[1440px] max-w-none lg:top-[calc(45*var(--u))] lg:block lg:h-[calc(1920*var(--u))] lg:w-full"
+          />
+        )}
+        {/* Bản dựng play: xe trôi lên từ dưới khi cuộn tới khối này. Ảnh xe bộ 25/09
+            cắt sẵn đúng khung 1440×1200 (xe đã nằm đúng chỗ) nên đặt ở góc trên, không lệch. */}
         <motion.div
-          className="absolute inset-x-0 top-0 lg:top-[calc(45*var(--u))]"
+          className="absolute inset-x-0 top-0"
           initial={{ y: 140, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}
@@ -72,9 +76,9 @@ export function Interior({
             src={car.src}
             alt={car.alt}
             width={1440}
-            height={1917}
+            height={1200}
             sizes="100vw"
-            className="h-[900px] w-full object-cover motion-safe:animate-[fade-in_600ms_ease-out] lg:h-[calc(1917*var(--u))] lg:w-full"
+            className="h-[900px] w-full object-cover motion-safe:animate-[fade-in_600ms_ease-out] lg:h-[calc(1200*var(--u))] lg:w-full"
           />
         </motion.div>
         <span

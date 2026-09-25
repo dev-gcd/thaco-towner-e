@@ -42,7 +42,7 @@ export function HeaderEditor() {
       <Card className="flex flex-col gap-4">
         <ResponsiveImageInput
           label="Ảnh lớn đầu trang"
-          recommended="1938×1551px, .webp"
+          recommended="2100×1493px (đúng tỉ lệ khung 1440×1024), .webp"
           recommendedMobile="900×1200px"
           value={data.background}
           onChange={(background) => setData({ ...data, background })}

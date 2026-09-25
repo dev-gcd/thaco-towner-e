@@ -101,9 +101,9 @@ export function SiteNav() {
  * chữ co theo nhưng có cỡ sàn (tiêu đề ≥20px, mô tả ≥12px) để không xuống dòng đè xe:
  *  · NỀN tràn hết bề ngang màn hình;
  *  · NỘI DUNG (logo, chữ) neo trong khung 1440 căn giữa.
- * Ảnh lớn đặt bằng đơn vị `vw` theo đúng tỉ lệ Figma (1938×1551 tại -249,-244
- * trên khung 1440) nên bố cục ảnh giữ nguyên ở mọi bề ngang, không lộ thêm/mất
- * bớt phần nào. Chiều cao khối vì thế cũng co giãn theo: 1024/1440 = 71.11vw.
+ * Ảnh lớn (bộ ảnh 25/09) đã được cắt sẵn đúng khung 1440×1024 nên chỉ việc phủ kín
+ * khối; chiều cao khối co giãn theo bề ngang: 1024/1440 = 71.11vw, nhờ vậy bố cục ảnh
+ * giữ nguyên ở mọi bề ngang, không lộ thêm/mất bớt phần nào.
  */
 export function Header() {
   const { logo, background, title, description } = header;
@@ -115,11 +115,11 @@ export function Header() {
         <Image
           src={background.srcMobile || background.src}
           alt={background.alt}
-          width={1938}
-          height={1551}
+          width={2100}
+          height={1493}
           priority
-          sizes="140vw"
-          className="h-[62vw] max-h-[460px] w-full object-cover object-[62%_60%] sm:h-[56vw] lg:absolute lg:left-[-17.29vw] lg:top-[-16.94vw] lg:h-auto lg:max-h-none lg:w-[134.58vw] lg:max-w-none lg:object-[50%_50%]"
+          sizes="100vw"
+          className="h-[62vw] max-h-[460px] w-full object-cover object-[62%_60%] sm:h-[56vw] lg:absolute lg:inset-0 lg:h-full lg:max-h-none lg:object-[50%_50%]"
         />
 
         {/* Vệt sáng trắng làm nền cho chữ (Figma: ellipse trắng, mờ 356px,

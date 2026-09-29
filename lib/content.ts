@@ -81,6 +81,12 @@ export type VersionItem = {
   code: string;
   displayName: string;
   price: string;
+  /**
+   * Quà tặng kèm theo xe (viên nhãn đỏ ngay dưới dòng giá, khối Dòng xe). Cũng là chữ trong
+   * khung khuyến mãi của popup "Nhận báo giá" khi đang xem phiên bản này. Trống ⇒ ẩn cả hai.
+   * Không bắt buộc: dữ liệu lưu trước 29/09 chưa có ô này.
+   */
+  gift?: string;
   specs: VersionSpec[];
 };
 export type VersionsContent = {
@@ -173,6 +179,18 @@ export type LeadFormContent = {
   submitLabel: string;
   successMessage: string;
 };
+/**
+ * Popup "Nhận báo giá xe" tự hiện khi khách cuộn tới khối Dòng xe (29/09). Nhãn + gợi ý ô
+ * Họ tên / Số điện thoại dùng chung với `form`; không có ô ghi chú.
+ */
+export type QuotePopupContent = {
+  /** Tắt ⇒ không bao giờ tự hiện. */
+  enabled: boolean;
+  title: string;
+  description: string;
+  submitLabel: string;
+  successMessage: string;
+};
 /** Chữ trong hộp thoại báo thiếu dữ liệu (dùng chung cho brochure và bản đồ). */
 export type NoticeContent = { title: string; message: string };
 export type CtaContent = {
@@ -180,6 +198,7 @@ export type CtaContent = {
   /** `file` trống ⇒ ẩn nút tải brochure (khách chưa gửi tệp). */
   brochure: CtaCard & { file: string };
   form: LeadFormContent;
+  quote: QuotePopupContent;
   notice: NoticeContent;
 };
 export const cta = ctaData as CtaContent;

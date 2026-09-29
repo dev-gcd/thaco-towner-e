@@ -4,7 +4,7 @@ import { cta } from "@/lib/content";
 import defaults from "@/content/defaults/cta.json";
 import type { CtaContent } from "@/lib/content";
 import { useContentEditor } from "./useContent";
-import { Card, Field, TextInput, TextArea, ImageInput, FileInput } from "./ui";
+import { Card, Field, TextInput, TextArea, ImageInput, FileInput, Toggle } from "./ui";
 import { EditorShell } from "./EditorShell";
 
 export function CtaEditor() {
@@ -202,6 +202,53 @@ export function CtaEditor() {
             value={data.form.successMessage}
             onChange={(e) =>
               setData({ ...data, form: { ...data.form, successMessage: e.target.value } })
+            }
+          />
+        </Field>
+      </Card>
+
+      <Card className="flex flex-col gap-4">
+        <p className="text-sm font-semibold text-gray-800">Popup nhận báo giá</p>
+        <p className="text-xs leading-relaxed text-gray-500">
+          Tự hiện 1 lần mỗi lượt truy cập, 1,5 giây sau khi khách cuộn tới khối Dòng xe. Chỉ có ô
+          Họ tên + Số điện thoại (nhãn và gợi ý lấy ở hộp thoại lái thử phía trên). Khung khuyến mãi
+          đỏ trong popup lấy từ ô <b>Quà tặng kèm</b> của phiên bản khách đang xem (sửa ở mục Dòng
+          xe). Khách gửi xong hiện ở <b>Khách đăng ký</b>{" "}với nguồn &quot;Báo giá&quot;.
+        </p>
+        <Toggle
+          label="Bật popup"
+          checked={data.quote.enabled}
+          onChange={(enabled) => setData({ ...data, quote: { ...data.quote, enabled } })}
+        />
+        <Field label="Tiêu đề popup">
+          <TextInput
+            value={data.quote.title}
+            onChange={(e) => setData({ ...data, quote: { ...data.quote, title: e.target.value } })}
+          />
+        </Field>
+        <Field label="Mô tả">
+          <TextArea
+            rows={2}
+            value={data.quote.description}
+            onChange={(e) =>
+              setData({ ...data, quote: { ...data.quote, description: e.target.value } })
+            }
+          />
+        </Field>
+        <Field label="Chữ trên nút gửi">
+          <TextInput
+            value={data.quote.submitLabel}
+            onChange={(e) =>
+              setData({ ...data, quote: { ...data.quote, submitLabel: e.target.value } })
+            }
+          />
+        </Field>
+        <Field label="Lời cảm ơn sau khi gửi">
+          <TextArea
+            rows={2}
+            value={data.quote.successMessage}
+            onChange={(e) =>
+              setData({ ...data, quote: { ...data.quote, successMessage: e.target.value } })
             }
           />
         </Field>

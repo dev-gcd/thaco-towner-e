@@ -121,6 +121,18 @@ export function VersionsEditor() {
                 }
               />
             </Field>
+            <Field
+              label="Quà tặng kèm"
+              hint="Viên nhãn đỏ dưới giá, cũng hiện trong popup Nhận báo giá. Để trống thì ẩn."
+            >
+              <TextInput
+                value={item.gift ?? ""}
+                placeholder="VD: Tặng bộ sạc di động theo xe trị giá 20 triệu"
+                onChange={(e) =>
+                  setData({ ...data, items: replaceAt(data.items, i, { ...item, gift: e.target.value }) })
+                }
+              />
+            </Field>
           </div>
 
           <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Thông số</p>
@@ -190,7 +202,7 @@ export function VersionsEditor() {
             items: [
               ...data.items,
               // Mã cố định, không đổi về sau — ảnh riêng ở Ngoại thất / Nội thất gắn vào đây.
-              { id: `v${Date.now().toString(36)}`, name: "Towner e", code: "", displayName: "", price: "", specs: [] },
+              { id: `v${Date.now().toString(36)}`, name: "Towner e", code: "", displayName: "", price: "", gift: "", specs: [] },
             ],
           })
         }

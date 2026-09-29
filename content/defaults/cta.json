@@ -30,6 +30,13 @@
     "submitLabel": "Gửi đăng ký",
     "successMessage": "Đã nhận thông tin. Cảm ơn anh/chị, chúng tôi sẽ liên hệ sớm nhất."
   },
+  "quote": {
+    "enabled": true,
+    "title": "Nhận báo giá xe",
+    "description": "Để lại Họ tên & SĐT, tư vấn viên gọi lại báo giá + phương án trả góp.",
+    "submitLabel": "Gửi yêu cầu tư vấn",
+    "successMessage": "Đã nhận thông tin. Tư vấn viên sẽ gọi lại báo giá cho anh/chị trong thời gian sớm nhất."
+  },
   "notice": {
     "title": "Đang cập nhật",
     "message": "Nội dung này đang được cập nhật. Anh/chị vui lòng quay lại sau hoặc liên hệ hotline để được hỗ trợ ngay."

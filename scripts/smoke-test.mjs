@@ -14,7 +14,10 @@ const TRAM_SAC_AN = true;
 const kiem = (t, ok, x = "") => { if (!ok) loi++; console.log(`${ok ? "✓" : "✗"} ${t}${x ? "  " + x : ""}`); };
 
 const b = await chromium.launch();
+const QUOTE_KEY = "towner-e:quote-popup-seen"; // khớp QUOTE_POPUP_SEEN_KEY trong LandingPage.tsx
 const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+// Popup báo giá tự hiện khi cuộn qua khối Dòng xe — tắt ở đây, kiểm riêng ở cuối.
+await p.addInitScript((k) => sessionStorage.setItem(k, "1"), QUOTE_KEY);
 const errs = [];
 p.on("pageerror", (e) => errs.push(e.message.slice(0, 90)));
 p.on("console", (m) => { if (m.type() === "error" && !m.text().includes("401")) errs.push(m.text().slice(0, 90)); });
@@ -47,6 +50,34 @@ try {
     kiem(`nút "${nut}" chưa có dữ liệu → hộp thoại đang cập nhật`,
       ((await p.locator('[role="alertdialog"]').textContent().catch(() => "")) || "").includes("cập nhật"));
     await p.locator("[role='alertdialog'] button").click();
+  }
+
+  // Popup "Nhận báo giá": tự hiện khi cuộn tới Dòng xe, chỉ 1 lần, ghi khách với nguồn "quote"
+  for (const [w, h] of [[1440, 900], [390, 844]]) {
+    const q = await (await b.newContext({ viewport: { width: w, height: h } })).newPage();
+    q.on("pageerror", (e) => errs.push(e.message.slice(0, 90)));
+    await q.goto(BASE, { waitUntil: "networkidle" });
+    await q.evaluate(() => document.querySelector("#dong-xe").scrollIntoView());
+    await q.waitForTimeout(2500);
+    const hop = q.locator('[role="dialog"]');
+    const hien = (await hop.count()) === 1 && (await hop.textContent()).includes("Nhận báo giá");
+    kiem(`${w}px: popup báo giá tự hiện ở khối Dòng xe`, hien);
+    if (!hien) { await q.context().close(); continue; }
+    kiem(`${w}px: popup chỉ 2 ô, có khung quà tặng`,
+      (await hop.locator("textarea").count()) === 0 && (await hop.textContent()).includes("Tặng"));
+    await q.fill('[role="dialog"] input[name="name"]', "Kiểm thử báo giá");
+    await q.fill('[role="dialog"] input[name="phone"]', "0900000008");
+    await q.click('[role="dialog"] button[type="submit"]');
+    await q.waitForTimeout(1200);
+    const lead = JSON.parse(readFileSync(LEADS, "utf8")).find((l) => l.phone === "0900000008" && l.source === "quote");
+    kiem(`${w}px: gửi báo giá → lưu khách nguồn "quote"`, Boolean(lead), lead?.note ?? "");
+    await q.keyboard.press("Escape");
+    await q.reload({ waitUntil: "networkidle" });
+    await q.evaluate(() => document.querySelector("#dong-xe").scrollIntoView());
+    await q.waitForTimeout(2500);
+    kiem(`${w}px: tải lại trang thì popup không hiện lại`, (await q.locator('[role="dialog"]').count()) === 0);
+    await q.context().close();
+    writeFileSync(LEADS, leadsTruoc);
   }
 
   await p.goto(`${BASE}/admin/`, { waitUntil: "networkidle" });

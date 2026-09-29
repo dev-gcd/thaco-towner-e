@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { versions } from "@/lib/content";
 import { SectionLabel } from "@/components/SectionLabel";
-import { ArrowLeft, ArrowRight } from "@/components/icons";
+import { ArrowLeft, ArrowRight, GiftIcon } from "@/components/icons";
 
 /**
  * Dòng xe — khung thiết kế 1440×951, hai góc dưới bo 80px (Figma:
@@ -115,6 +115,15 @@ export function Versions({
                   {item.price}
                 </span>
               </div>
+              {/* Quà tặng kèm (khách yêu cầu 29/09, ngoài Figma) — trống thì không hiện. Chen
+                  giữa giá và bảng thông số nên bảng tụt xuống 50px so với Figma. Điện thoại hẹp
+                  (<390) chữ dài có thể xuống 2 dòng nên bo 16px thay vì tròn hết cỡ. */}
+              {item.gift?.trim() && (
+                <p className="flex w-fit max-w-full items-center gap-[6px] rounded-[16px] border border-promo-line bg-promo-soft px-[10px] py-[5px] text-[13px] leading-[18px] font-semibold text-promo sm:rounded-full sm:px-[12px] sm:text-body-md lg:gap-[max(6px,calc(8*var(--u)))] lg:px-[max(12px,calc(16*var(--u)))] lg:py-[max(4px,calc(6*var(--u)))] lg:text-[length:max(12px,calc(16*var(--u)))] lg:leading-[1.25]">
+                  <GiftIcon className="size-[18px] shrink-0 lg:size-[max(16px,calc(20*var(--u)))]" />
+                  {item.gift}
+                </p>
+              )}
 
               <dl className="mt-[8px] flex w-fit flex-wrap items-center gap-[16px] rounded-[8px] bg-white/60 px-[24px] py-[21px] backdrop-blur-[2px] lg:mt-[calc(16*var(--u))] lg:grid lg:w-[calc(590*var(--u))] lg:grid-cols-2 xl:flex xl:h-[97px] xl:flex-nowrap xl:justify-between xl:gap-0">
                 {item.specs.map((spec, i) => (

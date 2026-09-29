@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { LEAD_SOURCES, type LeadSource } from "@/lib/leadSource";
 
 type Lead = {
   id: number;
@@ -9,17 +10,25 @@ type Lead = {
   phone: string;
   note: string | null;
   status: "new" | "contacted";
+  source: LeadSource;
 };
 
 type LeadsResponse = { leads: Lead[]; total: number; page: number; perPage: number };
 
-type Filters = { search: string; status: "" | "new" | "contacted"; from: string; to: string };
-const EMPTY: Filters = { search: "", status: "", from: "", to: "" };
+type Filters = {
+  search: string;
+  status: "" | "new" | "contacted";
+  source: "" | LeadSource;
+  from: string;
+  to: string;
+};
+const EMPTY: Filters = { search: "", status: "", source: "", from: "", to: "" };
 
 function queryString(f: Filters, page: number): string {
   const p = new URLSearchParams();
   if (f.search) p.set("search", f.search);
   if (f.status) p.set("status", f.status);
+  if (f.source) p.set("source", f.source);
   if (f.from) p.set("from", f.from);
   if (f.to) p.set("to", f.to);
   if (page > 1) p.set("page", String(page));
@@ -141,6 +150,22 @@ export function LeadsPanel({ onUnauthorized }: { onUnauthorized: () => void }) {
             <option value="contacted">Đã liên hệ</option>
           </select>
         </FilterField>
+        <FilterField label="Nguồn">
+          <select
+            value={filters.source}
+            onChange={(e) =>
+              setFilters((f) => ({ ...f, source: e.target.value as Filters["source"] }))
+            }
+            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-[#00529c]"
+          >
+            <option value="">Tất cả</option>
+            {Object.entries(LEAD_SOURCES).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </FilterField>
         <FilterField label="Từ ngày">
           <input
             type="date"
@@ -209,6 +234,7 @@ export function LeadsPanel({ onUnauthorized }: { onUnauthorized: () => void }) {
                 />
               </th>
               <Th>Thời gian</Th>
+              <Th>Nguồn</Th>
               <Th>Họ tên</Th>
               <Th>Điện thoại</Th>
               <Th>Ghi chú</Th>
@@ -219,14 +245,14 @@ export function LeadsPanel({ onUnauthorized }: { onUnauthorized: () => void }) {
           <tbody className="divide-y divide-gray-100">
             {loading && (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-gray-400">
+                <td colSpan={8} className="py-8 text-center text-gray-400">
                   Đang tải…
                 </td>
               </tr>
             )}
             {!loading && leads.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-gray-400">
+                <td colSpan={8} className="py-8 text-center text-gray-400">
                   Không có lead nào.
                 </td>
               </tr>
@@ -248,6 +274,15 @@ export function LeadsPanel({ onUnauthorized }: { onUnauthorized: () => void }) {
                   </Td>
                   <Td className="whitespace-nowrap text-gray-500">
                     {formatDate(l.created_at)}
+                  </Td>
+                  <Td>
+                    <span
+                      className={`whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${
+                        l.source === "quote" ? "bg-red-50 text-red-700" : "bg-blue-50 text-[#00529c]"
+                      }`}
+                    >
+                      {LEAD_SOURCES[l.source] ?? l.source}
+                    </span>
                   </Td>
                   <Td className="font-medium text-gray-900">{l.name}</Td>
                   <Td>

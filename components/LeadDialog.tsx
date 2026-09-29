@@ -2,16 +2,40 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cta } from "@/lib/content";
+import type { LeadSource } from "@/lib/leadSource";
+import { GiftIcon } from "@/components/icons";
 
 type Status = "idle" | "sending" | "done" | "error";
 
 /**
- * Hộp thoại đăng ký lái thử. Bản thiết kế không vẽ biểu mẫu — chốt với chủ dự án
- * 16/09: nút "Đăng ký lái thử" mở hộp thoại này, dữ liệu vào kho D1 qua
- * `POST /api/leads` (cùng đường với 2 landing trước).
+ * Hộp thoại đăng ký. Bản thiết kế không vẽ biểu mẫu — chốt với chủ dự án 16/09: nút
+ * "Đăng ký lái thử" mở hộp thoại này, dữ liệu vào kho D1 qua `POST /api/leads` (cùng
+ * đường với 2 landing trước).
+ *
+ * Từ 29/09 có thêm biến thể `quote` = popup "Nhận báo giá xe" tự hiện ở khối Dòng xe:
+ * cùng khung cho đồng bộ, không có ô ghi chú, có khung khuyến mãi (= quà tặng của phiên
+ * bản đang xem). Cột `source` trong D1 phân biệt 2 loại ở trang Khách đăng ký.
  */
-export function LeadDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const form = cta.form;
+export function LeadDialog({
+  open,
+  onClose,
+  source = "test_drive",
+  promo = "",
+  context = "",
+  onSubmitted,
+}: {
+  open: boolean;
+  onClose: () => void;
+  source?: LeadSource;
+  /** Chữ trong khung khuyến mãi (chỉ biến thể `quote`); trống ⇒ ẩn khung. */
+  promo?: string;
+  /** Ghi vào ô ghi chú của khách khi form không có ô ghi chú (vd phiên bản đang xem). */
+  context?: string;
+  onSubmitted?: () => void;
+}) {
+  const isQuote = source === "quote";
+  // Nhãn + gợi ý ô nhập dùng chung; tiêu đề, mô tả, nút, lời cảm ơn theo từng biến thể.
+  const form = isQuote ? { ...cta.form, ...cta.quote } : cta.form;
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -41,7 +65,8 @@ export function LeadDialog({ open, onClose }: { open: boolean; onClose: () => vo
         body: JSON.stringify({
           name: String(data.get("name") || ""),
           phone: String(data.get("phone") || ""),
-          note: String(data.get("note") || ""),
+          note: isQuote ? context : String(data.get("note") || ""),
+          source,
           hp: String(data.get("company") || ""),
         }),
       });
@@ -52,6 +77,7 @@ export function LeadDialog({ open, onClose }: { open: boolean; onClose: () => vo
         return;
       }
       setStatus("done");
+      onSubmitted?.();
     } catch {
       setStatus("error");
       setMessage("Không kết nối được máy chủ, vui lòng thử lại.");
@@ -75,7 +101,9 @@ export function LeadDialog({ open, onClose }: { open: boolean; onClose: () => vo
             <h2 className="text-heading-md font-bold uppercase text-brand-deep">
               {form.title}
             </h2>
-            <p className="mt-2 text-body-md text-text-heading">{form.description}</p>
+            {form.description && (
+              <p className="mt-2 text-body-md text-text-heading">{form.description}</p>
+            )}
           </div>
           <button
             type="button"
@@ -95,6 +123,12 @@ export function LeadDialog({ open, onClose }: { open: boolean; onClose: () => vo
           </p>
         ) : (
           <form onSubmit={submit} className="flex flex-col gap-4">
+            {isQuote && promo.trim() && (
+              <p className="flex items-start gap-[10px] rounded-[12px] border border-dashed border-promo-line bg-promo-soft px-4 py-3 text-body-md font-semibold text-promo">
+                <GiftIcon className="mt-[2px] size-5 shrink-0" />
+                {promo}
+              </p>
+            )}
             <Field label={form.nameLabel}>
               <input
                 name="name"
@@ -117,15 +151,17 @@ export function LeadDialog({ open, onClose }: { open: boolean; onClose: () => vo
                 className={inputCls}
               />
             </Field>
-            <Field label={form.noteLabel}>
-              <textarea
-                name="note"
-                rows={3}
-                maxLength={2000}
-                placeholder={form.notePlaceholder}
-                className={`${inputCls} resize-y`}
-              />
-            </Field>
+            {!isQuote && (
+              <Field label={form.noteLabel}>
+                <textarea
+                  name="note"
+                  rows={3}
+                  maxLength={2000}
+                  placeholder={form.notePlaceholder}
+                  className={`${inputCls} resize-y`}
+                />
+              </Field>
+            )}
 
             {/* Bẫy máy gửi rác — người thật không nhìn thấy ô này */}
             <input

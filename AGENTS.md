@@ -173,7 +173,7 @@ pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 11 ph
                        #    thao tác trên điện thoại · dải laptop 800–1439 (chữ không bị cắt,
                        #    không đè nhau, không nhỏ hơn 12px) · thanh menu cố định + hotline ·
                        #    băng ảnh các góc xe · phiên bản dùng chung 3 khối
-pnpm test:smoke        # chức năng chính ở máy (ảnh, form, hộp thoại, 11 mục CMS) — tự dọn dữ liệu thử
+pnpm test:smoke        # chức năng chính ở máy (ảnh, form, hộp thoại, popup báo giá 1440/390, 11 mục CMS) — tự dọn dữ liệu thử
 pnpm test:worker       # luồng lưu bộ ảnh 360° của Worker với GitHub GIẢ LẬP (không tạo commit thật)
 ```
 
@@ -189,6 +189,25 @@ Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác t
   → commit vào `public/images/uploads/`.
 - Khách đăng ký: form công khai POST `/api/leads` → D1; xem ở thẻ **Khách đăng ký**.
 - Email báo có khách mới (tuỳ chọn): cấu hình `MAIL_*` (Resend) — xem `worker/index.ts`.
+
+### Popup "Nhận báo giá" + dòng quà tặng dưới giá (khách yêu cầu 29/09)
+
+- **Quà tặng kèm** = ô `gift` của TỪNG phiên bản (`versions.json` → `items[].gift`, CMS → Dòng xe).
+  Hiện thành viên nhãn đỏ ngay dưới ô giá; trống thì ẩn. Chen giữa giá và bảng thông số nên bảng
+  tụt 50px so với Figma (audit-layout đã ghi số mới 704 thay cho 654 của Figma).
+- **Popup** = `LeadDialog` với `source="quote"` (cùng khung với popup lái thử cho đồng bộ): không có
+  ô ghi chú, có khung khuyến mãi = `gift` của phiên bản ĐANG XEM; ô ghi chú của khách tự điền
+  "Phiên bản đang xem: …". Chữ ở `cta.json` → `quote` (CMS → Đăng ký & Brochure → Popup nhận báo giá,
+  có công tắc bật/tắt); nhãn + gợi ý 2 ô nhập dùng chung với `form`.
+- **Luật tự hiện** (`useQuotePopup` trong `LandingPage.tsx`): lần đầu mép trên khối Dòng xe lên
+  quá 60% chiều cao màn thì chờ 1,5 giây rồi mở. Chỉ 1 lần mỗi lượt truy cập (khoá
+  `sessionStorage` "towner-e:quote-popup-seen"); không hiện nếu đã gửi form lái thử, hoặc đang có
+  hộp thoại khác mở. 🔴 `audit-layout` / `smoke-test` đặt sẵn khoá này để popup không che trang khi
+  đo — thêm script kiểm mới thì nhớ làm y vậy.
+- **Nguồn khách** = cột `source` trong D1 (migration `0003`): `test_drive` | `quote`, danh sách ở
+  `lib/leadSource.ts` (`cms-dev.mjs` giữ bản sao). Trang Khách đăng ký có cột + bộ lọc "Nguồn", CSV
+  có cột `source`, thư báo có dòng "Form". 🔴 Migration 0003 phải chạy `--remote` TRƯỚC khi deploy
+  Worker mới — Worker mới ghi cột `source`, chưa có cột thì form trả lỗi và MẤT khách.
 
 ### Mã theo dõi — GTM, GA4, Pixel… (khách yêu cầu 29/09, chốt phương án "ô tự do")
 
@@ -283,6 +302,7 @@ cả bộ khi khối còn cách màn ~800px.
 
 - [x] Kho D1 `thaco-towner-e-leads` (APAC) — id `a9ac2b0d-4bd7-4bc0-984a-e3d82d51fbdd`
 - [x] Migration 0001 + 0002 đã chạy cả local lẫn `--remote` (11 cột, 3 chỉ mục)
+- [ ] Migration 0003 (`source`) — tạo 29/09, chạy `--remote` trước khi push bản popup báo giá
 - [x] Khoá bí mật bản thật: `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `GITHUB_TOKEN`
       (chưa đặt `MAIL_*` — form vẫn lưu khách, chỉ không gửi thư)
 - [x] Deploy tay lần đầu bằng `pnpm run deploy`

@@ -21,6 +21,11 @@
   --color-stroke: #e5e7eb;
   --color-stroke-soft: #ededed;
   --color-stroke-mute: #cccccc;
+  /* Khuyến mãi / quà tặng (viên nhãn dưới giá + khung trong popup báo giá) — ngoài Figma,
+     theo mẫu khách gửi 29/09: chữ đỏ trên nền hồng nhạt để nổi giữa tông xanh. */
+  --color-promo: #c62828;
+  --color-promo-soft: #fdf0f0;
+  --color-promo-line: #f2c4c4;
 
   /* ── Phông chữ ────────────────────────────────────────── */
   --font-sans: var(--font-montserrat), system-ui, sans-serif;

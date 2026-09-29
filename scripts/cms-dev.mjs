@@ -38,6 +38,9 @@ const CONTENT_FILES = {
   tracking: "content/tracking.json",
 };
 
+// Bản sao khoá của LEAD_SOURCES trong lib/leadSource.ts (tệp TS, Node không nạp thẳng được).
+const LEAD_SOURCES = ["test_drive", "quote"];
+
 const UPLOAD_EXTENSIONS = [".webp", ".png", ".jpg", ".jpeg", ".pdf"];
 
 /* ───────────────────────── helpers ───────────────────────── */
@@ -114,6 +117,7 @@ async function handleCreateLead(req, res) {
     name,
     phone,
     note: body.note ? String(body.note).trim().slice(0, 2000) : null,
+    source: LEAD_SOURCES.includes(body.source) ? body.source : "test_drive",
     status: "new",
   });
   await writeLeads(leads);
@@ -124,13 +128,15 @@ async function handleCreateLead(req, res) {
 function filterLeads(leads, url) {
   const search = (url.searchParams.get("search") || "").toLowerCase();
   const status = url.searchParams.get("status");
-  let out = leads;
+  const source = url.searchParams.get("source");
+  let out = leads.map((l) => ({ ...l, source: l.source ?? "test_drive" }));
   if (search)
     out = out.filter((l) =>
       [l.name, l.phone, l.note].some((f) => (f || "").toLowerCase().includes(search))
     );
   if (status === "new" || status === "contacted")
     out = out.filter((l) => l.status === status);
+  if (LEAD_SOURCES.includes(source)) out = out.filter((l) => l.source === source);
   return out.slice().sort((a, b) => b.id - a.id);
 }
 
@@ -149,14 +155,14 @@ async function handleListLeads(res, url) {
 
 async function handleExportLeads(res, url) {
   const all = filterLeads(await readLeads(), url);
-  const header = ["id", "created_at", "name", "phone", "note", "status"];
+  const header = ["id", "created_at", "source", "name", "phone", "note", "status"];
   const cell = (v) => {
     const s = String(v ?? "");
     return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const lines = [header.join(",")];
   for (const r of all)
-    lines.push([r.id, r.created_at, r.name, r.phone, r.note ?? "", r.status].map(cell).join(","));
+    lines.push([r.id, r.created_at, r.source, r.name, r.phone, r.note ?? "", r.status].map(cell).join(","));
   res.writeHead(200, {
     "Content-Type": "text/csv; charset=utf-8",
     "Content-Disposition": 'attachment; filename="leads-dev.csv"',

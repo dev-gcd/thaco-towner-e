@@ -38,7 +38,8 @@ const POSITIONS = [
   ["#uu-diem", "thẻ đầu", "article:nth-of-type(6)", 80, 216, 400, 500],
   ["#dong-xe", "tiêu đề", "h2", 80, 112, null, null],
   ["#dong-xe", "ô giá", "div.bg-brand", 735, 590, 371, 32],
-  ["#dong-xe", "bảng thông số", "dl", 735, 654, 590, 97],
+  // Figma y=654; +50 vì dòng quà tặng dưới giá (khách yêu cầu 29/09). Xoá hết quà tặng ở CMS thì về 654.
+  ["#dong-xe", "bảng thông số", "dl", 735, 704, 590, 97],
   ["#dong-xe", "nút trái", "button", 80, 549, 56, 56],
   ["#ngoai-that", "chữ mờ", "p", 80, 112, null, null],
   ["#ngoai-that", "tiêu đề", "h2", 80, 1025, null, null],
@@ -62,6 +63,9 @@ let loi = 0;
 
 async function mo(width, height = 1000, deviceScaleFactor = 1) {
   const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor });
+  // Popup "Nhận báo giá" tự mở khi cuộn qua khối Dòng xe và khoá cuộn trang — đánh dấu
+  // "đã hiện" trước khi tải để nó không che các phép đo (smoke-test kiểm riêng popup).
+  await page.addInitScript(() => sessionStorage.setItem("towner-e:quote-popup-seen", "1"));
   await page.goto(BASE, { waitUntil: "networkidle" });
   await page.evaluate(async () => {
     for (let i = 0; i < document.body.scrollHeight; i += 600) {

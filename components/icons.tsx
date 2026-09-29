@@ -41,3 +41,18 @@ export function PhoneIcon({ className = "" }: { className?: string }) {
     </svg>
   );
 }
+
+/** Hộp quà — viên nhãn quà tặng dưới giá và khung khuyến mãi trong popup báo giá. */
+export function GiftIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden className={className}>
+      <path
+        d="M3.5 8.5h13v3h-13zM4.5 11.5v5h11v-5M10 8.5v8M10 8.5S8.9 4 6.7 4a1.6 1.6 0 0 0 0 3.2c1.4 0 3.3 1.3 3.3 1.3Zm0 0s1.1-4.5 3.3-4.5a1.6 1.6 0 0 1 0 3.2c-1.4 0-3.3 1.3-3.3 1.3Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

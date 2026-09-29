@@ -27,6 +27,7 @@
  */
 
 import { checkTrackingContent } from "../lib/tracking.mjs";
+import { DEFAULT_LEAD_SOURCE, LEAD_SOURCES, isLeadSource, type LeadSource } from "../lib/leadSource";
 
 export interface Env {
   ASSETS: Fetcher;
@@ -72,6 +73,8 @@ type LeadInput = {
   name: string;
   phone: string;
   note?: string;
+  /** Form gửi lên (`test_drive` | `quote`); sai hoặc thiếu ⇒ `test_drive`. */
+  source?: string;
   /** Honeypot — should always be empty when a real user submits. */
   hp?: string;
 };
@@ -122,6 +125,7 @@ async function handleCreateLead(
   const name = sanitize(body.name, MAX_NAME);
   const phone = sanitizePhone(body.phone);
   const note = body.note ? sanitize(body.note, MAX_NOTE) : null;
+  const source: LeadSource = isLeadSource(body.source) ? body.source : DEFAULT_LEAD_SOURCE;
 
   if (!name) return json({ error: "Vui lòng nhập họ và tên" }, 400);
   if (!phone) return json({ error: "Số điện thoại không hợp lệ" }, 400);
@@ -134,10 +138,10 @@ async function handleCreateLead(
 
   try {
     await env.DB.prepare(
-      `INSERT INTO leads (name, phone, note, ip, country, user_agent, referer)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO leads (name, phone, note, source, ip, country, user_agent, referer)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     )
-      .bind(name, phone, note, ip, country, userAgent, referer)
+      .bind(name, phone, note, source, ip, country, userAgent, referer)
       .run();
   } catch (err) {
     console.error("D1 insert failed", err);
@@ -146,14 +150,14 @@ async function handleCreateLead(
 
   // Notify sales — best-effort, runs after the response is sent so a slow or
   // misconfigured mail provider never delays/breaks the form submission.
-  ctx.waitUntil(sendLeadEmail(env, { name, phone, note }, { country, referer }));
+  ctx.waitUntil(sendLeadEmail(env, { name, phone, note, source }, { country, referer }));
 
   return json({ ok: true });
 }
 
 /* ─────────────────── Lead notification email (optional) ─────────────────── */
 
-type LeadEmail = { name: string; phone: string; note: string | null };
+type LeadEmail = { name: string; phone: string; note: string | null; source: LeadSource };
 type LeadMeta = { country: string | null; referer: string | null };
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
@@ -185,7 +189,7 @@ async function sendLeadEmail(
       body: JSON.stringify({
         from: env.MAIL_FROM,
         to,
-        subject: `[Lead mới] ${lead.name} — ${lead.phone}`,
+        subject: `[Lead mới · ${LEAD_SOURCES[lead.source]}] ${lead.name} — ${lead.phone}`,
         html: renderLeadEmail(lead, meta),
       }),
     });
@@ -204,6 +208,7 @@ function renderLeadEmail(lead: LeadEmail, meta: LeadMeta): string {
     hour12: false,
   });
   const rows: Array<[string, string]> = [
+    ["Form", LEAD_SOURCES[lead.source]],
     ["Họ và tên", lead.name],
     ["Số điện thoại", lead.phone],
     ["Nội dung", lead.note || "—"],
@@ -348,6 +353,7 @@ type LeadRow = {
   phone: string;
   note: string | null;
   status: string;
+  source: string;
 };
 
 function buildLeadFilter(url: URL): { where: string; binds: unknown[] } {
@@ -364,6 +370,11 @@ function buildLeadFilter(url: URL): { where: string; binds: unknown[] } {
   if (status === "new" || status === "contacted") {
     clauses.push("status = ?");
     binds.push(status);
+  }
+  const source = url.searchParams.get("source");
+  if (isLeadSource(source)) {
+    clauses.push("source = ?");
+    binds.push(source);
   }
   const from = url.searchParams.get("from");
   if (from) {
@@ -392,7 +403,7 @@ async function handleListLeads(env: Env, url: URL): Promise<Response> {
     .first<{ n: number }>();
 
   const { results } = await env.DB.prepare(
-    `SELECT id, created_at, name, phone, note, status
+    `SELECT id, created_at, name, phone, note, status, source
        FROM leads ${where}
        ORDER BY created_at DESC
        LIMIT ? OFFSET ?`
@@ -411,17 +422,17 @@ async function handleListLeads(env: Env, url: URL): Promise<Response> {
 async function handleExportLeads(env: Env, url: URL): Promise<Response> {
   const { where, binds } = buildLeadFilter(url);
   const { results } = await env.DB.prepare(
-    `SELECT id, created_at, name, phone, note, status
+    `SELECT id, created_at, name, phone, note, status, source
        FROM leads ${where} ORDER BY created_at DESC`
   )
     .bind(...binds)
     .all<LeadRow>();
 
-  const header = ["id", "created_at", "name", "phone", "note", "status"];
+  const header = ["id", "created_at", "source", "name", "phone", "note", "status"];
   const lines = [header.join(",")];
   for (const r of results ?? []) {
     lines.push(
-      [r.id, r.created_at, r.name, r.phone, r.note ?? "", r.status]
+      [r.id, r.created_at, r.source, r.name, r.phone, r.note ?? "", r.status]
         .map(csvCell)
         .join(",")
     );

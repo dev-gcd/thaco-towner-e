@@ -163,7 +163,7 @@ phải dùng `transition-[scale]`, `transition-transform` sẽ không có tác d
 pnpm install
 pnpm dev               # next dev :3002 (giao diện tĩnh; /api KHÔNG chạy ở chế độ này)
 pnpm dev:cms           # 1 lệnh chạy cả hai: lưng CMS :8790 + trang :3002 (đừng chạy thêm `pnpm dev`)
-pnpm build             # xuất tĩnh → out/
+pnpm build             # xuất tĩnh → out/, rồi chèn mã theo dõi (scripts/inject-tracking.mjs)
 pnpm run deploy        # build + wrangler deploy
 pnpm optimize:images   # chuyển ảnh sang .webp (tối đa 2400px, chất lượng 82)
 pnpm test:screens      # chụp ảnh ở nhiều độ phân giải
@@ -173,7 +173,7 @@ pnpm audit:layout      # 🔴 CHẠY SAU MỖI LẦN SỬA GIAO DIỆN — 11 ph
                        #    thao tác trên điện thoại · dải laptop 800–1439 (chữ không bị cắt,
                        #    không đè nhau, không nhỏ hơn 12px) · thanh menu cố định + hotline ·
                        #    băng ảnh các góc xe · phiên bản dùng chung 3 khối
-pnpm test:smoke        # chức năng chính ở máy (ảnh, form, 2 hộp thoại, 10 mục CMS) — tự dọn dữ liệu thử
+pnpm test:smoke        # chức năng chính ở máy (ảnh, form, hộp thoại, 11 mục CMS) — tự dọn dữ liệu thử
 pnpm test:worker       # luồng lưu bộ ảnh 360° của Worker với GitHub GIẢ LẬP (không tạo commit thật)
 ```
 
@@ -189,6 +189,25 @@ Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác t
   → commit vào `public/images/uploads/`.
 - Khách đăng ký: form công khai POST `/api/leads` → D1; xem ở thẻ **Khách đăng ký**.
 - Email báo có khách mới (tuỳ chọn): cấu hình `MAIL_*` (Resend) — xem `worker/index.ts`.
+
+### Mã theo dõi — GTM, GA4, Pixel… (khách yêu cầu 29/09, chốt phương án "ô tự do")
+
+`/admin` → **Mã theo dõi**: 2 ô văn bản (`content/tracking.json` → `headCode`, `bodyCode`), khách
+dán NGUYÊN VĂN mã nhà cung cấp đưa. Đã cân nhắc ô chỉ nhận mã `GTM-XXXX` (an toàn hơn), user chọn
+ô tự do để gắn được mọi loại mã.
+
+- **Chèn lúc build, không qua React:** `pnpm build` = `next build` rồi `scripts/inject-tracking.mjs`
+  chèn `headCode` ngay sau thẻ meta charset, `bodyCode` ngay sau thẻ mở body, vào MỌI trang
+  `out/**/*.html` TRỪ `out/admin/` và `out/leads/`. React không chèn được HTML tuỳ ý (nhiều thẻ,
+  noscript) vào head. Hệ quả: 🔴 **`pnpm dev` / `pnpm dev:cms` KHÔNG có mã theo dõi** — muốn xem
+  thì `pnpm build` rồi mở `out/index.html`.
+- **Bộ kiểm dùng chung `lib/tracking.mjs`** (JS thường để Node chạy thẳng lúc build): tối đa 20.000
+  ký tự/ô, cấm thẻ html/head/body (dán nhầm cả trang), thẻ script/noscript/style/iframe và chú
+  thích HTML phải mở-đóng cân. Kiểm ở 4 chỗ: trang quản trị (báo đỏ, không gửi), Worker khi lưu
+  (400), `cms-dev.mjs`, và bước build (sai thì build DỪNG → Cloudflare không deploy, bản thật giữ
+  nguyên). KHÔNG lọc nội dung script — ai vào được `/admin` là chạy được mã trên trang khách.
+- Không có nút "Khôi phục mặc định" (mặc định = trống). Để trống cả 2 ô = gỡ mã.
+- Hằng `GTM_ID` cũ trong `app/(public)/layout.tsx` đã bỏ — mọi mã theo dõi đi qua `/admin`.
 
 ### Ảnh theo phiên bản xe (chốt 21/09 — "trung sách")
 
@@ -270,8 +289,8 @@ cả bộ khi khối còn cách màn ~800px.
 - [x] **Đã nối Cloudflare Workers Build** với repo `dev-gcd/thaco-towner-e` (nhánh `main`) —
       xác nhận 21/09: commit `1c1795d` tự lên bản thật sau khi push. 🔴 **Push `main` = đưa lên
       bản thật ngay** — không push khi chưa được duyệt; khách bấm Lưu trong `/admin` cũng tự lên.
-- [ ] Khách cấp mã Google Tag Manager → dán vào `GTM_ID` trong `app/(public)/layout.tsx`
-- [ ] Khách cấp tên miền riêng → sửa `metadataBase` cùng tệp
+- [ ] Khách tự dán mã Google Tag Manager ở `/admin` → Mã theo dõi (có ô từ 29/09)
+- [ ] Khách cấp tên miền riêng → sửa `metadataBase` trong `app/(public)/layout.tsx`
 - [ ] Ghi lại ngày hết hạn của `GITHUB_TOKEN` — hết hạn là nút Lưu trong `/admin` báo lỗi
 - 🔴 `GITHUB_TOKEN` phải tạo **khi đăng nhập GitHub bằng `dev-gcd`** (chủ repo), fine-grained,
   chỉ chọn repo `thaco-towner-e`, quyền **Contents: Read and write**. 17/09 bản thật báo
@@ -292,7 +311,7 @@ cả bộ khi khối còn cách màn ~800px.
 - **Tailwind v4 `@theme` ghi đè thang đo có tên** → dùng giá trị trực tiếp (`max-w-[40rem]`),
   đừng dùng `max-w-sm` (ở đây `max-w-sm` = 12px).
 - **GTM không dùng `next/script strategy="beforeInteractive"`** — Next không xuất ra thẻ
-  `<script>` thật. Phải dùng thẻ thô trong `<head>` (đã làm sẵn trong `app/(public)/layout.tsx`).
+  `<script>` thật. Từ 29/09 mã theo dõi chèn thẳng vào HTML sau build (xem "Mã theo dõi").
 
 ## Ghi chú kho mã
 

@@ -56,7 +56,7 @@ try {
   const muc = await p.evaluate(() => [...document.querySelectorAll("aside nav button")].map((x) => x.textContent.trim()));
   let o = 0;
   for (const m of muc) { await p.click(`aside nav button:text-is("${m}")`); await p.waitForTimeout(250); o += await p.locator("main input, main textarea, main select").count(); }
-  kiem("trang quản trị mở đủ mục", muc.length === 10, `${muc.length} mục, ${o} ô nhập`);
+  kiem("trang quản trị mở đủ mục", muc.length === 11, `${muc.length} mục, ${o} ô nhập`);
 } finally {
   await b.close();
   writeFileSync(LEADS, leadsTruoc); // trả kho đăng ký ở máy về như cũ

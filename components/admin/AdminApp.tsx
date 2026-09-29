@@ -11,6 +11,7 @@ import { InteriorEditor } from "./InteriorEditor";
 import { CtaEditor } from "./CtaEditor";
 import { ChargingEditor } from "./ChargingEditor";
 import { FooterEditor } from "./FooterEditor";
+import { TrackingEditor } from "./TrackingEditor";
 
 type NavKey = "leads";
 type DefaultTab = "content" | "leads";
@@ -27,6 +28,8 @@ const CONTENT_ITEMS: { key: string; label: string }[] = [
   { key: "charging", label: "Trạm sạc" },
   { key: "cta", label: "Đăng ký & Brochure" },
   { key: "footer", label: "Chân trang" },
+  // Không phải khối trên trang — mã theo dõi gắn vào mọi trang khách, để cuối danh sách.
+  { key: "tracking", label: "Mã theo dõi" },
 ];
 
 export function AdminApp({ defaultTab = "content" }: { defaultTab?: DefaultTab }) {
@@ -172,6 +175,7 @@ export function AdminApp({ defaultTab = "content" }: { defaultTab?: DefaultTab }
         {active === "charging" && <ChargingEditor />}
         {active === "cta" && <CtaEditor />}
         {active === "footer" && <FooterEditor />}
+        {active === "tracking" && <TrackingEditor />}
         {active === "leads" && <LeadsPanel onUnauthorized={() => setAuthed(false)} />}
       </main>
     </div>

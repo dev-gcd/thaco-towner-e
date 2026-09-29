@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 import { readFile, writeFile, mkdir, rm, readdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
+import { checkTrackingContent } from "../lib/tracking.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = 8790; // riêng project này (truck/van dùng 8788) — xem PORT.md
@@ -34,6 +35,7 @@ const CONTENT_FILES = {
   cta: "content/cta.json",
   charging: "content/charging.json",
   footer: "content/footer.json",
+  tracking: "content/tracking.json",
 };
 
 const UPLOAD_EXTENSIONS = [".webp", ".png", ".jpg", ".jpeg", ".pdf"];
@@ -185,6 +187,9 @@ async function handlePutContent(req, res, name) {
   const body = JSON.parse((await readBody(req)) || "{}");
   if (body.content == null || typeof body.content !== "object")
     return sendJson(res, 400, { error: "Thiếu nội dung" });
+  // Giống Worker: mã theo dõi chèn nguyên văn vào HTML, sai là vỡ trang.
+  const trackingError = name === "tracking" ? checkTrackingContent(body.content) : null;
+  if (trackingError) return sendJson(res, 400, { error: trackingError });
   await writeFile(join(ROOT, rel), JSON.stringify(body.content, null, 2) + "\n");
   console.log(`[cms-dev] wrote ${rel}`);
   return sendJson(res, 200, { ok: true, commit: "local-dev" });

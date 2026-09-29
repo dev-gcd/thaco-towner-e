@@ -26,6 +26,8 @@
  * ctx.waitUntil) when MAIL_* is configured — see sendLeadEmail().
  */
 
+import { checkTrackingContent } from "../lib/tracking.mjs";
+
 export interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
@@ -63,6 +65,7 @@ const CONTENT_FILES: Record<string, string> = {
   cta: "content/cta.json",
   charging: "content/charging.json",
   footer: "content/footer.json",
+  tracking: "content/tracking.json",
 };
 
 type LeadInput = {
@@ -482,6 +485,12 @@ async function handlePutContent(
   }
   if (body.content == null || typeof body.content !== "object") {
     return json({ error: "Thiếu nội dung" }, 400);
+  }
+  // Mã theo dõi được chèn nguyên văn vào HTML trang khách lúc build — thẻ không cân
+  // là vỡ cả trang, nên chặn ngay ở đây (trang quản trị cũng kiểm, nhưng không tin client).
+  if (name === "tracking") {
+    const trackingError = checkTrackingContent(body.content);
+    if (trackingError) return json({ error: trackingError }, 400);
   }
 
   const branch = env.CONTENT_BRANCH || "main";

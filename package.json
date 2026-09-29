@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "next dev -p 3002",
     "dev:cms": "node scripts/cms-dev.mjs",
-    "build": "next build",
+    "build": "next build && node scripts/inject-tracking.mjs",
     "start": "next start -p 3002",
-    "deploy": "next build && wrangler deploy",
+    "deploy": "pnpm build && wrangler deploy",
     "optimize:images": "tsx scripts/optimize-images.ts --delete-originals",
     "test:screens": "node scripts/screenshot-resolutions.mjs",
     "sync:assets": "tsx scripts/sync-figma-assets.ts",

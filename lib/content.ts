@@ -224,6 +224,19 @@ export type FooterContent = {
 };
 export const footer = footerData as FooterContent;
 
+import trackingData from "@/content/tracking.json";
+
+// ── Mã theo dõi (GTM, GA4, Pixel…) ───────────────────────────
+// KHÔNG render bằng React: scripts/inject-tracking.mjs chèn nguyên văn vào out/*.html
+// sau `next build`. Trang quản trị chỉ đọc để hiện giá trị đang dùng.
+export type TrackingContent = {
+  /** Chèn ngay sau `<meta charset>` trong `<head>`. */
+  headCode: string;
+  /** Chèn ngay sau thẻ mở `<body>` (vd `<noscript>` của GTM). */
+  bodyCode: string;
+};
+export const tracking = trackingData as TrackingContent;
+
 // ── Ảnh theo phiên bản (khối Ngoại thất / Nội thất) ─────────
 // Luật chung: ảnh hiện có của khối = ảnh của PHIÊN BẢN MẶC ĐỊNH (V2.6). Phiên bản khác có
 // ảnh riêng thì dùng ảnh riêng, không thì dùng ảnh của phiên bản mặc định. Không bao giờ trống.

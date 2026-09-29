@@ -22,7 +22,10 @@ export function Charging({ onMissingLink }: { onMissingLink?: () => void }) {
     charging;
 
   return (
-    <section id="tram-sac" className="canvas-1440 relative overflow-hidden bg-bg-soft">
+    // TẠM ẨN ở mọi cỡ màn (user chốt 29/09): `hidden` = display:none, nội dung + CMS giữ nguyên.
+    // Bật lại: bỏ `hidden`, thêm lại mục "Trạm sạc" ở /admin → Đầu trang, đặt TRAM_SAC_AN = false
+    // trong scripts/audit-layout.mjs + scripts/smoke-test.mjs.
+    <section id="tram-sac" className="canvas-1440 relative hidden overflow-hidden bg-bg-soft">
       {/* NỀN tràn hết bề ngang; thẻ trạm + ảnh xe neo trong khung 1440. */}
       <div aria-hidden className="absolute inset-0 overflow-hidden">
         <Image

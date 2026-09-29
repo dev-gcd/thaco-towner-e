@@ -9,6 +9,8 @@ const PASS = process.env.CMS_DEV_PASSWORD ?? "Admin@12345";
 const LEADS = ".cms-dev/leads.json";
 const leadsTruoc = existsSync(LEADS) ? readFileSync(LEADS, "utf8") : "[]";
 let loi = 0;
+// Khối Trạm sạc đang TẠM ẨN (chốt 29/09) → không bấm nút "Mở bản đồ". Bỏ ẩn thì đặt lại false.
+const TRAM_SAC_AN = true;
 const kiem = (t, ok, x = "") => { if (!ok) loi++; console.log(`${ok ? "✓" : "✗"} ${t}${x ? "  " + x : ""}`); };
 
 const b = await chromium.launch();
@@ -37,7 +39,7 @@ try {
   kiem("gửi đăng ký lái thử", (await p.textContent('[role="dialog"]')).includes("Đã nhận"));
   await p.keyboard.press("Escape");
 
-  for (const [khoi, nut] of [["#dang-ky", "Brochure"], ["#tram-sac", "bản đồ"]]) {
+  for (const [khoi, nut] of [["#dang-ky", "Brochure"], ...(TRAM_SAC_AN ? [] : [["#tram-sac", "bản đồ"]])]) {
     await p.evaluate((q) => document.querySelector(q).scrollIntoView(), khoi);
     await p.waitForTimeout(800);
     await p.locator(`${khoi} button:has-text('${nut}')`).first().click();

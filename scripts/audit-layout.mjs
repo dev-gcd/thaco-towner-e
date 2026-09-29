@@ -11,15 +11,21 @@
 //   3. Không tràn ngang ở 12 độ phân giải (có 3 cỡ laptop), kể cả màn bật phóng to hệ điều hành.
 //   4–6. Hiệu ứng · bản điện thoại/máy tính bảng · thao tác trên điện thoại.
 //   7. Dải laptop 800–1439: chữ không bị cắt / đè nhau / ra ngoài khối / nhỏ hơn 12px.
-//   8. Thanh menu cố định: bám đầu màn suốt trang, 6 mục + hotline không tràn, bấm menu
+//   8. Thanh menu cố định: bám đầu màn suốt trang, đủ mục menu + hotline không tràn, bấm menu
 //      thì khối nằm ngay dưới thanh.
 //   9. Băng ảnh các góc xe (Ngoại thất): bấm tới hết, quay vòng về ảnh đầu (xe vào từ trái),
 //      thanh vị trí đúng chỗ, nút không tràn — bỏ qua khi nội dung chưa có ≥2 ảnh.
 //  10. Phiên bản dùng chung: đổi ở Dòng xe thì Ngoại thất + Nội thất đổi theo, và ngược lại.
 import { chromium } from "playwright";
+import { readFileSync } from "node:fs";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3002";
 const CANVAS = 1440;
+// Khối Trạm sạc đang TẠM ẨN (display:none, chốt 29/09) → bỏ qua mọi phép đo của khối.
+// Bỏ `hidden` ở components/sections/Charging.tsx thì đặt lại false.
+const TRAM_SAC_AN = true;
+// Số mục menu lấy từ nội dung thật — khách thêm/bớt mục ở /admin → Đầu trang.
+const SO_MUC_MENU = JSON.parse(readFileSync("content/header.json", "utf8")).menu.length;
 
 /** [khối, tên, selector, x, y, rộng, cao] — toạ độ lấy từ Figma, tính từ mép khối. */
 const POSITIONS = [
@@ -75,7 +81,7 @@ async function mo(width, height = 1000, deviceScaleFactor = 1) {
 console.log("\n① Toạ độ ở đúng 1440px so với Figma (lệch ≤2px coi như khớp)\n");
 {
   const page = await mo(CANVAS);
-  for (const [sec, ten, sel, ex, ey, ew, eh] of POSITIONS) {
+  for (const [sec, ten, sel, ex, ey, ew, eh] of POSITIONS.filter(([sec]) => !(TRAM_SAC_AN && sec === "#tram-sac"))) {
     // Cuộn tới khối rồi mới đo: các khối có hiệu ứng "hiện khi cuộn tới" chỉ về
     // đúng vị trí sau khi đã lọt vào tầm nhìn.
     await page.evaluate((q) => document.querySelector(q)?.scrollIntoView({ block: "center" }), sec);
@@ -277,7 +283,7 @@ console.log("\n④ Hiệu ứng\n");
   const nutBrochure = await page.locator("#dang-ky button:has-text('Brochure'), #dang-ky a:has-text('Brochure')").count();
   const nutBanDo = await page.locator("#tram-sac button:has-text('bản đồ'), #tram-sac a:has-text('bản đồ')").count();
   kiem("nút Tải Brochure luôn hiện", nutBrochure === 1);
-  kiem("nút Mở bản đồ hiện đủ 4 trạm", nutBanDo === 4, `đếm được ${nutBanDo}`);
+  if (!TRAM_SAC_AN) kiem("nút Mở bản đồ hiện đủ 4 trạm", nutBanDo === 4, `đếm được ${nutBanDo}`);
 
   await page.close();
 }
@@ -408,22 +414,24 @@ console.log("\n⑥ Thao tác trên điện thoại (390px)\n");
   }
 
   // Trạm sạc: lưới 2 cột — thấy cùng lúc trạm 1 + 2, cả 4 trạm đều nằm trong màn
-  await page.evaluate(() => document.querySelector("#tram-sac").scrollIntoView());
-  await page.waitForTimeout(900);
-  const tram = await page.evaluate(() => {
-    const li = [...document.querySelectorAll("#tram-sac li")].map((x) => x.getBoundingClientRect());
-    return {
-      soTram: li.length,
-      canhNhau: li.length > 1 && Math.abs(li[0].top - li[1].top) < 2 && li[1].left > li[0].right,
-      trongMan: li.every((r) => r.left >= 0 && r.right <= window.innerWidth),
-    };
-  });
-  kiem("trạm sạc: trạm 1 và 2 nằm cạnh nhau", tram.canhNhau);
-  kiem("trạm sạc: cả 4 trạm nằm trọn trong màn, không cần kéo ngang", tram.trongMan, `${tram.soTram} trạm`);
-  await page.locator("#tram-sac li").first().locator("button:has-text('bản đồ')").click();
-  await page.waitForTimeout(600);
-  kiem("trạm sạc: nút Mở bản đồ mở hộp thoại", (await page.locator("[role='alertdialog']").count()) === 1);
-  await page.keyboard.press("Escape");
+  if (!TRAM_SAC_AN) {
+    await page.evaluate(() => document.querySelector("#tram-sac").scrollIntoView());
+    await page.waitForTimeout(900);
+    const tram = await page.evaluate(() => {
+      const li = [...document.querySelectorAll("#tram-sac li")].map((x) => x.getBoundingClientRect());
+      return {
+        soTram: li.length,
+        canhNhau: li.length > 1 && Math.abs(li[0].top - li[1].top) < 2 && li[1].left > li[0].right,
+        trongMan: li.every((r) => r.left >= 0 && r.right <= window.innerWidth),
+      };
+    });
+    kiem("trạm sạc: trạm 1 và 2 nằm cạnh nhau", tram.canhNhau);
+    kiem("trạm sạc: cả 4 trạm nằm trọn trong màn, không cần kéo ngang", tram.trongMan, `${tram.soTram} trạm`);
+    await page.locator("#tram-sac li").first().locator("button:has-text('bản đồ')").click();
+    await page.waitForTimeout(600);
+    kiem("trạm sạc: nút Mở bản đồ mở hộp thoại", (await page.locator("[role='alertdialog']").count()) === 1);
+    await page.keyboard.press("Escape");
+  }
 
   // Thiết kế mạnh mẽ: hiện đủ mọi mục theo thứ tự, không thẻ tối, không bấm-đổi
   await page.evaluate(() => document.querySelector("#ngoai-that ol").scrollIntoView());
@@ -534,7 +542,7 @@ for (const [w, h, dpr] of [[320, 568, 2], [390, 844, 3], [800, 500, 1.5], [853, 
     if (dau.tel.right > w + 1) sai.push("hotline tràn khỏi màn");
     if (dau.tel.h < 40) sai.push(`hotline cao ${dau.tel.h}px < 40`);
   }
-  if (w >= 800 && dau.muc !== 6) sai.push(`chỉ hiện ${dau.muc}/6 mục menu`);
+  if (w >= 800 && dau.muc !== SO_MUC_MENU) sai.push(`chỉ hiện ${dau.muc}/${SO_MUC_MENU} mục menu`);
   if (w >= 800 && dau.khe < 16) sai.push(`chữ menu sát nhau ${Math.round(dau.khe)}px`);
   if (w >= 800 && dau.tel && dau.cuoi > dau.tel.left - 16) sai.push("mục menu cuối chạm hotline");
   if (dau.tran) sai.push("tràn ngang");

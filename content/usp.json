@@ -20,7 +20,7 @@
         "alt": "Công nghệ pin CATL 2C"
       },
       "title": "Pin thương hiệu CATL\nCông nghệ Pin 2C",
-      "subtitle": "Thương hiệu pin hàng đầu thế giới, công nghệ sạc nhanh (18 phút) gia tăng hiệu quả khai thác.",
+      "subtitle": "Thương hiệu pin hàng đầu thế giới, công nghệ sạc nhanh (18 phút) ",
       "imageHover": {
         "src": "/images/usp/pin-hover.webp",
         "alt": "Công nghệ pin CATL 2C — ảnh chi tiết"
@@ -31,7 +31,7 @@
         "src": "/images/usp/khoang-hang.webp",
         "alt": "Khoang hàng rộng rãi"
       },
-      "title": "khoang hàng rộng rãi\nCửa sau mở 270°",
+      "title": "khoang hàng rộng \ncửa sau mở 270°",
       "subtitle": "Tối ưu sức chứa, thuận tiện bốc dỡ",
       "imageHover": {
         "src": "/images/usp/khoang-hang-hover.webp",
@@ -44,7 +44,7 @@
         "alt": "Động cơ điện Inovance"
       },
       "title": "động cơ điện\ninovance",
-      "subtitle": "Sức mạnh vượt trội, vận hành ổn định.",
+      "subtitle": "Sức mạnh vượt trội, vận hành ổn định",
       "imageHover": {
         "src": "/images/usp/dong-co-hover.webp",
         "alt": "Động cơ điện Inovance — ảnh chi tiết"
@@ -61,6 +61,18 @@
         "src": "/images/usp/cabin-hover.webp",
         "alt": "Cabin tiện nghi — ảnh chi tiết"
       }
+    },
+    {
+      "image": {
+        "src": "",
+        "alt": "Cần số tích hợp trụ lái"
+      },
+      "imageHover": {
+        "src": "",
+        "alt": ""
+      },
+      "title": "Cần chuyển số \ntích hợp trên trụ lái",
+      "subtitle": "Chuyển số linh hoạt, dễ thao tác"
     }
   ]
 }

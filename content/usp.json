@@ -7,7 +7,7 @@
         "src": "/images/usp/300km.webp",
         "alt": "Quãng đường 300km"
       },
-      "title": "Quãng đường hoạt động ",
+      "title": "Quãng đường\nhoạt động",
       "subtitle": "300km/1 lần sạc đầy",
       "imageHover": {
         "src": "/images/usp/300km-hover.webp",
@@ -19,8 +19,8 @@
         "src": "/images/usp/pin.webp",
         "alt": "Công nghệ pin CATL 2C"
       },
-      "title": "Pin thương hiệu CATL ",
-      "subtitle": "Thương hiệu pin hàng đầu thế giới, độ bền vượt trội, an toàn và hiệu quả",
+      "title": "Pin thương hiệu CATL\nCông nghệ Pin 2C",
+      "subtitle": "Thương hiệu pin hàng đầu thế giới, công nghệ sạc nhanh (18 phút) gia tăng hiệu quả khai thác.",
       "imageHover": {
         "src": "/images/usp/pin-hover.webp",
         "alt": "Công nghệ pin CATL 2C — ảnh chi tiết"
@@ -44,7 +44,7 @@
         "alt": "Động cơ điện Inovance"
       },
       "title": "động cơ điện\ninovance",
-      "subtitle": "Sức mạnh vượt trội",
+      "subtitle": "Sức mạnh vượt trội, vận hành ổn định.",
       "imageHover": {
         "src": "/images/usp/dong-co-hover.webp",
         "alt": "Động cơ điện Inovance — ảnh chi tiết"

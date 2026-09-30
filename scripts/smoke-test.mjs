@@ -26,7 +26,8 @@ try {
   await p.goto(BASE, { waitUntil: "networkidle" });
   await p.evaluate(async () => { for (let i = 0; i < document.body.scrollHeight; i += 500) { window.scrollTo(0, i); await new Promise((r) => setTimeout(r, 80)); } window.scrollTo(0, 0); });
   await p.waitForLoadState("networkidle");
-  const srcs = await p.evaluate(() => [...new Set([...document.querySelectorAll("img")].map((i) => new URL(i.src).pathname))]);
+  // Ảnh khách chưa tải (ô ảnh trống trong CMS) không có src — bỏ qua, chỉ kiểm ảnh có đường dẫn.
+  const srcs = await p.evaluate(() => [...new Set([...document.querySelectorAll("img")].filter((i) => i.getAttribute("src")).map((i) => new URL(i.src).pathname))]);
   const hong = [];
   for (const s of srcs) if (!(await p.request.get(BASE + s)).ok()) hong.push(s);
   kiem("ảnh tải được", !hong.length, `${srcs.length} tệp${hong.length ? ", hỏng: " + hong.join(", ") : ""}`);
@@ -59,15 +60,16 @@ try {
     await q.goto(BASE, { waitUntil: "networkidle" });
     await q.evaluate(() => document.querySelector("#dong-xe").scrollIntoView());
     await q.waitForTimeout(2500);
-    const hop = q.locator('[role="dialog"]');
-    const hien = (await hop.count()) === 1 && (await hop.textContent()).includes("Nhận báo giá");
+    // Lọc theo chữ: Playwright xuyên cả shadow DOM, bảng báo lỗi của Next dev cũng là role="dialog".
+    const hop = q.locator('[role="dialog"]', { hasText: "Nhận báo giá" });
+    const hien = (await hop.count()) === 1;
     kiem(`${w}px: popup báo giá tự hiện ở khối Dòng xe`, hien);
     if (!hien) { await q.context().close(); continue; }
     kiem(`${w}px: popup chỉ 2 ô, có khung quà tặng`,
       (await hop.locator("textarea").count()) === 0 && (await hop.textContent()).includes("Tặng"));
-    await q.fill('[role="dialog"] input[name="name"]', "Kiểm thử báo giá");
-    await q.fill('[role="dialog"] input[name="phone"]', "0900000008");
-    await q.click('[role="dialog"] button[type="submit"]');
+    await hop.locator('input[name="name"]').fill("Kiểm thử báo giá");
+    await hop.locator('input[name="phone"]').fill("0900000008");
+    await hop.locator('button[type="submit"]').click();
     await q.waitForTimeout(1200);
     const lead = JSON.parse(readFileSync(LEADS, "utf8")).find((l) => l.phone === "0900000008" && l.source === "quote");
     kiem(`${w}px: gửi báo giá → lưu khách nguồn "quote"`, Boolean(lead), lead?.note ?? "");
@@ -75,7 +77,7 @@ try {
     await q.reload({ waitUntil: "networkidle" });
     await q.evaluate(() => document.querySelector("#dong-xe").scrollIntoView());
     await q.waitForTimeout(2500);
-    kiem(`${w}px: tải lại trang thì popup không hiện lại`, (await q.locator('[role="dialog"]').count()) === 0);
+    kiem(`${w}px: tải lại trang thì popup không hiện lại`, (await hop.count()) === 0);
     await q.context().close();
     writeFileSync(LEADS, leadsTruoc);
   }

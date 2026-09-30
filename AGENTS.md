@@ -195,6 +195,10 @@ Cổng của project này: **3002** (trang) và **8790** (lưng CMS) — khác t
 - **Quà tặng kèm** = ô `gift` của TỪNG phiên bản (`versions.json` → `items[].gift`, CMS → Dòng xe).
   Hiện thành viên nhãn đỏ ngay dưới ô giá; trống thì ẩn. Chen giữa giá và bảng thông số nên bảng
   tụt 50px so với Figma (audit-layout đã ghi số mới 704 thay cho 654 của Figma).
+- **Bảng thông số từ 5 ô trở lên** (khách thêm "Quãng đường hoạt động" 30/09): từ 800px xếp lưới
+  3 cột nhiều hàng, rộng tối thiểu 590·u. 1 hàng không được vì bảng V2.6 nằm bên phải chỉ còn 625px
+  tới lề khung 1440 (5 ô cần ~742px); lưới 2 cột cũ thì 3 hàng tràn đáy khối ở laptop. ≤4 ô giữ
+  nguyên Figma. Bộ kiểm đọc số ô / số thẻ Ưu điểm từ `content/*.json`, không ghi cứng.
 - **Popup** = `LeadDialog` với `source="quote"` (cùng khung với popup lái thử cho đồng bộ): không có
   ô ghi chú, có khung khuyến mãi = `gift` của phiên bản ĐANG XEM; ô ghi chú của khách tự điền
   "Phiên bản đang xem: …". Chữ ở `cta.json` → `quote` (CMS → Đăng ký & Brochure → Popup nhận báo giá,

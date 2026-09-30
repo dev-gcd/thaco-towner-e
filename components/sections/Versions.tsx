@@ -39,6 +39,9 @@ const PANEL_X = [735 / 1440, 176 / 1440]; // vị trí bảng thông số đang 
  * nên dải chỉ rộng 150% (không thì xe đè chữ "V2.6-2S"): xe bản 2 ở 118% → lề -68%.
  */
 const BG_M = ["0%", "-110%"];
+/** Số chỉ số tối đa vừa 1 hàng 590px ở `xl` (Figma có 4). Nhiều hơn thì xếp lưới 3 cột. */
+const SPECS_PER_ROW_XL = 4;
+const SPEC_COLUMNS_MANY = 3;
 const BG_M_SM = ["0%", "-68%"];
 
 export function Versions({
@@ -52,6 +55,7 @@ export function Versions({
   const { label, heading, headingAccent, background, priceLabel, items } = versions;
   const index = Math.max(0, items.findIndex((v) => v.id === versionId));
   const item = items[index];
+  const manySpecs = item.specs.length > SPECS_PER_ROW_XL;
   const step = (n: number) => onVersion(items[((n % items.length) + items.length) % items.length].id);
   // Chỉ có 2 khung hình nền trong thiết kế; phiên bản thứ 3 trở đi dùng lại khung 2.
   const frame = Math.min(index, BG_X.length - 1);
@@ -125,11 +129,29 @@ export function Versions({
                 </p>
               )}
 
-              <dl className="mt-[8px] flex w-fit flex-wrap items-center gap-[16px] rounded-[8px] bg-white/60 px-[24px] py-[21px] backdrop-blur-[2px] lg:mt-[calc(16*var(--u))] lg:grid lg:w-[calc(590*var(--u))] lg:grid-cols-2 xl:flex xl:h-[97px] xl:flex-nowrap xl:justify-between xl:gap-0">
+              {/* Figma: 4 chỉ số 1 hàng 590×97 (laptop: lưới 2 cột). Khách thêm ô thứ 5 (30/09,
+                  "Quãng đường hoạt động"): 1 hàng cần ~742px nhưng bảng V2.6 nằm bên phải chỉ còn
+                  625px tới lề khung 1440; lưới 2 cột thì 3 hàng tràn đáy khối ở laptop (khung cao
+                  cố định 951·u). Nên từ ô thứ 5, cả laptop lẫn 1440 xếp 3 cột × nhiều hàng, rộng
+                  tối thiểu 590·u (nới theo chữ ở 800px), laptop thu đệm cho vừa đáy khối. */}
+              <dl
+                className={`mt-[8px] flex w-fit flex-wrap items-center gap-[16px] rounded-[8px] bg-white/60 px-[24px] py-[21px] backdrop-blur-[2px] lg:grid ${
+                  manySpecs
+                    ? "lg:mt-[max(8px,calc(12*var(--u)))] lg:w-max lg:min-w-[calc(590*var(--u))] lg:grid-cols-[repeat(3,auto)] lg:justify-between lg:gap-x-0 lg:gap-y-[max(8px,calc(12*var(--u)))] lg:px-[max(14px,calc(24*var(--u)))] lg:py-[max(10px,calc(16*var(--u)))] xl:mt-[16px] xl:gap-y-[16px] xl:px-[24px] xl:py-[21px]"
+                    : "lg:mt-[calc(16*var(--u))] lg:w-[calc(590*var(--u))] lg:grid-cols-2 xl:flex xl:h-[97px] xl:flex-nowrap xl:justify-between xl:gap-0"
+                }`}
+              >
                 {item.specs.map((spec, i) => (
-                  <div key={spec.label} className="flex items-center gap-[16px]">
-                    {i > 0 && (
-                      <span aria-hidden className="hidden h-[56px] w-px bg-text-heading/20 xl:block" />
+                  <div
+                    key={spec.label}
+                    className={`flex items-center gap-[16px] ${manySpecs ? "lg:gap-[max(8px,calc(16*var(--u)))] xl:gap-[16px]" : ""}`}
+                  >
+                    {/* Vạch ngăn trước mỗi ô, trừ ô đầu mỗi hàng. */}
+                    {(manySpecs ? i % SPEC_COLUMNS_MANY > 0 : i > 0) && (
+                      <span
+                        aria-hidden
+                        className={`hidden w-px bg-text-heading/20 ${manySpecs ? "lg:block lg:h-[calc(56*var(--u))]" : "h-[56px] xl:block"}`}
+                      />
                     )}
                     <div className="flex flex-col gap-[4px] whitespace-nowrap">
                       <dd className="text-heading-md font-semibold text-brand lg:text-[length:max(16px,calc(24*var(--u)))] lg:leading-[1.3333]">{spec.value}</dd>

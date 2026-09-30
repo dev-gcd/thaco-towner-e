@@ -26,6 +26,11 @@ const CANVAS = 1440;
 const TRAM_SAC_AN = true;
 // Số mục menu lấy từ nội dung thật — khách thêm/bớt mục ở /admin → Đầu trang.
 const SO_MUC_MENU = JSON.parse(readFileSync("content/header.json", "utf8")).menu.length;
+// Số chỉ số của phiên bản đầu (V2.6) — khách thêm/bớt ô ở /admin → Dòng xe.
+// Số thẻ Ưu điểm (khách thêm/bớt ở /admin). Băng chuyền nhân 3 danh sách để quay vòng, nên
+// thẻ thứ nhất đang hiện là bản sao ở GIỮA: phần tử article thứ SO_THE_UU_DIEM (đếm từ 0).
+const SO_THE_UU_DIEM = JSON.parse(readFileSync("content/usp.json", "utf8")).items.length;
+const SO_CHI_SO_V26 = JSON.parse(readFileSync("content/versions.json", "utf8")).items[0].specs.length;
 
 /** [khối, tên, selector, x, y, rộng, cao] — toạ độ lấy từ Figma, tính từ mép khối. */
 const POSITIONS = [
@@ -35,11 +40,12 @@ const POSITIONS = [
   ["#gioi-thieu", "tiêu đề", "h2", 144, 168, null, null],
   ["#gioi-thieu", "nút", "button", 144, 359, 242, 40],
   ["#uu-diem", "tiêu đề", "h2", 80, 112, null, null],
-  ["#uu-diem", "thẻ đầu", "article:nth-of-type(6)", 80, 216, 400, 500],
+  ["#uu-diem", "thẻ đầu", `article:nth-of-type(${SO_THE_UU_DIEM + 1})`, 80, 216, 400, 500],
   ["#dong-xe", "tiêu đề", "h2", 80, 112, null, null],
   ["#dong-xe", "ô giá", "div.bg-brand", 735, 590, 371, 32],
   // Figma y=654; +50 vì dòng quà tặng dưới giá (khách yêu cầu 29/09). Xoá hết quà tặng ở CMS thì về 654.
-  ["#dong-xe", "bảng thông số", "dl", 735, 704, 590, 97],
+  // Cao 97 chỉ khi ≤4 chỉ số (1 hàng); từ 5 chỉ số xếp 3 cột nhiều hàng nên không so chiều cao.
+  ["#dong-xe", "bảng thông số", "dl", 735, 704, 590, SO_CHI_SO_V26 > 4 ? null : 97],
   ["#dong-xe", "nút trái", "button", 80, 549, 56, 56],
   ["#ngoai-that", "chữ mờ", "p", 80, 112, null, null],
   ["#ngoai-that", "tiêu đề", "h2", 80, 1025, null, null],
@@ -205,14 +211,14 @@ console.log("\n④ Hiệu ứng\n");
   // Thẻ ưu điểm: rê chuột đổi sang ảnh chi tiết
   await page.evaluate(() => document.querySelector("#uu-diem").scrollIntoView());
   await page.waitForTimeout(700);
-  const the = page.locator("#uu-diem article").nth(5);
+  const the = page.locator("#uu-diem article").nth(SO_THE_UU_DIEM);
   const hop = await the.boundingBox();
   const anh = () =>
-    page.evaluate(() => {
-      const a = [...document.querySelectorAll("#uu-diem article")][5];
+    page.evaluate((n) => {
+      const a = [...document.querySelectorAll("#uu-diem article")][n];
       const [i1, i2] = a.querySelectorAll("img");
       return [getComputedStyle(i1).opacity, getComputedStyle(i2).opacity];
-    });
+    }, SO_THE_UU_DIEM);
   const truoc = await anh();
   await page.mouse.move(hop.x + 200, hop.y + 250);
   await page.waitForTimeout(1000);

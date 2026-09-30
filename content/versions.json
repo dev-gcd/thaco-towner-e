@@ -32,6 +32,10 @@
         {
           "value": "75kW",
           "label": "Động cơ điện"
+        },
+        {
+          "value": "300km",
+          "label": "Quãng đường hoạt động"
         }
       ]
     },
@@ -58,6 +62,10 @@
         {
           "value": "75kW",
           "label": "Động cơ điện"
+        },
+        {
+          "value": "300km",
+          "label": "Quãng đường hoạt động"
         }
       ]
     }

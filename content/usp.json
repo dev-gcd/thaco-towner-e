@@ -7,8 +7,8 @@
         "src": "/images/usp/300km.webp",
         "alt": "Quãng đường 300km"
       },
-      "title": "Quãng đường\n300km",
-      "subtitle": "Sẵn sàng mọi hành trình",
+      "title": "Quãng đường hoạt động ",
+      "subtitle": "300km/1 lần sạc đầy",
       "imageHover": {
         "src": "/images/usp/300km-hover.webp",
         "alt": "Quãng đường 300km — ảnh chi tiết"
@@ -19,8 +19,8 @@
         "src": "/images/usp/pin.webp",
         "alt": "Công nghệ pin CATL 2C"
       },
-      "title": "công nghệ\npin catl 2c",
-      "subtitle": "Sẵn sàng mọi hành trình",
+      "title": "Pin thương hiệu CATL ",
+      "subtitle": "Thương hiệu pin hàng đầu thế giới, độ bền vượt trội, an toàn và hiệu quả",
       "imageHover": {
         "src": "/images/usp/pin-hover.webp",
         "alt": "Công nghệ pin CATL 2C — ảnh chi tiết"
@@ -31,8 +31,8 @@
         "src": "/images/usp/khoang-hang.webp",
         "alt": "Khoang hàng rộng rãi"
       },
-      "title": "khoang hàng\nrộng rãi",
-      "subtitle": "Tối ưu mỗi chuyến",
+      "title": "khoang hàng rộng rãi\nCửa sau mở 270°",
+      "subtitle": "Tối ưu sức chứa, thuận tiện bốc dỡ",
       "imageHover": {
         "src": "/images/usp/khoang-hang-hover.webp",
         "alt": "Khoang hàng rộng rãi — ảnh chi tiết"
@@ -56,7 +56,7 @@
         "alt": "Cabin tiện nghi"
       },
       "title": "cabin\ntiện nghi",
-      "subtitle": "Giảm mệt mỏi",
+      "subtitle": "Màn hình AVN kết nối internet, dẫn đường Google Maps",
       "imageHover": {
         "src": "/images/usp/cabin-hover.webp",
         "alt": "Cabin tiện nghi — ảnh chi tiết"
